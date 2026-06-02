@@ -11,6 +11,7 @@ set -euo pipefail
 PROJECT_ROOT="${ULTIMATE_ROOT:-/shared/shen/2026/ultimate}"
 CONDA_SH="${CONDA_SH:-/share/home/nshen/miniconda3/etc/profile.d/conda.sh}"
 MAMBA_EXE="${MAMBA_EXE:-mamba}"
+CONDARC_PATH="${ULTIMATE_CONDARC:-$PROJECT_ROOT/config/condarc.mirrors.tuna.yml}"
 ENV_KEYS=("$@")
 if [[ ${#ENV_KEYS[@]} -eq 0 ]]; then
   ENV_KEYS=(genome_mtdna scrna vdj spatial scatac_multiome)
@@ -19,6 +20,9 @@ fi
 mkdir -p "$PROJECT_ROOT/.conda/envs" "$PROJECT_ROOT/.conda/pkgs" "$PROJECT_ROOT/logs" "$PROJECT_ROOT/audits/env_setup"
 source "$CONDA_SH"
 export CONDA_PKGS_DIRS="$PROJECT_ROOT/.conda/pkgs"
+if [[ -f "$CONDARC_PATH" ]]; then
+  export CONDARC="$CONDARC_PATH"
+fi
 
 env_file_for_key() {
   case "$1" in
@@ -66,7 +70,7 @@ run_env_create() {
       "$MAMBA_EXE" env create -p "$prefix" -f "$env_file" -y
     fi
     echo "[$(date -Is)] done"
-  } 2>&1 | tee "$log"
+  } >"$log" 2>&1
 }
 
 status=0
@@ -84,4 +88,3 @@ if [[ -x "$PROJECT_ROOT/.conda/envs/ultimate-core/bin/ultimate" ]]; then
 fi
 
 exit "$status"
-

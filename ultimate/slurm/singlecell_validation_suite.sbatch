@@ -84,6 +84,31 @@ run_mtdna_validation() {
   fi
 }
 
+run_vdj_validation() {
+  local out_dir="$PROJECT_ROOT/validations/slurm_vdj_10x_pbmc"
+  local input_dir="$PROJECT_ROOT/public_data/vdj"
+  if [[ ! -s "$input_dir/filtered_contig_annotations.csv" || ! -s "$input_dir/clonotypes.csv" ]]; then
+    write_skip_manifest "$out_dir" "partial:data_required" "未找到 public_data/vdj 下的 10x VDJ filtered_contig_annotations.csv 和 clonotypes.csv；请先通过 Slurm 运行 download_public_singlecell_data.sbatch。"
+    return 0
+  fi
+  conda activate "$CORE_ENV"
+  python "$PROJECT_ROOT/01_tools/validate_vdj_public.py" \
+    --input-dir "$input_dir" \
+    --output-dir "$out_dir"
+  if [[ -x "$PROJECT_ROOT/.conda/envs/ultimate-vdj/bin/python" ]]; then
+    LD_PRELOAD="$PROJECT_ROOT/.conda/envs/ultimate-vdj/lib/libgomp.so.1" \
+      "$PROJECT_ROOT/.conda/envs/ultimate-vdj/bin/python" - <<'PY'
+import scirpy as ir
+
+adata = ir.io.read_10x_vdj(
+    "/shared/shen/2026/ultimate/public_data/vdj/filtered_contig_annotations.csv",
+    filtered=True,
+)
+print({"scirpy_vdj_cells": int(adata.n_obs)})
+PY
+  fi
+}
+
 run_final_audit() {
   conda activate "$CORE_ENV"
   cd "$PROJECT_ROOT"
@@ -95,5 +120,5 @@ run_final_audit() {
 run_initial_audit
 run_scrna_validation
 run_mtdna_validation
+run_vdj_validation
 run_final_audit
-

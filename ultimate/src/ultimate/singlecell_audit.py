@@ -16,6 +16,7 @@ class Capability:
     key: str
     title_cn: str
     env_name: str
+    alternate_env_paths: tuple[str, ...] = ()
     python_packages: tuple[str, ...] = ()
     r_packages: tuple[str, ...] = ()
     commands: tuple[str, ...] = ()
@@ -28,6 +29,11 @@ CAPABILITIES: tuple[Capability, ...] = (
         "scrna",
         "单细胞转录组 scRNA-seq",
         "ultimate-scrna",
+        alternate_env_paths=(
+            "{root}/.conda/envs/ultimate-scrna-r",
+            "/shared/shen/2026/singlecell_workbench/.conda/envs/scw-py311",
+            "/share/home/nshen/miniconda3/envs/nsclc_sc",
+        ),
         python_packages=("scanpy", "anndata", "scvi", "celltypist", "decoupler"),
         r_packages=("Seurat", "SingleR", "GSVA", "AUCell", "WGCNA", "clusterProfiler"),
         data_checks=("nsclc_h5ad",),
@@ -56,6 +62,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         "vdj",
         "单细胞免疫组库 VDJ/TCR/BCR",
         "ultimate-vdj",
+        alternate_env_paths=("{root}/.conda/envs/ultimate-vdj-r",),
         python_packages=("scirpy", "dandelion"),
         r_packages=("scRepertoire", "immunarch"),
         data_checks=("public_vdj",),
@@ -64,6 +71,11 @@ CAPABILITIES: tuple[Capability, ...] = (
         "scdna",
         "单细胞 DNA-seq / 基因组",
         "ultimate-genome-mtdna",
+        alternate_env_paths=(
+            "{root}/.conda/envs/ultimate-core",
+            "/share/home/nshen/miniconda3/envs/star_env",
+            "/share/home/nshen/miniconda3/envs/scfusion_final",
+        ),
         python_packages=("pandas", "matplotlib"),
         commands=("samtools", "bcftools", "bwa", "bedtools"),
         data_checks=("dna_bam_0518",),
@@ -72,6 +84,11 @@ CAPABILITIES: tuple[Capability, ...] = (
         "mtdna",
         "单细胞线粒体基因组 / mtDNA",
         "ultimate-genome-mtdna",
+        alternate_env_paths=(
+            "{root}/.conda/envs/ultimate-core",
+            "/share/home/nshen/miniconda3/envs/star_env",
+            "/share/home/nshen/miniconda3/envs/scfusion_final",
+        ),
         python_packages=("pandas", "matplotlib"),
         commands=("samtools", "bcftools"),
         data_checks=("mtdna_0518",),
@@ -89,6 +106,10 @@ CAPABILITIES: tuple[Capability, ...] = (
         "cite_seq",
         "单细胞蛋白组 / CITE-seq / REAP-seq",
         "ultimate-scrna",
+        alternate_env_paths=(
+            "{root}/.conda/envs/ultimate-scrna-r",
+            "/shared/shen/2026/singlecell_workbench/.conda/envs/scw-py311",
+        ),
         python_packages=("muon", "scanpy"),
         r_packages=("Seurat", "dsb"),
         data_checks=("public_cite_seq",),
@@ -106,6 +127,10 @@ CAPABILITIES: tuple[Capability, ...] = (
         "functional_state",
         "单细胞代谢 / 功能状态",
         "ultimate-scrna",
+        alternate_env_paths=(
+            "{root}/.conda/envs/ultimate-scrna-r",
+            "/shared/shen/2026/singlecell_workbench/.conda/envs/scw-py311",
+        ),
         python_packages=("scanpy", "decoupler"),
         r_packages=("GSVA", "AUCell", "Seurat"),
         data_checks=("nsclc_h5ad",),
@@ -114,14 +139,19 @@ CAPABILITIES: tuple[Capability, ...] = (
         "tumor_sc",
         "肿瘤单细胞常见专项",
         "ultimate-scrna",
+        alternate_env_paths=(
+            "{root}/.conda/envs/ultimate-scrna-r",
+            "/shared/shen/2026/singlecell_workbench/.conda/envs/scw-py311",
+        ),
         python_packages=("scanpy", "celltypist", "decoupler"),
-        r_packages=("infercnv", "CopyKAT", "Seurat", "survival"),
+        r_packages=("infercnv", "copykat", "Seurat", "survival"),
         data_checks=("nsclc_h5ad",),
     ),
     Capability(
         "clinical_assoc",
         "跨样本 / 临床关联分析",
         "ultimate-core",
+        alternate_env_paths=("{root}/.conda/envs/ultimate-scrna-r",),
         python_packages=("pandas", "numpy", "matplotlib"),
         r_packages=("survival", "GSVA", "survminer"),
         data_checks=("public_geo_validation",),
@@ -130,6 +160,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         "method_tools",
         "方法学 / 工具类分析",
         "ultimate-core",
+        alternate_env_paths=("{root}/.conda/envs/ultimate-scrna-r",),
         python_packages=("pandas", "numpy", "matplotlib", "jinja2"),
         r_packages=("Seurat", "SingleR"),
         commands=("snakemake",),
@@ -174,63 +205,72 @@ def run_singlecell_audit(root: Path, output_dir: Path | None = None) -> dict[str
 
 
 def _check_capability(root: Path, capability: Capability) -> dict[str, Any]:
-    env_path = root / ".conda" / "envs" / capability.env_name
-    if capability.env_name == "ultimate-core":
-        env_path = root / ".conda" / "envs" / "ultimate-core"
-    python_path = env_path / "bin" / "python"
-    rscript_path = env_path / "bin" / "Rscript"
-    bin_dir = env_path / "bin"
+    env_paths = _env_paths(root, capability)
+    python_paths = [env_path / "bin" / "python" for env_path in env_paths]
+    rscript_paths = [env_path / "bin" / "Rscript" for env_path in env_paths]
+    bin_dirs = [env_path / "bin" for env_path in env_paths]
     checks = {
-        "env_path": str(env_path),
-        "env_exists": env_path.exists(),
-        "python_packages": _check_python_packages(python_path, capability.python_packages),
-        "r_packages": _check_r_packages(rscript_path, capability.r_packages),
-        "commands": _check_commands(bin_dir, capability.commands),
+        "env_path": str(env_paths[0]),
+        "env_paths": [str(path) for path in env_paths],
+        "env_exists": any(env_path.exists() for env_path in env_paths),
+        "reusable_envs": [str(path) for path in env_paths[1:] if path.exists()],
+        "python_packages": _check_python_packages(python_paths, capability.python_packages),
+        "r_packages": _check_r_packages(rscript_paths, capability.r_packages),
+        "commands": _check_commands(bin_dirs, capability.commands),
         "data": _check_data(root, capability.data_checks),
-        "licensed_tools": {tool: _command_available(tool, bin_dir) for tool in capability.licensed_tools},
+        "licensed_tools": {tool: _command_available(tool, bin_dirs) for tool in capability.licensed_tools},
     }
     return checks
 
 
-def _check_python_packages(python_path: Path, packages: tuple[str, ...]) -> dict[str, bool]:
+def _env_paths(root: Path, capability: Capability) -> list[Path]:
+    primary = root / ".conda" / "envs" / capability.env_name
+    env_paths = [primary]
+    for env_path in capability.alternate_env_paths:
+        env_paths.append(Path(env_path.format(root=root)))
+    return env_paths
+
+
+def _check_python_packages(python_paths: list[Path], packages: tuple[str, ...]) -> dict[str, bool]:
     if not packages:
         return {}
-    if not python_path.exists():
-        return {pkg: False for pkg in packages}
-    code = "import importlib.util\nfor p in %r:\n print(p, bool(importlib.util.find_spec(p)), sep='\\t')" % (list(packages),)
-    completed = subprocess.run([str(python_path), "-c", code], text=True, capture_output=True, check=False)
     found = {pkg: False for pkg in packages}
-    for line in completed.stdout.splitlines():
-        parts = line.split("\t")
-        if len(parts) == 2:
-            found[parts[0]] = parts[1] == "True"
+    code = "import importlib.util\nfor p in %r:\n print(p, bool(importlib.util.find_spec(p)), sep='\\t')" % (list(packages),)
+    for python_path in python_paths:
+        if not python_path.exists():
+            continue
+        completed = subprocess.run([str(python_path), "-c", code], text=True, capture_output=True, check=False)
+        for line in completed.stdout.splitlines():
+            parts = line.split("\t")
+            if len(parts) == 2 and parts[1] == "True":
+                found[parts[0]] = True
     return found
 
 
-def _check_r_packages(rscript_path: Path, packages: tuple[str, ...]) -> dict[str, bool]:
+def _check_r_packages(rscript_paths: list[Path], packages: tuple[str, ...]) -> dict[str, bool]:
     if not packages:
         return {}
-    if not rscript_path.exists():
-        return {pkg: False for pkg in packages}
+    found = {pkg: False for pkg in packages}
     code = "pkgs <- c(%s); inst <- rownames(installed.packages()); cat(paste(pkgs, pkgs %%in%% inst, sep='\\t'), sep='\\n')" % (
         ",".join(json.dumps(pkg) for pkg in packages)
     )
-    completed = subprocess.run([str(rscript_path), "-e", code], text=True, capture_output=True, check=False)
-    found = {pkg: False for pkg in packages}
-    for line in completed.stdout.splitlines():
-        parts = line.split("\t")
-        if len(parts) == 2:
-            found[parts[0]] = parts[1] == "TRUE"
+    for rscript_path in rscript_paths:
+        if not rscript_path.exists():
+            continue
+        completed = subprocess.run([str(rscript_path), "-e", code], text=True, capture_output=True, check=False)
+        for line in completed.stdout.splitlines():
+            parts = line.split("\t")
+            if len(parts) == 2 and parts[1] == "TRUE":
+                found[parts[0]] = True
     return found
 
 
-def _check_commands(bin_dir: Path, commands: tuple[str, ...]) -> dict[str, bool]:
-    return {command: _command_available(command, bin_dir) for command in commands}
+def _check_commands(bin_dirs: list[Path], commands: tuple[str, ...]) -> dict[str, bool]:
+    return {command: _command_available(command, bin_dirs) for command in commands}
 
 
-def _command_available(command: str, bin_dir: Path) -> bool:
-    candidate = bin_dir / command
-    return candidate.exists() or shutil.which(command) is not None
+def _command_available(command: str, bin_dirs: list[Path]) -> bool:
+    return any((bin_dir / command).exists() for bin_dir in bin_dirs) or shutil.which(command) is not None
 
 
 def _check_data(root: Path, checks: tuple[str, ...]) -> dict[str, bool]:
@@ -291,6 +331,7 @@ def _capability_row(capability: Capability, checks: dict[str, Any]) -> dict[str,
         "data_missing": ",".join(data_missing),
         "licensed_optional_missing": ",".join(licensed_missing),
         "env_exists": str(checks["env_exists"]),
+        "reusable_envs": ";".join(checks["reusable_envs"]),
     }
 
 

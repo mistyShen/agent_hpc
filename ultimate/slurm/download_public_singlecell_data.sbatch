@@ -18,9 +18,8 @@ conda activate "$CORE_ENV"
 
 python "$PROJECT_ROOT/01_tools/prepare_public_singlecell_manifests.py" \
   --root "$PROJECT_ROOT" \
-  --mode "${ULTIMATE_PUBLIC_DATA_MODE:-manifest}"
+  --mode "${ULTIMATE_PUBLIC_DATA_MODE:-download}"
 
 ultimate audit-singlecell \
   --root "$PROJECT_ROOT" \
   --output-dir "$PROJECT_ROOT/audits/singlecell_after_public_data_manifest"
-
