@@ -1,0 +1,16 @@
+{
+  "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example",
+  "config_path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/run_config.yaml",
+  "samples": [
+    {
+      "sample_id": "ctrl_a",
+      "condition": "control",
+      "input_path": "data/ctrl_a/filtered_feature_bc_matrix"
+    },
+    {
+      "sample_id": "stim_b",
+      "condition": "treated",
+      "input_path": "data/stim_b/filtered_feature_bc_matrix.h5"
+    }
+  ]
+}

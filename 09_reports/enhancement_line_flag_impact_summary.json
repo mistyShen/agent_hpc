@@ -1,0 +1,71 @@
+{
+  "generated_at_utc": "2026-04-16T06:31:46.805385+00:00",
+  "source_files": {
+    "background_delta_json": "09_reports/enhancement_line_background_delta.json",
+    "comparison_json": "09_reports/enhancement_line_v2_vs_v3_comparison.json"
+  },
+  "headline": {
+    "best_background_compound_id": "BG_BIPHENYL",
+    "active_best_background_gap": 6.146,
+    "baseline_shortlist_count": 2,
+    "enhancement_shortlist_count": 1
+  },
+  "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+  "flag_summary": [
+    {
+      "flag": "polyaryl_hydrophobe_background",
+      "compound_count": 4,
+      "compounds": [
+        "BG_BIPHENYL",
+        "BG_QUINOLINE",
+        "BG_INDOLE",
+        "BG_NAPHTHALENE"
+      ],
+      "average_score_delta": 3.924,
+      "max_score_delta": 4.211,
+      "average_rank_delta": 0.0,
+      "shortlist_removed_count": 1,
+      "shortlist_removed_compounds": [
+        "BG_BIPHENYL"
+      ],
+      "best_current_compound_id": "BG_BIPHENYL",
+      "best_current_rank": 2,
+      "best_current_score": -2.754
+    },
+    {
+      "flag": "simple_aromatic_background",
+      "compound_count": 4,
+      "compounds": [
+        "BG_BIPHENYL",
+        "BG_QUINOLINE",
+        "BG_INDOLE",
+        "BG_NAPHTHALENE"
+      ],
+      "average_score_delta": 3.924,
+      "max_score_delta": 4.211,
+      "average_rank_delta": 0.0,
+      "shortlist_removed_count": 1,
+      "shortlist_removed_compounds": [
+        "BG_BIPHENYL"
+      ],
+      "best_current_compound_id": "BG_BIPHENYL",
+      "best_current_rank": 2,
+      "best_current_score": -2.754
+    },
+    {
+      "flag": "single_ring_background",
+      "compound_count": 1,
+      "compounds": [
+        "BG_BENZAMIDE"
+      ],
+      "average_score_delta": 3.729,
+      "max_score_delta": 3.729,
+      "average_rank_delta": 0.0,
+      "shortlist_removed_count": 0,
+      "shortlist_removed_compounds": [],
+      "best_current_compound_id": "BG_BENZAMIDE",
+      "best_current_rank": 3,
+      "best_current_score": -2.741
+    }
+  ]
+}

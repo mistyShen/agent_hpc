@@ -1,0 +1,34 @@
+{
+  "decoupler": {
+    "reason": "decoupler is not installed",
+    "status": "skipped"
+  },
+  "module": "stats",
+  "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats",
+  "schema": {
+    "missing_or_repaired_values": {},
+    "requested_keys": {
+      "cell_type": "cell_type",
+      "condition": "condition",
+      "sample": "sample_id"
+    },
+    "total_cells": 12
+  },
+  "status": "completed",
+  "tables": {
+    "sample_cell_type_condition_summary": {
+      "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_cell_type_condition_summary.csv",
+      "rows": 2
+    },
+    "sample_condition_totals": {
+      "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_condition_totals.csv",
+      "rows": 2
+    },
+    "sample_totals": {
+      "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_totals.csv",
+      "rows": 2
+    }
+  },
+  "warnings": [],
+  "working_modality": "Gene Expression"
+}

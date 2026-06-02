@@ -1,0 +1,91 @@
+{
+  "scope_note": "Design only. This does not change current tuning, frozen benchmark/manuscript claims, or workflow behavior.",
+  "boundary_note": "Conclusions are limited to the current enhancement line evidence.",
+  "design_goal": "Retain current v3 gains on panels like BRD4_BD1_LIT002_V3EXP while avoiding unnecessary panel-specific penalties on panels like BRD4_BD1_LIT001_V3EXP where the same rules do not materially help.",
+  "non_goals": [
+    "Do not change the frozen result line.",
+    "Do not change benchmark schema or truth-table structure.",
+    "Do not promote current enhancement behavior into manuscript claims.",
+    "Do not introduce a target-specific hardcoded whitelist."
+  ],
+  "evidence_basis": {
+    "BRD4_BD1_LIT002_V3EXP": {
+      "effect_class": "material_on_panel",
+      "active_best_background_gap": 6.146,
+      "background_flag_coverage": 1.0,
+      "best_background_compound_id": "BG_BIPHENYL",
+      "best_background_captured_by_flags": true
+    },
+    "BRD4_BD1_LIT001_V3EXP": {
+      "effect_class": "weak_on_panel",
+      "active_best_background_gap": 1.859,
+      "background_flag_coverage": 0.478,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "best_background_captured_by_flags": false
+    }
+  },
+  "gating_target_terms": [
+    "simple_aromatic_penalty",
+    "polyaryl_hydrophobe_penalty",
+    "single_ring_background_penalty"
+  ],
+  "ungated_core_terms": [
+    "artifact_penalty",
+    "small_mw_penalty",
+    "hetero_floor_penalty",
+    "aromatic_fraction_penalty"
+  ],
+  "panel_profile_inputs": [
+    "background_count",
+    "flagged_background_count",
+    "background_flag_coverage",
+    "simple_aromatic_background_count",
+    "polyaryl_hydrophobe_background_count",
+    "single_ring_background_count"
+  ],
+  "recommended_minimal_modes": [
+    {
+      "mode": "panel_specific_v3_full",
+      "conditions": {
+        "library_type": "focused",
+        "background_flag_coverage_gte": 0.8
+      },
+      "multipliers": {
+        "simple_aromatic_penalty": 1.0,
+        "polyaryl_hydrophobe_penalty": 1.0,
+        "single_ring_background_penalty": 1.0
+      }
+    },
+    {
+      "mode": "panel_specific_v3_off",
+      "conditions": {
+        "background_flag_coverage_lt": 0.8
+      },
+      "multipliers": {
+        "simple_aromatic_penalty": 0.0,
+        "polyaryl_hydrophobe_penalty": 0.0,
+        "single_ring_background_penalty": 0.0
+      }
+    }
+  ],
+  "expected_behavior": {
+    "BRD4_BD1_LIT002_V3EXP": "remain in panel_specific_v3_full",
+    "BRD4_BD1_LIT001_V3EXP": "move to panel_specific_v3_off"
+  },
+  "implementation_diagnostics_to_add": [
+    "panel_specific_gating_mode",
+    "background_flag_coverage",
+    "simple_aromatic_background_count",
+    "polyaryl_hydrophobe_background_count",
+    "single_ring_background_count",
+    "applied_penalty_multipliers"
+  ],
+  "validation_sequence": [
+    "Keep frozen line untouched.",
+    "Implement gating only on the enhancement line.",
+    "Re-run BRD4_BD1_LIT002_V3EXP and BRD4_BD1_LIT001_V3EXP.",
+    "Rebuild dual-case validation summary and panel profile summary.",
+    "Accept only if LIT002 keeps a strong margin and LIT001 remains compatible."
+  ],
+  "current_recommendation": "Use this as the first implementation candidate for case-aware gating."
+}

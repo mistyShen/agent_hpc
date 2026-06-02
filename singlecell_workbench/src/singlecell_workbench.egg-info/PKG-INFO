@@ -1,0 +1,90 @@
+Metadata-Version: 2.4
+Name: singlecell-workbench
+Version: 0.1.0
+Summary: Reproducible single-cell analysis scaffold for 10x data with QC, annotation, statistics, and reporting.
+Author: Codex
+License: MIT
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: anndata>=0.10
+Requires-Dist: click>=8.1
+Requires-Dist: h5py>=3.10
+Requires-Dist: jinja2>=3.1
+Requires-Dist: matplotlib>=3.8
+Requires-Dist: mudata>=0.2.4
+Requires-Dist: nbformat>=5.10
+Requires-Dist: numpy>=1.26
+Requires-Dist: pandas>=2.2
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: scanpy>=1.10
+Requires-Dist: scipy>=1.11
+Requires-Dist: seaborn>=0.13
+Provides-Extra: annotation
+Requires-Dist: celltypist>=1.6; extra == "annotation"
+Requires-Dist: scarches>=0.5.10; extra == "annotation"
+Requires-Dist: scvi-tools>=1.1; extra == "annotation"
+Provides-Extra: qc
+Requires-Dist: scvi-tools>=1.1; extra == "qc"
+Requires-Dist: scar>=0.1.0; extra == "qc"
+Provides-Extra: stats
+Requires-Dist: decoupler>=1.8; extra == "stats"
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+
+# singlecell_workbench
+
+`singlecell_workbench` is a reproducible, testable scaffold for 10x single-cell data processing under `/shared/shen/2026/singlecell_workbench`.
+
+It is built around a CLI-first workflow rather than notebooks or UI:
+
+- ingest 10x `filtered_feature_bc_matrix.h5` and `matrix.mtx` directories
+- normalize outputs to `h5ad` or `h5mu` depending on detected modalities
+- validate `obs` / `var` / `layers` / `obsm` / `uns` schema and emit auto-fix suggestions
+- run QC with `scanpy.pp.calculate_qc_metrics` plus optional SOLO and SCAR integration
+- annotate with preferred `scArches + scANVI`, falling back to `CellTypist` when available
+- summarize `sample x cell_type x condition` results and optionally attach `decoupler` activities
+- generate an HTML report and methods draft for handoff
+
+## Quickstart
+
+Create a local environment:
+
+```bash
+uv venv .venv
+uv pip install --python .venv/bin/python -e '.[dev]'
+```
+
+Generate a runnable minimal example:
+
+```bash
+.venv/bin/scw make-example --output-dir example_data/minimal_example
+```
+
+Run the full workflow on the generated example:
+
+```bash
+.venv/bin/scw run --config example_data/minimal_example/run_config.yaml
+```
+
+## Project layout
+
+- `src/singlecell_workbench/`: package source
+- `config/default.yaml`: editable baseline config template
+- `tests/`: unit and integration coverage
+- `notebooks/`: example notebook for onboarding and validation
+- `example_data/`: generated minimal example inputs and outputs
+
+## Real-data expansion path
+
+1. Start from the minimal example and confirm the base pipeline completes.
+2. Replace the `samples` block in a config YAML with real 10x H5 or MTX inputs.
+3. Install optional extras required by your analysis plan:
+   - `annotation`: `scArches`, `scvi-tools`, `CellTypist`
+   - `qc`: `scvi-tools`, `SCAR`
+   - `stats`: `decoupler`
+4. Re-run through the CLI and archive the generated `run_manifest.json`, report, and exported `h5ad` / `h5mu`.
+
+## Notes
+
+- The minimal example is designed to complete even when optional deep-learning dependencies are not installed.
+- Optional modules record explicit skip reasons in their manifests so handoff remains transparent.

@@ -1,0 +1,11 @@
+jobs: 20
+restart-times: 1
+latency-wait: 60
+printshellcmds: true
+rerun-incomplete: true
+default-resources:
+  - mem_mb=4000
+  - runtime=30
+  - cpus_per_task=1
+cluster:
+  sbatch --partition=comp --nodes=1 --ntasks=1 --cpus-per-task={resources.cpus_per_task} --time=00:{resources.runtime}:00 --mem={resources.mem_mb}

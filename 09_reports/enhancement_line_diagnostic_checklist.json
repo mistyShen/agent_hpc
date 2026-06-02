@@ -1,0 +1,52 @@
+{
+  "generated_at_utc": "2026-04-16T06:31:46.754399+00:00",
+  "source_files": {
+    "comparison_json": "09_reports/enhancement_line_v2_vs_v3_comparison.json",
+    "tracker_json": "09_reports/enhancement_line_iteration_tracker.json"
+  },
+  "scope": {
+    "baseline_case_id": "BRD4_BD1_LIT002",
+    "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP"
+  },
+  "headline": {
+    "baseline_active_best_background_gap": 0.81,
+    "enhancement_active_best_background_gap": 6.146,
+    "enhancement_shortlist_count": 1,
+    "enhancement_shortlist_ids": [
+      "I-BET762"
+    ],
+    "best_background_compound_id": "BG_BIPHENYL"
+  },
+  "best_background_diagnostic": {
+    "compound_id": "BG_BIPHENYL",
+    "docking_core": -6.8,
+    "physchem_penalty": 4.046,
+    "physchem_flags": [
+      "simple_aromatic_background",
+      "polyaryl_hydrophobe_background"
+    ],
+    "physchem_snapshot": {
+      "molecular_weight_estimate": 144.132,
+      "hetero_atom_count": 0,
+      "aromatic_atom_count": 12,
+      "ring_index_count": 2,
+      "aromatic_fraction": 1.0
+    }
+  },
+  "consistency_checks": {
+    "active_margin_matches_tracker": true,
+    "shortlist_count_matches_tracker": true,
+    "known_active_shortlisted_matches_tracker": true
+  },
+  "quality_gates": {
+    "known_active_remains_rank_1": true,
+    "known_active_still_shortlisted": true,
+    "active_margin_improved": true,
+    "shortlist_compressed": true,
+    "best_background_explained": true,
+    "diagnostic_outputs_consistent": true
+  },
+  "attention_items": [],
+  "overall_status": "healthy",
+  "recommendation": "Continue enhancement-line tuning; current outputs are aligned and explanatory."
+}

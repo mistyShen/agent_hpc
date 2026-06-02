@@ -1,0 +1,87 @@
+{
+  "scope": "enhancement_line_only",
+  "boundary": "bounded_case_aware_gating_readout_only",
+  "gating": {
+    "enabled_in_v3": true,
+    "focused_flag_coverage_threshold": 0.8,
+    "modes": {
+      "panel_specific_v3_full": {
+        "conditions": {
+          "library_type": "focused",
+          "background_flag_coverage_gte": 0.8
+        },
+        "gated_penalty_multiplier": 1.0
+      },
+      "panel_specific_v3_off": {
+        "conditions": {
+          "otherwise": true
+        },
+        "gated_penalty_multiplier": 0.0
+      }
+    },
+    "gated_penalties": [
+      "simple_aromatic_penalty",
+      "polyaryl_hydrophobe_penalty",
+      "single_ring_background_penalty"
+    ],
+    "ungated_terms": [
+      "artifact_penalty",
+      "lightweight_non_panel_specific_physchem_terms"
+    ]
+  },
+  "case_readout": [
+    {
+      "case_id": "BRD4_BD1_LIT002_V3EXP",
+      "background_flag_coverage": 1.0,
+      "expected_gating_mode": "panel_specific_v3_full",
+      "effect_class": "material_on_panel",
+      "known_active_id": "I-BET762",
+      "shortlist_count": 1,
+      "best_background_id": "BG_BIPHENYL",
+      "active_best_background_gap": 6.146
+    },
+    {
+      "case_id": "BRD4_BD1_LIT001_V3EXP",
+      "background_flag_coverage": 0.478,
+      "expected_gating_mode": "panel_specific_v3_off",
+      "effect_class": "weak_on_panel",
+      "known_active_id": "JQ1",
+      "shortlist_count": 1,
+      "best_background_id": "BG_ASPIRIN",
+      "active_best_background_gap": 1.859
+    }
+  ],
+  "operational_definitions": {
+    "material_on_panel": [
+      "known_active_rank_1",
+      "known_active_shortlisted",
+      "bounded_audit_shows_material_gap_contribution_from_panel_specific_penalty_family"
+    ],
+    "weak_on_panel": [
+      "known_active_rank_1",
+      "known_active_shortlisted",
+      "bounded_audit_shows_no_material_gap_contribution_from_panel_specific_penalty_family"
+    ]
+  },
+  "threshold_note": {
+    "background_flag_coverage_threshold": 0.8,
+    "interpretation": "empirical_enhancement_line_threshold",
+    "is_frozen_benchmark_policy": false,
+    "is_generally_validated_cross_panel_threshold": false
+  },
+  "what_gating_does_not_change": [
+    "frozen_filtering_logic",
+    "benchmark_schema",
+    "truth_table_structure",
+    "overall_frozen_benchmark_policy"
+  ],
+  "current_recommendation": {
+    "keep_frozen_line_untouched": true,
+    "keep_v3_claims_bounded": true,
+    "resume_same_panel_tuning": false,
+    "preferred_next_actions": [
+      "add_third_enhancement_only_validation_surface",
+      "run_broader_bounded_validation_before_stronger_claims"
+    ]
+  }
+}

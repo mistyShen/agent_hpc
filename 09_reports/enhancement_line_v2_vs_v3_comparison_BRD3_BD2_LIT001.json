@@ -1,0 +1,254 @@
+{
+  "report_type": "enhancement_line_comparison",
+  "isolated_execution_root": "/Users/a1234/Documents/coding/projects/agent_hpc/11_tmp/enhancement_case_fetch/current_v3exp",
+  "baseline_case": {
+    "case_id": "BRD3_BD2_LIT001",
+    "rerank_model": "cpu_docking_rerank_v2",
+    "top_rerank": [
+      {
+        "compound_id": "JQ1",
+        "rerank_score": -6.705,
+        "rerank_rank": 1
+      },
+      {
+        "compound_id": "BG_BIPHENYL",
+        "rerank_score": -6.49,
+        "rerank_rank": 2
+      },
+      {
+        "compound_id": "BG_BENZAMIDE",
+        "rerank_score": -6.375,
+        "rerank_rank": 3
+      }
+    ],
+    "filter_keep_count": 1,
+    "shortlist_count": 1,
+    "shortlist_ids": [
+      "JQ1"
+    ],
+    "ground_truth": {
+      "known_active_count": 1,
+      "known_active_recovered_in_filter_keep": 1,
+      "known_active_recovered_in_shortlist": 1,
+      "shortlist_contains_known_active": true,
+      "best_known_active_rank": 1
+    },
+    "known_active_compound_id": "JQ1",
+    "active_margin": {
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_rerank_score": -6.705,
+      "known_active_shortlisted": true,
+      "best_background_compound_id": "BG_BIPHENYL",
+      "best_background_rank": 2,
+      "best_background_rerank_score": -6.49,
+      "known_active_to_best_background_gap": 0.215
+    },
+    "rerank_diagnostics": {
+      "top_preview": [
+        {
+          "compound_id": "JQ1",
+          "docking_core": -7.9,
+          "artifact_penalty": null,
+          "physchem_penalty": null,
+          "total_penalty": null,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": null,
+            "hetero_atom_count": null,
+            "aromatic_atom_count": null,
+            "ring_index_count": null,
+            "aromatic_fraction": null
+          }
+        },
+        {
+          "compound_id": "BG_BIPHENYL",
+          "docking_core": -6.4,
+          "artifact_penalty": null,
+          "physchem_penalty": null,
+          "total_penalty": null,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": null,
+            "hetero_atom_count": null,
+            "aromatic_atom_count": null,
+            "ring_index_count": null,
+            "aromatic_fraction": null
+          }
+        },
+        {
+          "compound_id": "BG_BENZAMIDE",
+          "docking_core": -5.5,
+          "artifact_penalty": null,
+          "physchem_penalty": null,
+          "total_penalty": null,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": null,
+            "hetero_atom_count": null,
+            "aromatic_atom_count": null,
+            "ring_index_count": null,
+            "aromatic_fraction": null
+          }
+        }
+      ],
+      "v3_component_averages": {
+        "artifact_penalty": 0.0,
+        "physchem_penalty": 0.0
+      },
+      "cache_status": "miss"
+    },
+    "priority_diagnostics": {
+      "selection_policy": "filter_keep_then_rerank_score_then_vina_affinity_v1",
+      "filter_keep_input_count": 1,
+      "shortlist_count": 1,
+      "shortlist_cap": 1,
+      "top_score_gap": 0.0,
+      "v3_priority_tuning": {},
+      "cache_status": "miss"
+    }
+  },
+  "enhancement_case": {
+    "case_id": "BRD3_BD2_LIT001_V3EXP",
+    "rerank_model": "cpu_docking_rerank_v3",
+    "top_rerank": [
+      {
+        "compound_id": "JQ1",
+        "rerank_score": -7.9,
+        "rerank_rank": 1
+      },
+      {
+        "compound_id": "BG_ASPIRIN",
+        "rerank_score": -5.641,
+        "rerank_rank": 2
+      },
+      {
+        "compound_id": "BG_ETHYL_PARABEN",
+        "rerank_score": -5.461,
+        "rerank_rank": 3
+      }
+    ],
+    "filter_keep_count": 1,
+    "shortlist_count": 1,
+    "shortlist_ids": [
+      "JQ1"
+    ],
+    "ground_truth": {
+      "known_active_count": 1,
+      "known_active_recovered_in_filter_keep": 1,
+      "known_active_recovered_in_shortlist": 1,
+      "shortlist_contains_known_active": true,
+      "best_known_active_rank": 1
+    },
+    "known_active_compound_id": "JQ1",
+    "active_margin": {
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_rerank_score": -7.9,
+      "known_active_shortlisted": true,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "best_background_rank": 2,
+      "best_background_rerank_score": -5.641,
+      "known_active_to_best_background_gap": 2.259
+    },
+    "rerank_diagnostics": {
+      "top_preview": [
+        {
+          "compound_id": "JQ1",
+          "docking_core": -7.9,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 0.0,
+          "total_penalty": 0.0,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 431.789,
+            "hetero_atom_count": 8,
+            "aromatic_atom_count": 0,
+            "ring_index_count": 4,
+            "aromatic_fraction": 0.0
+          }
+        },
+        {
+          "compound_id": "BG_ASPIRIN",
+          "docking_core": -6.0,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 0.359,
+          "total_penalty": 0.359,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 144.085,
+            "hetero_atom_count": 3,
+            "aromatic_atom_count": 5,
+            "ring_index_count": 1,
+            "aromatic_fraction": 0.455
+          }
+        },
+        {
+          "compound_id": "BG_ETHYL_PARABEN",
+          "docking_core": -5.7,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 0.239,
+          "total_penalty": 0.239,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 156.096,
+            "hetero_atom_count": 3,
+            "aromatic_atom_count": 6,
+            "ring_index_count": 1,
+            "aromatic_fraction": 0.5
+          }
+        }
+      ],
+      "v3_component_averages": {
+        "artifact_penalty": 0.0,
+        "physchem_penalty": 0.259
+      },
+      "cache_status": "miss"
+    },
+    "priority_diagnostics": {
+      "selection_policy": "filter_keep_then_v3_rerank_margin_then_vina_v2",
+      "filter_keep_input_count": 1,
+      "shortlist_count": 1,
+      "shortlist_cap": 1,
+      "top_score_gap": 0.0,
+      "v3_priority_tuning": {
+        "top1_only_gap": 0.75,
+        "top2_gap": 0.35,
+        "mid_gap_shortlist_cap": 2
+      },
+      "cache_status": "miss"
+    }
+  },
+  "performance": {
+    "ai_reranking": {
+      "phase_timings_seconds": {
+        "read": 0.008341,
+        "scoring": 0.042898,
+        "output": 0.005373
+      },
+      "per_case_runtime_seconds": {
+        "BRD3_BD2_LIT001": {
+          "runtime_seconds": 0.021007,
+          "scoring_runtime_seconds": 0.01481
+        },
+        "BRD3_BD2_LIT001_V3EXP": {
+          "runtime_seconds": 0.020211,
+          "scoring_runtime_seconds": 0.014529
+        }
+      },
+      "cache_hit_case_runtime_seconds": {}
+    },
+    "clustering_and_prioritization": {
+      "phase_timings_seconds": {
+        "read": 0.013895,
+        "scoring": 0.000761,
+        "output": 0.001847
+      },
+      "cache_hit_case_runtime_seconds": {}
+    }
+  },
+  "conclusion": {
+    "summary": "v3 improves rerank separation and clustering v2 converts that difference into a tighter shortlist without touching the frozen baseline line.",
+    "next_recommended_action": "Use the enhancement-line iteration tracker after each v3 tweak to verify that rerank gap or shortlist compression still improves before expanding the experiment scope."
+  }
+}

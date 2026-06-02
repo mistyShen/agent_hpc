@@ -1,0 +1,52 @@
+{
+  "case_id": "BRD3_BD1_LIT002_V3EXP",
+  "case_type": "literature_backed",
+  "rerank_strategy": "ai_rerank_v3",
+  "target_id": "BRD3_BD1_24OS",
+  "library_id": "BRD4_LIT_FOCUSED_002",
+  "known_active_compound_id": "I-BET762",
+  "truth_row_count": 1,
+  "docking_candidate_count": 6,
+  "reranked_candidate_count": 6,
+  "filter_keep_count": 1,
+  "shortlist_count": 1,
+  "shortlist_ids": [
+    "I-BET762"
+  ],
+  "known_active_rank": 1,
+  "known_active_shortlisted": true,
+  "best_background_compound_id": "BG_BENZAMIDE",
+  "active_best_background_gap": 6.559,
+  "top_rerank": [
+    {
+      "compound_id": "I-BET762",
+      "rerank_rank": 1,
+      "rerank_score": -8.9,
+      "vina_affinity_kcal_mol": -8.9
+    },
+    {
+      "compound_id": "BG_BENZAMIDE",
+      "rerank_rank": 2,
+      "rerank_score": -2.341,
+      "vina_affinity_kcal_mol": -5.1
+    },
+    {
+      "compound_id": "BG_BIPHENYL",
+      "rerank_rank": 3,
+      "rerank_score": -2.154,
+      "vina_affinity_kcal_mol": -6.2
+    },
+    {
+      "compound_id": "BG_QUINOLINE",
+      "rerank_rank": 4,
+      "rerank_score": -1.884,
+      "vina_affinity_kcal_mol": -5.6
+    },
+    {
+      "compound_id": "BG_NAPHTHALENE",
+      "rerank_rank": 5,
+      "rerank_score": -1.614,
+      "vina_affinity_kcal_mol": -5.9
+    }
+  ]
+}

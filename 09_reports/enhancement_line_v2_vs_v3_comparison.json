@@ -1,0 +1,206 @@
+{
+  "report_type": "enhancement_line_comparison",
+  "isolated_execution_root": "/shared/shen/cpu_ai_drug_design_v3exp",
+  "baseline_case": {
+    "case_id": "BRD4_BD1_LIT002",
+    "rerank_model": "cpu_docking_rerank_v2",
+    "top_rerank": [
+      {
+        "compound_id": "I-BET762",
+        "rerank_score": -7.68,
+        "rerank_rank": 1
+      },
+      {
+        "compound_id": "BG_BIPHENYL",
+        "rerank_score": -6.87,
+        "rerank_rank": 2
+      },
+      {
+        "compound_id": "BG_BENZAMIDE",
+        "rerank_score": -6.47,
+        "rerank_rank": 3
+      }
+    ],
+    "filter_keep_count": 2,
+    "shortlist_count": 2,
+    "shortlist_ids": [
+      "I-BET762",
+      "BG_BIPHENYL"
+    ],
+    "ground_truth": {
+      "known_active_count": 1,
+      "known_active_recovered_in_filter_keep": 1,
+      "known_active_recovered_in_shortlist": 1,
+      "shortlist_contains_known_active": true,
+      "best_known_active_rank": 1
+    },
+    "known_active_compound_id": "I-BET762",
+    "active_margin": {
+      "known_active_compound_id": "I-BET762",
+      "known_active_rank": 1,
+      "known_active_rerank_score": -7.68,
+      "known_active_shortlisted": true,
+      "best_background_compound_id": "BG_BIPHENYL",
+      "best_background_rank": 2,
+      "best_background_rerank_score": -6.87,
+      "known_active_to_best_background_gap": 0.81
+    }
+  },
+  "enhancement_case": {
+    "case_id": "BRD4_BD1_LIT002_V3EXP",
+    "rerank_model": "cpu_docking_rerank_v3",
+    "top_rerank": [
+      {
+        "compound_id": "I-BET762",
+        "rerank_score": -8.9,
+        "rerank_rank": 1
+      },
+      {
+        "compound_id": "BG_BIPHENYL",
+        "rerank_score": -2.754,
+        "rerank_rank": 2
+      },
+      {
+        "compound_id": "BG_BENZAMIDE",
+        "rerank_score": -2.741,
+        "rerank_rank": 3
+      }
+    ],
+    "filter_keep_count": 2,
+    "shortlist_count": 1,
+    "shortlist_ids": [
+      "I-BET762"
+    ],
+    "ground_truth": {
+      "note": "no separate truth row added for the experimental case"
+    },
+    "known_active_compound_id": "I-BET762",
+    "active_margin": {
+      "known_active_compound_id": "I-BET762",
+      "known_active_rank": 1,
+      "known_active_rerank_score": -8.9,
+      "known_active_shortlisted": true,
+      "best_background_compound_id": "BG_BIPHENYL",
+      "best_background_rank": 2,
+      "best_background_rerank_score": -2.754,
+      "known_active_to_best_background_gap": 6.146
+    },
+    "rerank_diagnostics": {
+      "top_preview": [
+        {
+          "compound_id": "I-BET762",
+          "docking_core": -8.9,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 0.0,
+          "total_penalty": 0.0,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 401.725,
+            "hetero_atom_count": 8,
+            "aromatic_atom_count": 0,
+            "ring_index_count": 4,
+            "aromatic_fraction": 0.0
+          }
+        },
+        {
+          "compound_id": "BG_BIPHENYL",
+          "docking_core": -6.8,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 4.046,
+          "total_penalty": 4.046,
+          "physchem_flags": [
+            "simple_aromatic_background",
+            "polyaryl_hydrophobe_background"
+          ],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 144.132,
+            "hetero_atom_count": 0,
+            "aromatic_atom_count": 12,
+            "ring_index_count": 2,
+            "aromatic_fraction": 1.0
+          }
+        },
+        {
+          "compound_id": "BG_BENZAMIDE",
+          "docking_core": -5.5,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 2.759,
+          "total_penalty": 2.759,
+          "physchem_flags": [
+            "single_ring_background"
+          ],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 114.083,
+            "hetero_atom_count": 2,
+            "aromatic_atom_count": 6,
+            "ring_index_count": 1,
+            "aromatic_fraction": 0.667
+          }
+        }
+      ],
+      "v3_component_averages": {
+        "artifact_penalty": 0.0,
+        "physchem_penalty": 2.872
+      },
+      "cache_status": "miss"
+    },
+    "priority_diagnostics": {
+      "selection_policy": "filter_keep_then_v3_rerank_margin_then_vina_v2",
+      "filter_keep_input_count": 2,
+      "shortlist_count": 1,
+      "shortlist_cap": 1,
+      "top_score_gap": 6.146,
+      "v3_priority_tuning": {
+        "top1_only_gap": 0.75,
+        "top2_gap": 0.35,
+        "mid_gap_shortlist_cap": 2
+      },
+      "cache_status": "miss"
+    }
+  },
+  "performance": {
+    "ai_reranking": {
+      "phase_timings_seconds": {
+        "read": 0.007055,
+        "scoring": 0.030849,
+        "output": 0.002744
+      },
+      "per_case_runtime_seconds": {
+        "BRD4_BD1_LIT001_V3EXP": {
+          "runtime_seconds": 0.023339,
+          "scoring_runtime_seconds": 0.014456
+        },
+        "BRD4_BD1_LIT002_V3EXP": {
+          "runtime_seconds": 0.006333,
+          "scoring_runtime_seconds": 0.003475
+        }
+      },
+      "cache_hit_case_runtime_seconds": {
+        "BRD4_BD1_LIT002": {
+          "runtime_seconds": 0.002139,
+          "scoring_runtime_seconds": 0.0
+        },
+        "BRD4_BD1_LIT002_V3EXP": {
+          "runtime_seconds": 0.001576,
+          "scoring_runtime_seconds": 0.0
+        }
+      }
+    },
+    "clustering_and_prioritization": {
+      "phase_timings_seconds": {
+        "read": 0.005679,
+        "scoring": 0.000687,
+        "output": 0.005719
+      },
+      "cache_hit_case_runtime_seconds": {
+        "BRD4_BD1_LIT002_V3EXP": {
+          "runtime_seconds": 0.00015
+        }
+      }
+    }
+  },
+  "conclusion": {
+    "summary": "v3 improves rerank separation and clustering v2 converts that difference into a tighter shortlist without touching the frozen baseline line.",
+    "next_recommended_action": "Use the enhancement-line iteration tracker after each v3 tweak to verify that rerank gap or shortlist compression still improves before expanding the experiment scope."
+  }
+}

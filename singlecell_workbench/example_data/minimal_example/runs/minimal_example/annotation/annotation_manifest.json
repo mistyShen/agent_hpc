@@ -1,0 +1,54 @@
+{
+  "attempts": [
+    {
+      "backend": "scarches_scanvi",
+      "missing_dependencies": [
+        "scarches",
+        "scvi"
+      ],
+      "reason": "missing optional dependencies",
+      "status": "unavailable"
+    },
+    {
+      "backend": "celltypist",
+      "missing_dependencies": [
+        "celltypist"
+      ],
+      "reason": "missing optional dependency",
+      "status": "unavailable"
+    }
+  ],
+  "available_optional_dependencies": {
+    "celltypist": false,
+    "scarches": false,
+    "scvi": false
+  },
+  "backend_priority": [
+    "scarches_scanvi",
+    "celltypist",
+    "placeholder"
+  ],
+  "confidence_key": "cell_type_confidence",
+  "label_key": "cell_type",
+  "method_key": "cell_type_method",
+  "missing_optional_dependencies": [
+    "celltypist",
+    "scarches",
+    "scvi"
+  ],
+  "n_cells": 12,
+  "obs_columns_written": [
+    "cell_type",
+    "cell_type_confidence",
+    "cell_type_method"
+  ],
+  "output_files": {
+    "manifest_json": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/annotation/annotation_manifest.json",
+    "obs_csv": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/annotation/annotation_obs.csv"
+  },
+  "placeholder_label": "unassigned",
+  "selected_backend": "placeholder",
+  "selected_details": {},
+  "selected_reason": "deterministic fallback",
+  "working_modality": "Gene Expression"
+}

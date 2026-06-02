@@ -1,0 +1,126 @@
+{
+  "generated_at_utc": "2026-04-17T03:36:31.084741+00:00",
+  "base_case_id": "BRD2_BD1_LIT002",
+  "enhancement_case_id": "BRD2_BD1_LIT002_V3EXP",
+  "challenge_class": "filter_gated_after_rerank_gain",
+  "effective_filter_policy": "literature_comparison_filter_v2",
+  "configured_filter_policy_field": "lightweight_real_filter_v1",
+  "rollout_preserved": false,
+  "boundary_impact": "exclude_from_current_approved_boundary",
+  "case_comparison": [
+    {
+      "case_id": "BRD2_BD1_LIT002",
+      "known_active_rank": 6,
+      "known_active_shortlisted": false,
+      "filter_keep_count": 0,
+      "shortlist_count": 0,
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": -1.45
+    },
+    {
+      "case_id": "BRD2_BD1_LIT002_V3EXP",
+      "known_active_rank": 1,
+      "known_active_shortlisted": false,
+      "filter_keep_count": 0,
+      "shortlist_count": 0,
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 4.359
+    }
+  ],
+  "filter_thresholds": {
+    "max_vina_affinity": -6.5,
+    "relative_vina_window": 2.0,
+    "max_rerank_rank": 3,
+    "min_molecular_weight": 50.0,
+    "max_molecular_weight": 600.0,
+    "min_heavy_atoms": 4.0,
+    "max_heavy_atoms": 60.0
+  },
+  "baseline_filter_reason_counts": {
+    "vina_affinity_above_threshold": 6
+  },
+  "enhancement_filter_reason_counts": {
+    "vina_affinity_above_threshold": 6
+  },
+  "enhancement_candidates": [
+    {
+      "compound_id": "I-BET762",
+      "filter_decision": "exclude_by_rule",
+      "filter_reason": "vina_affinity_above_threshold",
+      "priority_tier": "high",
+      "vina_affinity_kcal_mol": -5.4,
+      "rerank_score": -5.4,
+      "rerank_rank": 1,
+      "rerank_model": "cpu_docking_rerank_v3"
+    },
+    {
+      "compound_id": "BG_BENZAMIDE",
+      "filter_decision": "exclude_by_rule",
+      "filter_reason": "vina_affinity_above_threshold",
+      "priority_tier": "medium",
+      "vina_affinity_kcal_mol": -3.8,
+      "rerank_score": -1.041,
+      "rerank_rank": 2,
+      "rerank_model": "cpu_docking_rerank_v3"
+    },
+    {
+      "compound_id": "BG_QUINOLINE",
+      "filter_decision": "exclude_by_rule",
+      "filter_reason": "vina_affinity_above_threshold",
+      "priority_tier": "backup",
+      "vina_affinity_kcal_mol": -4.0,
+      "rerank_score": -0.284,
+      "rerank_rank": 3,
+      "rerank_model": "cpu_docking_rerank_v3"
+    },
+    {
+      "compound_id": "BG_BIPHENYL",
+      "filter_decision": "exclude_by_rule",
+      "filter_reason": "vina_affinity_above_threshold",
+      "priority_tier": "backup",
+      "vina_affinity_kcal_mol": -4.2,
+      "rerank_score": -0.154,
+      "rerank_rank": 4,
+      "rerank_model": "cpu_docking_rerank_v3"
+    },
+    {
+      "compound_id": "BG_NAPHTHALENE",
+      "filter_decision": "exclude_by_rule",
+      "filter_reason": "vina_affinity_above_threshold",
+      "priority_tier": "backup",
+      "vina_affinity_kcal_mol": -4.2,
+      "rerank_score": 0.086,
+      "rerank_rank": 5,
+      "rerank_model": "cpu_docking_rerank_v3"
+    },
+    {
+      "compound_id": "BG_INDOLE",
+      "filter_decision": "exclude_by_rule",
+      "filter_reason": "vina_affinity_above_threshold",
+      "priority_tier": "backup",
+      "vina_affinity_kcal_mol": -3.7,
+      "rerank_score": 0.137,
+      "rerank_rank": 6,
+      "rerank_model": "cpu_docking_rerank_v3"
+    }
+  ],
+  "audit_context": {
+    "best_background_compound_id": "BG_BENZAMIDE",
+    "best_background_flags": [
+      "single_ring_background"
+    ],
+    "shortlist_ids": []
+  },
+  "root_cause_notes": [
+    "Enhancement reranking clearly improves ordering: `BRD2_BD1_LIT002_V3EXP` moves `I-BET762` from baseline rank `6` to enhancement rank `1` and raises the active-best-background gap from `-1.45` to `4.359`.",
+    "Filtering blocks the gain because the effective policy is `literature_comparison_filter_v2`, not the literal metadata field `lightweight_real_filter_v1`.",
+    "The first hard gate is `vina_affinity <= -6.5`; the best enhancement vina in this surface is only `-5.4`, so every candidate is excluded before shortlist construction.",
+    "All enhancement candidates were excluded for the same reason: `vina_affinity_above_threshold=6`.",
+    "Clustering is therefore downstream-empty rather than independently failing: it receives `filter_keep_input_count = 0`, so shortlist generation never gets a candidate set to prioritize."
+  ],
+  "recommendation_notes": [
+    "Keep this surface logged as a boundary challenge rather than a rollout-safe material case.",
+    "Do not use its rerank gain alone to expand the approved enhancement-line boundary while shortlist preservation is still broken.",
+    "If we revisit it later, the right review surface is the literature-comparison filtering gate on this target/panel pairing, not more v3 rerank tuning."
+  ]
+}

@@ -1,0 +1,66 @@
+# Fill only the ALL_CAPS placeholders below. The structure mirrors config/default.yaml.
+project_name: singlecell_workbench_real_project
+output_dir: runs/project_smoke
+samples:
+  # Repeat one block per sample. These keys map directly onto the current config.samples schema.
+  - sample_id: SAMPLE_A
+    condition: control
+    input_path: path/to/SAMPLE_A/filtered_feature_bc_matrix
+    organism: human
+    reference_build: GRCh38
+    gene_id_type: gene_symbol
+    donor: donor_01
+    batch: batch_01
+    modality: rna
+    library_type: 10x_3prime_v3
+    chemistry: Chromium_v3
+    tissue: blood
+  - sample_id: SAMPLE_B
+    condition: treated
+    input_path: path/to/SAMPLE_B/filtered_feature_bc_matrix.h5
+    organism: human
+    reference_build: GRCh38
+    gene_id_type: gene_symbol
+    donor: donor_02
+    batch: batch_01
+    modality: rna
+    library_type: 10x_3prime_v3
+    chemistry: Chromium_v3
+    tissue: blood
+schema:
+  apply_fixes: true
+  required_obs_columns:
+    - sample_id
+    - condition
+qc:
+  rna_modality: Gene Expression
+  qc_vars:
+    - mt
+  solo:
+    enabled: true
+  scar:
+    enabled: true
+annotation:
+  modality: Gene Expression
+  method_priority:
+    - scarches_scanvi
+    - celltypist
+    - unassigned
+  placeholder_label: unassigned
+  fallback_label: unassigned
+  # Optional external manifest used by preflight + run_manifest provenance.
+  reference_manifest: path/to/reference_manifest.json
+stats:
+  modality: Gene Expression
+  cell_type_column: cell_type
+  sample_column: sample_id
+  condition_column: condition
+  run_decoupler: true
+  decoupler:
+    enabled: true
+    runner: mlm
+    min_targets: 3
+    pathway_network: ../resources/priors/human_academic/progeny.tsv
+    tf_network: ../resources/priors/human_academic/collectri.tsv
+reports:
+  title: Single-cell Workbench Report

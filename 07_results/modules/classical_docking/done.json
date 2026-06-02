@@ -1,0 +1,103 @@
+{
+  "module": "classical_docking",
+  "status": "docking_completed",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/benchmark_cases.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.769763+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "prepared_library_exists": true,
+    "target_manifest_exists": true,
+    "docking_results_written": true,
+    "summary_written": true,
+    "report_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "execution": {
+    "runtime_seconds": 0.002756,
+    "execution_status": "executed",
+    "backend_mode": "scaffold_heuristic",
+    "skipped_cache": false,
+    "skip_reason": "",
+    "selected_case_ids": [
+      "BRD4_BD1_LIT002"
+    ],
+    "partial_rerun_active": true
+  },
+  "module_profile": {
+    "stage_type": "classical_docking",
+    "primary_inputs": [
+      "prepared library table",
+      "target file manifest",
+      "benchmark cases"
+    ],
+    "primary_outputs": [
+      "07_results/modules/classical_docking/docking_results.tsv",
+      "07_results/modules/classical_docking/docking_summary.json",
+      "07_results/modules/classical_docking/classical_docking_report.md",
+      "07_results/modules/classical_docking/done.json"
+    ],
+    "next_action_hint": "tune docking boxes and ligand preparation once the minimal vina path is stable"
+  },
+  "input_summary": {
+    "row_count": 1,
+    "preview_ids": [
+      "BRD4_BD1_LIT002"
+    ]
+  },
+  "docking_outputs": {
+    "docking_results_tsv": "07_results/modules/classical_docking/docking_results.tsv",
+    "docking_summary_json": "07_results/modules/classical_docking/docking_summary.json",
+    "docking_report_markdown": "07_results/modules/classical_docking/classical_docking_report.md",
+    "engine_mode": "scaffold_heuristic",
+    "requested_backend": "vina_cpu"
+  },
+  "cache": {
+    "signature": {
+      "input_manifest": {
+        "path": "04_metadata/benchmark_cases.tsv",
+        "size": 1832,
+        "mtime_ns": 1776222811375648115
+      },
+      "config": {
+        "path": "config.yaml",
+        "size": 2448,
+        "mtime_ns": 1776079264482346662
+      },
+      "prepared_library_tsv": {
+        "path": "07_results/modules/compound_library_preparation/prepared_library.tsv",
+        "size": 4872,
+        "mtime_ns": 1776222878720067139
+      },
+      "target_manifest_tsv": {
+        "path": "07_results/modules/target_preparation/target_file_manifest.tsv",
+        "size": 884,
+        "mtime_ns": 1776222878680197695
+      },
+      "enabled_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "enabled_case_count": 1,
+      "requested_backend": "vina_cpu",
+      "vina_cpu": 1,
+      "vina_exhaustiveness": 8,
+      "vina_num_modes": 1
+    },
+    "cache_scope": "module_and_case_artifacts",
+    "cache_hit": false,
+    "cached_case_count": 0,
+    "cached_result_count": 0,
+    "ligand_cache_hit_count": 0,
+    "cache_hit_artifact": false
+  },
+  "notes": [
+    "The classical docking module preserves the original scaffold heuristic fallback.",
+    "When backend=vina_cpu and the configured backend environment is available, docking uses AutoDock Vina with CPU-only execution."
+  ]
+}

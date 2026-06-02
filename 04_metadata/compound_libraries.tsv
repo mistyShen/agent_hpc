@@ -1,0 +1,5 @@
+library_id	library_type	source_path	record_format	notes
+DEMO_LIB_001	virtual	03_data_raw/compound_libraries/DEMO_LIB_001.smi	smi	Placeholder compound library for scaffold validation
+DEMO_LIB_002	virtual	03_data_raw/compound_libraries/DEMO_LIB_001.smi	smi	Alias library handle for heterogeneous multi-case validation
+BRD4_LIT_FOCUSED_001	focused	03_data_raw/compound_libraries/BRD4_LIT_FOCUSED_001.smi	smi	Minimal literature-backed focused BRD4 BD1 library with one anchor active and background compounds
+BRD4_LIT_FOCUSED_002	focused	03_data_raw/compound_libraries/BRD4_LIT_FOCUSED_002.smi	smi	Minimal literature-backed focused BRD4 BD1 library with I-BET762 as anchor active and matched aromatic background compounds

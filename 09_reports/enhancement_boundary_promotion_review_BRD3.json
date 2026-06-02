@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-04-28",
+  "scope": "enhancement_line_boundary_review_only",
+  "updates_formal_boundary": false,
+  "updates_frozen_line": false,
+  "review_question": {
+    "from": "BRD4-only material gain",
+    "to": "BET-family bounded material gain"
+  },
+  "current_formal_boundary": {
+    "headline": "weak_outside_BRD4__material_on_BRD4_IBET_focused_panels",
+    "material_on_panel_cases": [
+      "BRD4_BD1_LIT002_V3EXP",
+      "BRD4_BD1_LIT003_V3EXP"
+    ]
+  },
+  "positive_evidence": [
+    {
+      "target_family": "BET",
+      "target_member": "BRD3",
+      "domain": "BD1",
+      "baseline_case_id": "BRD3_BD1_LIT002",
+      "enhancement_case_id": "BRD3_BD1_LIT002_V3EXP",
+      "known_active": "I-BET762",
+      "library_id": "BRD4_LIT_FOCUSED_002",
+      "baseline": {
+        "shortlist_count": 1,
+        "shortlist_contains_known_active": true,
+        "best_known_active_rank": 1,
+        "best_background": "BG_BIPHENYL",
+        "active_best_background_gap": 1.0
+      },
+      "v3": {
+        "shortlist_count": 1,
+        "shortlist_contains_known_active": true,
+        "best_known_active_rank": 1,
+        "best_background": "BG_BENZAMIDE",
+        "active_best_background_gap": 6.559
+      },
+      "interpretation": "shortlist_preserving_material_signal"
+    },
+    {
+      "target_family": "BET",
+      "target_member": "BRD3",
+      "domain": "BD2",
+      "baseline_case_id": "BRD3_BD2_LIT002",
+      "enhancement_case_id": "BRD3_BD2_LIT002_V3EXP",
+      "known_active": "I-BET762",
+      "library_id": "BRD4_LIT_FOCUSED_002",
+      "baseline": {
+        "shortlist_count": 1,
+        "shortlist_contains_known_active": true,
+        "best_known_active_rank": 1,
+        "best_background": "BG_BIPHENYL",
+        "active_best_background_gap": 2.52
+      },
+      "v3": {
+        "shortlist_count": 1,
+        "shortlist_contains_known_active": true,
+        "best_known_active_rank": 1,
+        "best_background": "BG_BENZAMIDE",
+        "active_best_background_gap": 7.459
+      },
+      "interpretation": "shortlist_preserving_material_signal"
+    }
+  ],
+  "counter_evidence": [
+    {
+      "case_id": "BRD2_BD1_LIT002_V3EXP",
+      "classification": "filtering_gated_challenge",
+      "reason": "rerank gain exists but known active is not shortlist-preserved"
+    },
+    {
+      "case_id": "BRDT_BD1_LIT002_V3EXP",
+      "classification": "filtering_gated_challenge",
+      "reason": "not rollout-safe positive material evidence"
+    }
+  ],
+  "decision": {
+    "retire_brd4_only_internal_reading": true,
+    "promote_to_full_bet_family_headline": false,
+    "recommended_interim_headline": "bounded material gain supported in BRD4 and BRD3 I-BET762-focused surfaces"
+  },
+  "recommendation": [
+    "Do not update the formal rollout boundary without explicit approval.",
+    "If approved, update to the recommended interim headline rather than full BET-family bounded material gain.",
+    "Keep failed shortlist-preservation and filtering-gated challenge surfaces outside rollout-safe material evidence.",
+    "Continue treating v3 and case-aware gating as enhancement-line empirical policy only.",
+    "Prefer one additional non-BRD3, non-BRD4, I-BET762-focused surface before any full BET-family headline."
+  ]
+}

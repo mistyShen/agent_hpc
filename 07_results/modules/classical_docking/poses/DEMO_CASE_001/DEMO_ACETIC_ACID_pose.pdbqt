@@ -1,0 +1,20 @@
+MODEL 1
+REMARK VINA RESULT:      -0.9      0.000      0.000
+REMARK  Name = DEMO_ACETIC_ACID
+REMARK  2 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C_1  and  C_2
+REMARK    2  A    between atoms: C_2  and  O_4
+REMARK                            x       y       z     vdW  Elec       q    Type
+REMARK                         _______ _______ _______ _____ _____    ______ ____
+ROOT
+ATOM      1  C   UNL     1      10.724  11.256   4.876  0.00  0.00    +0.136 C 
+ATOM      2  C   UNL     1      10.623  11.867   6.241  0.00  0.00    +0.302 C 
+ATOM      3  O   UNL     1      10.277  13.017   6.457  0.00  0.00    -0.251 OA
+ENDROOT
+BRANCH   2   4
+ATOM      4  O   UNL     1      10.960  11.005   7.226  0.00  0.00    -0.481 OA
+ATOM      5  H   UNL     1      10.483  10.155   7.181  0.00  0.00    +0.295 HD
+ENDBRANCH   2   4
+TORSDOF 1
+ENDMDL

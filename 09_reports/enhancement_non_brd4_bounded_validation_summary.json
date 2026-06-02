@@ -1,0 +1,217 @@
+{
+  "generated_at_utc": "2026-04-28T11:49:43.054123+00:00",
+  "scope": "enhancement_line_only",
+  "surface_count": 8,
+  "surfaces": [
+    {
+      "baseline_case_id": "BRD2_BD1_LIT002",
+      "enhancement_case_id": "BRD2_BD1_LIT002_V3EXP",
+      "target_id": "BRD2_BD1_2YEK",
+      "library_id": "BRD4_LIT_FOCUSED_002",
+      "known_active_compound_id": "I-BET762",
+      "baseline_gap": -1.45,
+      "enhancement_gap": 4.359,
+      "gap_gain_vs_baseline": 5.809,
+      "baseline_shortlist_ids": [],
+      "enhancement_shortlist_ids": [],
+      "baseline_best_background": "BG_BENZAMIDE",
+      "enhancement_best_background": "BG_BENZAMIDE",
+      "rollout_preserved": false,
+      "failure_reasons": [
+        "known_active_not_shortlisted",
+        "empty_shortlist"
+      ],
+      "audit_effect_class": "failed_shortlist_preservation",
+      "best_background_flags": [
+        "single_ring_background"
+      ],
+      "dominant_driver": "ablate_all_background_penalties",
+      "reproduces_existing_comparison_gap": true
+    },
+    {
+      "baseline_case_id": "BRD2_BD2_LIT001",
+      "enhancement_case_id": "BRD2_BD2_LIT001_V3EXP",
+      "target_id": "BRD2_BD2_3ONI",
+      "library_id": "BRD4_LIT_FOCUSED_001",
+      "known_active_compound_id": "JQ1",
+      "baseline_gap": 0.785,
+      "enhancement_gap": 2.459,
+      "gap_gain_vs_baseline": 1.674,
+      "baseline_shortlist_ids": [
+        "JQ1"
+      ],
+      "enhancement_shortlist_ids": [
+        "JQ1"
+      ],
+      "baseline_best_background": "BG_BIPHENYL",
+      "enhancement_best_background": "BG_ASPIRIN",
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "audit_effect_class": "weak_on_panel",
+      "best_background_flags": [],
+      "dominant_driver": "none",
+      "reproduces_existing_comparison_gap": false
+    },
+    {
+      "baseline_case_id": "BRD3_BD1_LIT001",
+      "enhancement_case_id": "BRD3_BD1_LIT001_V3EXP",
+      "target_id": "BRD3_BD1_3S91",
+      "library_id": "BRD4_LIT_FOCUSED_001",
+      "known_active_compound_id": "JQ1",
+      "baseline_gap": 0.12,
+      "enhancement_gap": 1.759,
+      "gap_gain_vs_baseline": 1.639,
+      "baseline_shortlist_ids": [
+        "JQ1"
+      ],
+      "enhancement_shortlist_ids": [
+        "JQ1"
+      ],
+      "baseline_best_background": "BG_BIPHENYL",
+      "enhancement_best_background": "BG_ASPIRIN",
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "audit_effect_class": "weak_on_panel",
+      "best_background_flags": [],
+      "dominant_driver": "none",
+      "reproduces_existing_comparison_gap": true
+    },
+    {
+      "baseline_case_id": "BRD3_BD1_LIT002",
+      "enhancement_case_id": "BRD3_BD1_LIT002_V3EXP",
+      "target_id": "BRD3_BD1_24OS",
+      "library_id": "BRD4_LIT_FOCUSED_002",
+      "known_active_compound_id": "I-BET762",
+      "baseline_gap": 1.0,
+      "enhancement_gap": 6.559,
+      "gap_gain_vs_baseline": 5.559,
+      "baseline_shortlist_ids": [
+        "I-BET762"
+      ],
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "baseline_best_background": "BG_BIPHENYL",
+      "enhancement_best_background": "BG_BENZAMIDE",
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "audit_effect_class": "material_on_panel",
+      "best_background_flags": [
+        "single_ring_background"
+      ],
+      "dominant_driver": "ablate_all_background_penalties",
+      "reproduces_existing_comparison_gap": true
+    },
+    {
+      "baseline_case_id": "BRD3_BD2_LIT001",
+      "enhancement_case_id": "BRD3_BD2_LIT001_V3EXP",
+      "target_id": "BRD3_BD2_3S92",
+      "library_id": "BRD4_LIT_FOCUSED_001",
+      "known_active_compound_id": "JQ1",
+      "baseline_gap": 0.215,
+      "enhancement_gap": 2.259,
+      "gap_gain_vs_baseline": 2.044,
+      "baseline_shortlist_ids": [
+        "JQ1"
+      ],
+      "enhancement_shortlist_ids": [
+        "JQ1"
+      ],
+      "baseline_best_background": "BG_BIPHENYL",
+      "enhancement_best_background": "BG_ASPIRIN",
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "audit_effect_class": "weak_on_panel",
+      "best_background_flags": [],
+      "dominant_driver": "none",
+      "reproduces_existing_comparison_gap": true
+    },
+    {
+      "baseline_case_id": "BRD3_BD2_LIT002",
+      "enhancement_case_id": "BRD3_BD2_LIT002_V3EXP",
+      "target_id": "BRD3_BD2_3S92",
+      "library_id": "BRD4_LIT_FOCUSED_002",
+      "known_active_compound_id": "I-BET762",
+      "baseline_gap": 2.52,
+      "enhancement_gap": 7.459,
+      "gap_gain_vs_baseline": 4.939,
+      "baseline_shortlist_ids": [
+        "I-BET762"
+      ],
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "baseline_best_background": "BG_BIPHENYL",
+      "enhancement_best_background": "BG_BENZAMIDE",
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "audit_effect_class": "material_on_panel",
+      "best_background_flags": [],
+      "dominant_driver": "promotion_review_material_signal",
+      "reproduces_existing_comparison_gap": null,
+      "evidence_source": "09_reports/enhancement_boundary_promotion_review_BRD3.json"
+    },
+    {
+      "baseline_case_id": "BRDT_BD1_LIT001",
+      "enhancement_case_id": "BRDT_BD1_LIT001_V3EXP",
+      "target_id": "BRDT_BD1_4FLP",
+      "library_id": "BRD4_LIT_FOCUSED_001",
+      "known_active_compound_id": "JQ1",
+      "baseline_gap": 0.88,
+      "enhancement_gap": 2.959,
+      "gap_gain_vs_baseline": 2.079,
+      "baseline_shortlist_ids": [
+        "JQ1",
+        "BG_BIPHENYL"
+      ],
+      "enhancement_shortlist_ids": [
+        "JQ1"
+      ],
+      "baseline_best_background": "BG_BIPHENYL",
+      "enhancement_best_background": "BG_ASPIRIN",
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "audit_effect_class": "weak_on_panel",
+      "best_background_flags": [],
+      "dominant_driver": "none",
+      "reproduces_existing_comparison_gap": true
+    },
+    {
+      "baseline_case_id": "PXR_LBD_LIT001",
+      "enhancement_case_id": "PXR_LBD_LIT001_V3EXP",
+      "target_id": "PXR_LBD_8F5Y",
+      "library_id": "BRD4_LIT_FOCUSED_001",
+      "known_active_compound_id": "JQ1",
+      "baseline_gap": 1.165,
+      "enhancement_gap": 3.159,
+      "gap_gain_vs_baseline": 1.994,
+      "baseline_shortlist_ids": [
+        "JQ1",
+        "BG_BIPHENYL",
+        "BG_ASPIRIN"
+      ],
+      "enhancement_shortlist_ids": [
+        "JQ1"
+      ],
+      "baseline_best_background": "BG_BIPHENYL",
+      "enhancement_best_background": "BG_ASPIRIN",
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "audit_effect_class": "weak_on_panel",
+      "best_background_flags": [],
+      "dominant_driver": "none",
+      "reproduces_existing_comparison_gap": true
+    }
+  ],
+  "synthesis_notes": [
+    "Current non-BRD4 bounded surfaces split across weak/material/failure behavior: weak on `BRD2_BD2_LIT001_V3EXP, BRD3_BD1_LIT001_V3EXP, BRD3_BD2_LIT001_V3EXP, BRDT_BD1_LIT001_V3EXP, PXR_LBD_LIT001_V3EXP`, material on `BRD3_BD1_LIT002_V3EXP, BRD3_BD2_LIT002_V3EXP`, failed shortlist preservation on `BRD2_BD1_LIT002_V3EXP`.",
+    "Even where panel-specific penalties stay weak_on_panel, v3 still shows modest positive gap improvement on `BRD2_BD1_LIT002_V3EXP, BRD2_BD2_LIT001_V3EXP, BRD3_BD1_LIT001_V3EXP, BRD3_BD1_LIT002_V3EXP, BRD3_BD2_LIT001_V3EXP, BRD3_BD2_LIT002_V3EXP, BRDT_BD1_LIT001_V3EXP, PXR_LBD_LIT001_V3EXP` through ungated lightweight terms.",
+    "The checked non-BRD4 surfaces support an interim BRD3-specific material reading while still falling short of a full cross-target or BET-family policy."
+  ],
+  "boundary_notes": [
+    "These non-BRD4 surfaces remain bounded enhancement-line evidence only and must not be read as cross-target generalization.",
+    "Weak or failed behavior outside the approved BRD3 I-BET762-focused set remains evidence that panel-specific penalties have not become an uncontrolled cross-target policy.",
+    "Any non-BRD4 surface that fails known-active shortlist/rank preservation must be excluded from rollout-safe material evidence, even if its rerank gap increases.",
+    "Frozen filtering logic, benchmark schema, truth-table structure, and manuscript claims remain unchanged."
+  ]
+}

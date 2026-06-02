@@ -1,0 +1,53 @@
+{
+  "case_id": "BRDT_BD1_LIT001",
+  "case_type": "literature_backed",
+  "rerank_strategy": "ai_rerank_v2",
+  "target_id": "BRDT_BD1_4FLP",
+  "library_id": "BRD4_LIT_FOCUSED_001",
+  "known_active_compound_id": "JQ1",
+  "truth_row_count": 1,
+  "docking_candidate_count": 24,
+  "reranked_candidate_count": 24,
+  "filter_keep_count": 2,
+  "shortlist_count": 2,
+  "shortlist_ids": [
+    "JQ1",
+    "BG_BIPHENYL"
+  ],
+  "known_active_rank": 1,
+  "known_active_shortlisted": true,
+  "best_background_compound_id": "BG_BIPHENYL",
+  "active_best_background_gap": 0.88,
+  "top_rerank": [
+    {
+      "compound_id": "JQ1",
+      "rerank_rank": 1,
+      "rerank_score": -7.655,
+      "vina_affinity_kcal_mol": -8.9
+    },
+    {
+      "compound_id": "BG_BIPHENYL",
+      "rerank_rank": 2,
+      "rerank_score": -6.775,
+      "vina_affinity_kcal_mol": -6.7
+    },
+    {
+      "compound_id": "BG_ASPIRIN",
+      "rerank_rank": 3,
+      "rerank_score": -6.385,
+      "vina_affinity_kcal_mol": -6.3
+    },
+    {
+      "compound_id": "BG_BENZAMIDE",
+      "rerank_rank": 4,
+      "rerank_score": -6.28,
+      "vina_affinity_kcal_mol": -5.4
+    },
+    {
+      "compound_id": "BG_ACETANILIDE",
+      "rerank_rank": 5,
+      "rerank_score": -6.155,
+      "vina_affinity_kcal_mol": -5.3
+    }
+  ]
+}

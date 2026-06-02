@@ -1,0 +1,100 @@
+{
+  "module": "target_preparation",
+  "status": "target_preparation_completed",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/targets.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.681894+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "prepared_targets_written": true,
+    "target_manifest_written": true,
+    "summary_written": true,
+    "report_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "execution": {
+    "runtime_seconds": 0.006797,
+    "execution_status": "executed",
+    "backend_mode": "lightweight_copy_annotation",
+    "skipped_cache": false,
+    "skip_reason": "",
+    "selected_case_ids": [
+      "BRD4_BD1_LIT002"
+    ],
+    "partial_rerun_active": true
+  },
+  "module_profile": {
+    "stage_type": "target_preparation",
+    "primary_inputs": [
+      "target metadata",
+      "PDB target file"
+    ],
+    "primary_outputs": [
+      "07_results/modules/target_preparation/prepared_targets.tsv",
+      "07_results/modules/target_preparation/target_file_manifest.tsv",
+      "07_results/modules/target_preparation/target_summary.json",
+      "07_results/modules/target_preparation/target_preparation_report.md",
+      "07_results/modules/target_preparation/done.json"
+    ],
+    "next_action_hint": "attach structure cleanup, chain selection, and binding-site preparation later"
+  },
+  "input_summary": {
+    "row_count": 1,
+    "preview_ids": [
+      "BRD4_BD1_4C66"
+    ]
+  },
+  "target_outputs": {
+    "prepared_targets_tsv": "07_results/modules/target_preparation/prepared_targets.tsv",
+    "target_file_manifest_tsv": "07_results/modules/target_preparation/target_file_manifest.tsv",
+    "target_summary_json": "07_results/modules/target_preparation/target_summary.json",
+    "target_report_markdown": "07_results/modules/target_preparation/target_preparation_report.md",
+    "box_source": "centroid_fixed",
+    "reused_target_count": 0
+  },
+  "cache": {
+    "signature": {
+      "input_manifest": {
+        "path": "04_metadata/targets.tsv",
+        "size": 960,
+        "mtime_ns": 1776222811375061351
+      },
+      "config": {
+        "path": "config.yaml",
+        "size": 2448,
+        "mtime_ns": 1776079264482346662
+      },
+      "target_count": 1,
+      "target_ids": [
+        "BRD4_BD1_4C66"
+      ],
+      "manual_box_targets": [
+        {
+          "target_id": "BRD4_BD1_4C66",
+          "center_x": "25.287",
+          "center_y": "50.878",
+          "center_z": "-1.347",
+          "size_x": "16.0",
+          "size_y": "16.0",
+          "size_z": "16.0"
+        }
+      ],
+      "box_source": "centroid_fixed",
+      "default_box_size": 12.0
+    },
+    "cache_scope": "module_plus_prepared_target_files",
+    "cache_hit": false,
+    "cache_hit_artifact": false
+  },
+  "notes": [
+    "Target preparation now copies and annotates a small example PDB target set.",
+    "Structure preparation is intentionally lightweight and does not alter coordinates in this minimal CPU-only implementation.",
+    "Docking box coordinates are estimated from the target atom centroid with a fixed box size."
+  ]
+}

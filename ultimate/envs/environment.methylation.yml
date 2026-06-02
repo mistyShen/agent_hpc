@@ -1,0 +1,9 @@
+name: ultimate-methylation
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - bioconductor-minfi
+  - bioconductor-champ
+  - bioconductor-limma

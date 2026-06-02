@@ -1,0 +1,193 @@
+{
+  "generated_at_utc": "2026-04-28T11:49:43.329855+00:00",
+  "package_status": "formal_enhancement_line_baseline",
+  "frozen_line_untouched": true,
+  "gating_status": "implemented_and_bounded",
+  "current_validation_status": "bounded_multi_surface_readout_with_boundary_challenge",
+  "bounded_headline": "bounded_material_gain_supported_in_BRD4_and_BRD3_IBET762_focused_surfaces",
+  "material_cases": [
+    "BRD3_BD1_LIT002_V3EXP",
+    "BRD3_BD2_LIT002_V3EXP",
+    "BRD4_BD1_LIT002_V3EXP",
+    "BRD4_BD1_LIT003_V3EXP"
+  ],
+  "weak_cases": [
+    "BRD2_BD2_LIT001_V3EXP",
+    "BRD3_BD1_LIT001_V3EXP",
+    "BRD3_BD2_LIT001_V3EXP",
+    "BRD4_BD1_LIT001_V3EXP",
+    "BRDT_BD1_LIT001_V3EXP",
+    "PXR_LBD_LIT001_V3EXP"
+  ],
+  "failed_cases": [
+    "BRD2_BD1_LIT002_V3EXP"
+  ],
+  "non_brd4_cases": [
+    "BRD2_BD1_LIT002_V3EXP",
+    "BRD2_BD2_LIT001_V3EXP",
+    "BRD3_BD1_LIT001_V3EXP",
+    "BRD3_BD1_LIT002_V3EXP",
+    "BRD3_BD2_LIT001_V3EXP",
+    "BRD3_BD2_LIT002_V3EXP",
+    "BRDT_BD1_LIT001_V3EXP",
+    "PXR_LBD_LIT001_V3EXP"
+  ],
+  "surface_table": [
+    {
+      "case_id": "BRD2_BD1_LIT002_V3EXP",
+      "target_id": "BRD2_BD1_2YEK",
+      "known_active_compound_id": "I-BET762",
+      "active_best_background_gap": 4.359,
+      "rollout_preserved": false,
+      "effect_class": "failed_shortlist_preservation",
+      "dominant_driver": "ablate_single_ring_background_penalty"
+    },
+    {
+      "case_id": "BRD2_BD2_LIT001_V3EXP",
+      "target_id": "BRD2_BD2_3ONI",
+      "known_active_compound_id": "JQ1",
+      "active_best_background_gap": 2.459,
+      "rollout_preserved": true,
+      "effect_class": "weak_on_panel",
+      "dominant_driver": "none"
+    },
+    {
+      "case_id": "BRD3_BD1_LIT001_V3EXP",
+      "target_id": "BRD3_BD1_3S91",
+      "known_active_compound_id": "JQ1",
+      "active_best_background_gap": 1.759,
+      "rollout_preserved": true,
+      "effect_class": "weak_on_panel",
+      "dominant_driver": "none"
+    },
+    {
+      "case_id": "BRD3_BD1_LIT002_V3EXP",
+      "target_id": "BRD3_BD1_24OS",
+      "known_active_compound_id": "I-BET762",
+      "active_best_background_gap": 6.559,
+      "rollout_preserved": true,
+      "effect_class": "material_on_panel",
+      "dominant_driver": "ablate_single_ring_background_penalty"
+    },
+    {
+      "case_id": "BRD3_BD2_LIT001_V3EXP",
+      "target_id": "BRD3_BD2_3S92",
+      "known_active_compound_id": "JQ1",
+      "active_best_background_gap": 2.259,
+      "rollout_preserved": true,
+      "effect_class": "weak_on_panel",
+      "dominant_driver": "none"
+    },
+    {
+      "case_id": "BRD3_BD2_LIT002_V3EXP",
+      "target_id": "BRD3_BD2_3S92",
+      "known_active_compound_id": "I-BET762",
+      "active_best_background_gap": 7.459,
+      "rollout_preserved": true,
+      "effect_class": "material_on_panel",
+      "dominant_driver": "promotion_review_material_signal"
+    },
+    {
+      "case_id": "BRD4_BD1_LIT001_V3EXP",
+      "target_id": "BRD4_BD1_4QZS",
+      "known_active_compound_id": "JQ1",
+      "active_best_background_gap": 1.859,
+      "rollout_preserved": true,
+      "effect_class": "weak_on_panel",
+      "dominant_driver": "none"
+    },
+    {
+      "case_id": "BRD4_BD1_LIT002_V3EXP",
+      "target_id": "BRD4_BD1_4C66",
+      "known_active_compound_id": "I-BET762",
+      "active_best_background_gap": 6.146,
+      "rollout_preserved": true,
+      "effect_class": "material_on_panel",
+      "dominant_driver": "ablate_single_ring_background_penalty"
+    },
+    {
+      "case_id": "BRD4_BD1_LIT003_V3EXP",
+      "target_id": "BRD4_BD1_4QZS",
+      "known_active_compound_id": "I-BET762",
+      "active_best_background_gap": 6.159,
+      "rollout_preserved": true,
+      "effect_class": "material_on_panel",
+      "dominant_driver": "ablate_single_ring_background_penalty"
+    },
+    {
+      "case_id": "BRDT_BD1_LIT001_V3EXP",
+      "target_id": "BRDT_BD1_4FLP",
+      "known_active_compound_id": "JQ1",
+      "active_best_background_gap": 2.959,
+      "rollout_preserved": true,
+      "effect_class": "weak_on_panel",
+      "dominant_driver": "none"
+    },
+    {
+      "case_id": "PXR_LBD_LIT001_V3EXP",
+      "target_id": "PXR_LBD_8F5Y",
+      "known_active_compound_id": "JQ1",
+      "active_best_background_gap": 3.159,
+      "rollout_preserved": true,
+      "effect_class": "weak_on_panel",
+      "dominant_driver": "none"
+    }
+  ],
+  "interpretation_points": [
+    "Current v3 behavior remains bounded and panel-aware rather than generally validated across targets.",
+    "Material-on-panel behavior is currently limited to `BRD3_BD1_LIT002_V3EXP, BRD3_BD2_LIT002_V3EXP, BRD4_BD1_LIT002_V3EXP, BRD4_BD1_LIT003_V3EXP`.",
+    "BRD3 I-BET762-focused surfaces now support the interim boundary `bounded material gain supported in BRD4 and BRD3 I-BET762-focused surfaces`.",
+    "Boundary-challenge surfaces `BRD2_BD1_LIT002_V3EXP` currently improve rerank separation without preserving shortlist/rank, so they are excluded from rollout-safe material evidence.",
+    "Current non-BRD4 evidence is mixed: BRD3 I-BET762-focused surfaces are material, while other checked non-BRD4 surfaces remain weak or challenge cases.",
+    "The interim BRD4+BRD3 boundary is not a full BET-family or cross-target claim."
+  ],
+  "allowed_uses": [
+    "Use as the current enhancement-line handoff and audit baseline.",
+    "Use as the reference point for future bounded validation surfaces.",
+    "Use to justify pausing same-panel tuning while preserving current enhancement evidence."
+  ],
+  "disallowed_uses": [
+    "Do not move these results into frozen manuscript or benchmark claims.",
+    "Do not describe the current enhancement result as cross-target generalization.",
+    "Do not use this package as evidence that v3 is a generally validated reranking improvement.",
+    "Do not count failed shortlist-preservation surfaces as rollout-safe material evidence."
+  ],
+  "included_components": [
+    {
+      "label": "gating_implementation_summary",
+      "path": "09_reports/enhancement_case_aware_gating_implementation_summary.md"
+    },
+    {
+      "label": "non_brd4_bounded_validation_summary",
+      "path": "09_reports/enhancement_non_brd4_bounded_validation_summary.md"
+    },
+    {
+      "label": "multi_case_validation_summary",
+      "path": "09_reports/enhancement_multi_case_validation_summary.md"
+    },
+    {
+      "label": "expansion_readiness",
+      "path": "09_reports/enhancement_expansion_readiness.md"
+    },
+    {
+      "label": "boundary_promotion_review_brd3",
+      "path": "09_reports/enhancement_boundary_promotion_review_BRD3.md"
+    },
+    {
+      "label": "pxr_bounded_surface_comparison",
+      "path": "09_reports/enhancement_line_v2_vs_v3_comparison_PXR_LBD_LIT001.md"
+    },
+    {
+      "label": "pxr_bounded_surface_rule_audit",
+      "path": "09_reports/enhancement_line_rule_audit_PXR_LBD_LIT001.md"
+    }
+  ],
+  "recommended_next_action": "formalize_interim_brd4_brd3_boundary_then_validate_non_brd3_surface",
+  "source_snapshots": {
+    "gating_summary_generated_at": null,
+    "non_brd4_summary_generated_at": "2026-04-28T11:49:43.054123+00:00",
+    "multi_case_summary_generated_at": "2026-04-28T11:49:42.953631+00:00",
+    "readiness_generated_at": "2026-04-28T11:49:42.953631+00:00",
+    "promotion_review_generated_at": "2026-04-28"
+  }
+}

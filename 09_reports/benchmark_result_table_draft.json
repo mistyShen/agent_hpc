@@ -1,0 +1,101 @@
+{
+  "source_freeze_documents": [
+    "00_docs/REAL_BACKEND_STATUS.md",
+    "09_reports/manuscript_draft.md",
+    "09_reports/workflow_summary_draft.md",
+    "09_reports/benchmark_comparison.md",
+    "09_reports/benchmark_summary.md",
+    "09_reports/FREEZE_SUMMARY.md"
+  ],
+  "snapshot_date": "2026-04-15",
+  "project_positioning": {
+    "workflow_type": "CPU-only Snakemake workflow",
+    "current_real_backend": "classical_docking with real vina_cpu",
+    "downstream_mode": "lightweight downstream consumers of real docking artifacts",
+    "current_claim_level": "operationally validated workflow with narrow literature-backed recovery evidence",
+    "not_supported": [
+      "benchmark superiority",
+      "broad literature recovery performance",
+      "robust cross-target generalization",
+      "prospective hit quality",
+      "larger-scale multi-case benchmark robustness"
+    ]
+  },
+  "validated_scope": [
+    {
+      "layer": "workflow_execution",
+      "status": "validated",
+      "boundary": "end-to-end CPU-only workflow runnable"
+    },
+    {
+      "layer": "real_backend",
+      "status": "validated",
+      "boundary": "classical_docking runs real vina_cpu and writes real docking artifacts"
+    },
+    {
+      "layer": "downstream_consumption",
+      "status": "validated",
+      "boundary": "ai_reranking, filtering, and clustering_and_prioritization consume real docking-derived signals in a lightweight way"
+    },
+    {
+      "layer": "multi_case_execution",
+      "status": "validated_at_demo_scale",
+      "boundary": "single-case, heterogeneous-target two-case, heterogeneous-library two-case, and three-active-case execution"
+    },
+    {
+      "layer": "partial_rerun_isolation",
+      "status": "validated_at_demo_scale",
+      "boundary": "untouched cases, targets, and libraries remain isolated under partial rerun"
+    },
+    {
+      "layer": "literature_backed_recovery",
+      "status": "validated_narrow_boundary",
+      "boundary": "two BRD4 BD1 focused recovery cases only"
+    }
+  ],
+  "literature_backed_cases": [
+    {
+      "case_id": "BRD4_BD1_LIT001",
+      "target_id": "BRD4_BD1_4QZS",
+      "library_id": "BRD4_LIT_FOCUSED_001",
+      "known_active": "JQ1",
+      "filter_keep_count": 1,
+      "shortlist_count": 1,
+      "top_1": "JQ1",
+      "top_2": null,
+      "shortlist_contains_known_active": true,
+      "best_known_active_rank": 1
+    },
+    {
+      "case_id": "BRD4_BD1_LIT002",
+      "target_id": "BRD4_BD1_4C66",
+      "library_id": "BRD4_LIT_FOCUSED_002",
+      "known_active": "I-BET762",
+      "filter_keep_count": 2,
+      "shortlist_count": 2,
+      "top_1": "I-BET762",
+      "top_2": "BG_BIPHENYL",
+      "shortlist_contains_known_active": true,
+      "best_known_active_rank": 1
+    }
+  ],
+  "fixed_filtering_v2_1": {
+    "activation_boundary": {
+      "case_type": "literature_backed",
+      "run_purpose": "comparison"
+    },
+    "rules": [
+      "vina_affinity <= -6.5",
+      "vina_affinity >= best_vina - 2.0",
+      "rerank_rank <= 3"
+    ],
+    "interpretation": [
+      "compatible with the two current BRD4 literature-backed cases",
+      "case-aware focused recovery rule",
+      "not a broadly validated cross-target benchmark filter"
+    ]
+  },
+  "next_evidence_layer_recommendation": {
+    "recommended_single_next_action": "Add one new realistic or literature-backed evidence layer only after predefining the exact claim boundary, while keeping the current BRD4 literature-backed boundary and filtering v2.1 frozen."
+  }
+}

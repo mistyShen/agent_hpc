@@ -1,0 +1,143 @@
+{
+  "project_name": "cpu_ai_drug_design",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "generated_at_utc": "2026-04-15T03:14:38.639017+00:00",
+  "inputs": {
+    "datasets_manifest": "04_metadata/datasets.tsv",
+    "targets_manifest": "04_metadata/targets.tsv",
+    "compound_libraries_manifest": "04_metadata/compound_libraries.tsv",
+    "benchmark_cases_manifest": "04_metadata/benchmark_cases.tsv"
+  },
+  "counts": {
+    "datasets": 1,
+    "targets": 4,
+    "compound_libraries": 4,
+    "benchmark_cases": 5,
+    "enabled_benchmark_cases": 5,
+    "benchmark_case_type_counts": {
+      "debug": 2,
+      "literature_backed": 2,
+      "toy": 1
+    },
+    "enabled_benchmark_case_type_counts": {
+      "debug": 2,
+      "literature_backed": 2,
+      "toy": 1
+    }
+  },
+  "mode": "scaffold_only",
+  "schemas": {
+    "run_manifest_doc": "00_docs/ARTIFACT_SCHEMAS.md",
+    "module_interface_doc": "00_docs/MODULE_INTERFACES.md",
+    "metadata_field_doc": "04_metadata/FIELD_REFERENCE.md"
+  },
+  "execution_state": {
+    "modules": {
+      "target_preparation": {
+        "runtime_seconds": 0.006797,
+        "execution_status": "executed",
+        "backend_mode": "lightweight_copy_annotation",
+        "updated_at_utc": "2026-04-15T03:14:38.681120+00:00"
+      },
+      "compound_library_preparation": {
+        "runtime_seconds": 0.004254,
+        "execution_status": "executed",
+        "backend_mode": "lightweight_smiles_standardization",
+        "updated_at_utc": "2026-04-15T03:14:38.721061+00:00"
+      },
+      "classical_docking": {
+        "runtime_seconds": 0.002756,
+        "execution_status": "executed",
+        "backend_mode": "scaffold_heuristic",
+        "updated_at_utc": "2026-04-15T03:14:38.768287+00:00"
+      },
+      "ai_reranking": {
+        "runtime_seconds": 0.002775,
+        "execution_status": "executed",
+        "backend_mode": "cpu_docking_rerank_v2",
+        "updated_at_utc": "2026-04-15T03:14:38.806333+00:00"
+      },
+      "filtering": {
+        "runtime_seconds": 0.002433,
+        "execution_status": "executed",
+        "backend_mode": "lightweight_real_filter_v1",
+        "updated_at_utc": "2026-04-15T03:14:38.845605+00:00"
+      },
+      "clustering_and_prioritization": {
+        "runtime_seconds": 0.002625,
+        "execution_status": "executed",
+        "backend_mode": "filter_keep_then_rerank_score_then_vina_affinity_v1",
+        "updated_at_utc": "2026-04-15T03:14:38.884838+00:00"
+      }
+    },
+    "cases": {
+      "DEMO_CASE_001": {},
+      "DEMO_CASE_002": {},
+      "DEMO_CASE_003": {},
+      "BRD4_BD1_LIT001": {},
+      "BRD4_BD1_LIT002": {
+        "target_preparation": {
+          "runtime_seconds": 0.001914,
+          "execution_status": "executed",
+          "backend_mode": "lightweight_copy_annotation",
+          "skipped_cache": false,
+          "skip_reason": "",
+          "cache_hit_artifact": false,
+          "updated_at_utc": "2026-04-15T03:14:38.681125+00:00"
+        },
+        "compound_library_preparation": {
+          "runtime_seconds": 0.000402,
+          "execution_status": "executed",
+          "backend_mode": "lightweight_smiles_standardization",
+          "skipped_cache": false,
+          "skip_reason": "",
+          "cache_hit_artifact": false,
+          "library_id": "BRD4_LIT_FOCUSED_002",
+          "updated_at_utc": "2026-04-15T03:14:38.721067+00:00"
+        },
+        "classical_docking": {
+          "runtime_seconds": 5.1e-05,
+          "execution_status": "executed",
+          "backend_mode": "scaffold_heuristic",
+          "result_row_count": 24,
+          "artifact_cache_hit_count": 0,
+          "skipped_cache": false,
+          "skip_reason": "",
+          "cache_hit_artifact": false,
+          "updated_at_utc": "2026-04-15T03:14:38.768378+00:00"
+        },
+        "ai_reranking": {
+          "runtime_seconds": 8.3e-05,
+          "execution_status": "executed",
+          "backend_mode": "cpu_docking_rerank_v2",
+          "result_row_count": 24,
+          "skipped_cache": false,
+          "skip_reason": "",
+          "cache_hit_artifact": false,
+          "updated_at_utc": "2026-04-15T03:14:38.806404+00:00"
+        },
+        "filtering": {
+          "runtime_seconds": 4.4e-05,
+          "execution_status": "executed",
+          "backend_mode": "lightweight_real_filter_v1",
+          "evaluated_candidate_count": 24,
+          "kept_candidate_count": 0,
+          "skipped_cache": false,
+          "skip_reason": "",
+          "cache_hit_artifact": false,
+          "updated_at_utc": "2026-04-15T03:14:38.845680+00:00"
+        },
+        "clustering_and_prioritization": {
+          "runtime_seconds": 3e-06,
+          "execution_status": "executed",
+          "backend_mode": "filter_keep_then_rerank_score_then_vina_affinity_v1",
+          "prioritized_candidate_count": 0,
+          "skipped_cache": false,
+          "skip_reason": "",
+          "cache_hit_artifact": false,
+          "updated_at_utc": "2026-04-15T03:14:38.884902+00:00"
+        }
+      }
+    }
+  }
+}

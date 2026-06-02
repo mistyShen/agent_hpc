@@ -1,0 +1,38 @@
+# {{ title }}
+
+Generated at {{ generated_at }}.
+
+## Overview
+{% for line in methods_sections.overview %}
+- {{ line }}
+{% endfor %}
+
+## Schema
+{% for line in methods_sections.schema %}
+- {{ line }}
+{% endfor %}
+
+## QC
+{% for line in methods_sections.qc %}
+- {{ line }}
+{% endfor %}
+
+## Annotation
+{% for line in methods_sections.annotation %}
+- {{ line }}
+{% endfor %}
+
+## Statistics
+{% for line in methods_sections.stats %}
+- {{ line }}
+{% endfor %}
+
+## Dependency Skips
+{% for line in methods_sections.dependency_skips %}
+- {{ line }}
+{% endfor %}
+
+## Artifacts
+{% for line in methods_sections.artifacts %}
+- {{ line }}
+{% endfor %}

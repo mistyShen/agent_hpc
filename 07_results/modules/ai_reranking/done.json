@@ -1,0 +1,93 @@
+{
+  "module": "ai_reranking",
+  "status": "reranking_completed",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/benchmark_cases.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.807691+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "docking_results_exists": true,
+    "reranked_table_written": true,
+    "summary_written": true,
+    "report_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "execution": {
+    "runtime_seconds": 0.002775,
+    "execution_status": "executed",
+    "backend_mode": "cpu_docking_rerank_v2",
+    "skipped_cache": false,
+    "skip_reason": "",
+    "selected_case_ids": [
+      "BRD4_BD1_LIT002"
+    ],
+    "partial_rerun_active": true
+  },
+  "module_profile": {
+    "stage_type": "ai_reranking",
+    "primary_inputs": [
+      "docking results",
+      "benchmark cases"
+    ],
+    "primary_outputs": [
+      "07_results/modules/ai_reranking/reranked_candidates.tsv",
+      "07_results/modules/ai_reranking/reranking_summary.json",
+      "07_results/modules/ai_reranking/ai_reranking_report.md",
+      "07_results/modules/ai_reranking/done.json"
+    ],
+    "next_action_hint": "keep extending the docking-aware rerank features while staying CPU-only"
+  },
+  "input_summary": {
+    "row_count": 1,
+    "preview_ids": [
+      "BRD4_BD1_LIT002"
+    ]
+  },
+  "reranking_outputs": {
+    "reranked_candidates_tsv": "07_results/modules/ai_reranking/reranked_candidates.tsv",
+    "reranking_summary_json": "07_results/modules/ai_reranking/reranking_summary.json",
+    "reranking_report_markdown": "07_results/modules/ai_reranking/ai_reranking_report.md",
+    "rerank_model": "cpu_docking_rerank_v2"
+  },
+  "cache": {
+    "signature": {
+      "input_manifest": {
+        "path": "04_metadata/benchmark_cases.tsv",
+        "size": 1832,
+        "mtime_ns": 1776222811375648115
+      },
+      "config": {
+        "path": "config.yaml",
+        "size": 2448,
+        "mtime_ns": 1776079264482346662
+      },
+      "docking_results_tsv": {
+        "path": "07_results/modules/classical_docking/docking_results.tsv",
+        "size": 9200,
+        "mtime_ns": 1776222878768139610
+      },
+      "docking_summary_json": {
+        "path": "07_results/modules/classical_docking/docking_summary.json",
+        "size": 717,
+        "mtime_ns": 1776222878769272471
+      },
+      "enabled_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "enabled_case_count": 1
+    },
+    "cache_scope": "module",
+    "cache_hit": false,
+    "cache_hit_artifact": false
+  },
+  "notes": [
+    "This module now consumes real docking outputs when available, including Vina affinity and ligand/pose PDBQT artifacts.",
+    "The rerank remains lightweight and CPU-only by combining docking affinity with simple artifact-quality signals and small chemistry heuristics."
+  ]
+}

@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=ult_sc_validate
+#SBATCH --output=/shared/shen/2026/ultimate/logs/%x_%j.out
+#SBATCH --error=/shared/shen/2026/ultimate/logs/%x_%j.err
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
+#SBATCH --time=12:00:00
+
+set -euo pipefail
+
+PROJECT_ROOT="${ULTIMATE_ROOT:-/shared/shen/2026/ultimate}"
+CORE_ENV="${ULTIMATE_CORE_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-core}"
+SCRNA_ENV="${ULTIMATE_SCRNA_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-scrna}"
+SCRNA_FALLBACK_ENV="${ULTIMATE_SCRNA_FALLBACK_ENV:-/shared/shen/2026/singlecell_workbench/.conda/envs/scw-py311}"
+GENOME_ENV="${ULTIMATE_GENOME_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-genome-mtdna}"
+CONDA_SH="${CONDA_SH:-/share/home/nshen/miniconda3/etc/profile.d/conda.sh}"
+
+mkdir -p "$PROJECT_ROOT/logs" "$PROJECT_ROOT/audits" "$PROJECT_ROOT/validations"
+source "$CONDA_SH"
+
+write_skip_manifest() {
+  local out_dir="$1"
+  local status="$2"
+  local reason="$3"
+  mkdir -p "$out_dir/reports"
+  python - "$out_dir" "$status" "$reason" <<'PY'
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+out = Path(sys.argv[1])
+status = sys.argv[2]
+reason = sys.argv[3]
+manifest = {
+    "generated_at": datetime.now(timezone.utc).isoformat(),
+    "output_dir": str(out),
+    "status": status,
+    "skip_reason": reason,
+}
+(out / "run_manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+(out / "reports" / "report.md").write_text(f"# 验证跳过\n\n状态：`{status}`\n\n原因：{reason}\n", encoding="utf-8")
+(out / "reports" / "report.html").write_text(f"<html><body><h1>验证跳过</h1><p>{reason}</p></body></html>", encoding="utf-8")
+PY
+}
+
+run_initial_audit() {
+  conda activate "$CORE_ENV"
+  cd "$PROJECT_ROOT"
+  ultimate audit-singlecell \
+    --root "$PROJECT_ROOT" \
+    --output-dir "$PROJECT_ROOT/audits/singlecell_slurm_initial"
+}
+
+run_scrna_validation() {
+  local out_dir="$PROJECT_ROOT/validations/slurm_scrna_nsclc_lambrechts"
+  local input_h5ad="/shared/shen/2026/nsclc_virtual_sc/02_processed_scRNA/Lambrechts_all_harmonized.h5ad"
+  if [[ -x "$SCRNA_ENV/bin/python" ]]; then
+    "$SCRNA_ENV/bin/python" "$PROJECT_ROOT/01_tools/validate_scrna_nsclc.py" \
+      --input-h5ad "$input_h5ad" \
+      --output-dir "$out_dir" \
+      --max-cells "${ULTIMATE_SCRNA_MAX_CELLS:-6000}"
+  elif [[ -x "$SCRNA_FALLBACK_ENV/bin/python" ]]; then
+    "$SCRNA_FALLBACK_ENV/bin/python" "$PROJECT_ROOT/01_tools/validate_scrna_nsclc.py" \
+      --input-h5ad "$input_h5ad" \
+      --output-dir "$out_dir" \
+      --max-cells "${ULTIMATE_SCRNA_MAX_CELLS:-6000}"
+  else
+    write_skip_manifest "$out_dir" "partial:dependency_required" "未找到 ultimate-scrna 或现有 singlecell_workbench scRNA Python 环境。"
+  fi
+}
+
+run_mtdna_validation() {
+  local out_dir="$PROJECT_ROOT/validations/slurm_mtdna_0518"
+  if [[ -x "$GENOME_ENV/bin/python" ]]; then
+    "$GENOME_ENV/bin/python" "$PROJECT_ROOT/01_tools/validate_mtdna_0518.py" \
+      --source-root "/shared/shen/2026/0518" \
+      --output-dir "$out_dir"
+  else
+    conda activate "$CORE_ENV"
+    python "$PROJECT_ROOT/01_tools/validate_mtdna_0518.py" \
+      --source-root "/shared/shen/2026/0518" \
+      --output-dir "$out_dir"
+  fi
+}
+
+run_final_audit() {
+  conda activate "$CORE_ENV"
+  cd "$PROJECT_ROOT"
+  ultimate audit-singlecell \
+    --root "$PROJECT_ROOT" \
+    --output-dir "$PROJECT_ROOT/audits/singlecell_slurm_post_validation"
+}
+
+run_initial_audit
+run_scrna_validation
+run_mtdna_validation
+run_final_audit
+

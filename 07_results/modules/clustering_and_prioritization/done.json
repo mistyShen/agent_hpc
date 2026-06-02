@@ -1,0 +1,101 @@
+{
+  "module": "clustering_and_prioritization",
+  "status": "clustering_completed",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/benchmark_cases.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.885775+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "docking_results_exists": true,
+    "reranked_candidates_exists": true,
+    "filtered_candidates_exists": true,
+    "clustered_table_written": true,
+    "summary_written": true,
+    "report_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "execution": {
+    "runtime_seconds": 0.002625,
+    "execution_status": "executed",
+    "backend_mode": "filter_keep_then_rerank_score_then_vina_affinity_v1",
+    "skipped_cache": false,
+    "skip_reason": "",
+    "selected_case_ids": [
+      "BRD4_BD1_LIT002"
+    ],
+    "partial_rerun_active": true
+  },
+  "module_profile": {
+    "stage_type": "clustering_and_prioritization",
+    "primary_inputs": [
+      "filtered candidates",
+      "reranked candidates",
+      "docking results",
+      "evaluation summary"
+    ],
+    "primary_outputs": [
+      "07_results/modules/clustering_and_prioritization/clustered_priorities.tsv",
+      "07_results/modules/clustering_and_prioritization/clustering_summary.json",
+      "07_results/modules/clustering_and_prioritization/clustering_report.md",
+      "07_results/modules/clustering_and_prioritization/done.json"
+    ],
+    "next_action_hint": "replace heuristic clusters with similarity-aware grouping while keeping the current real shortlist chain intact"
+  },
+  "input_summary": {
+    "row_count": 1,
+    "preview_ids": [
+      "BRD4_BD1_LIT002"
+    ]
+  },
+  "clustering_outputs": {
+    "clustered_priorities_tsv": "07_results/modules/clustering_and_prioritization/clustered_priorities.tsv",
+    "clustering_summary_json": "07_results/modules/clustering_and_prioritization/clustering_summary.json",
+    "clustering_report_markdown": "07_results/modules/clustering_and_prioritization/clustering_report.md"
+  },
+  "cache": {
+    "signature": {
+      "input_manifest": {
+        "path": "04_metadata/benchmark_cases.tsv",
+        "size": 1832,
+        "mtime_ns": 1776222811375648115
+      },
+      "config": {
+        "path": "config.yaml",
+        "size": 2448,
+        "mtime_ns": 1776079264482346662
+      },
+      "docking_results_tsv": {
+        "path": "07_results/modules/classical_docking/docking_results.tsv",
+        "size": 9200,
+        "mtime_ns": 1776222878768139610
+      },
+      "reranked_candidates_tsv": {
+        "path": "07_results/modules/ai_reranking/reranked_candidates.tsv",
+        "size": 3658,
+        "mtime_ns": 1776222878806230429
+      },
+      "filtered_candidates_tsv": {
+        "path": "07_results/modules/filtering/filtered_candidates.tsv",
+        "size": 3766,
+        "mtime_ns": 1776222878845497359
+      },
+      "enabled_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "enabled_case_count": 1
+    },
+    "cache_scope": "module",
+    "cache_hit": false,
+    "cache_hit_artifact": false
+  },
+  "notes": [
+    "This module now prioritizes only candidates kept by filtering and orders them using rerank score first and Vina affinity second.",
+    "Cluster assignment remains lightweight and rule-based in this minimal CPU-only version."
+  ]
+}

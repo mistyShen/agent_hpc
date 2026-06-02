@@ -1,0 +1,1061 @@
+{
+  "snapshot_count": 21,
+  "latest_snapshot": {
+    "archived_at_utc": "2026-04-16T06:31:46.921925+00:00",
+    "label": "poly0.7_single2.1_simple1.3",
+    "baseline_case_id": "BRD4_BD1_LIT002",
+    "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+    "enhancement_shortlist_count": 1,
+    "enhancement_shortlist_ids": [
+      "I-BET762"
+    ],
+    "best_background_compound_id": "BG_BIPHENYL",
+    "active_best_background_gap": 6.146,
+    "top12_rerank_gap": 6.146,
+    "shortlist_compression_ratio": 0.5,
+    "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+    "watchlist_top_compounds": [
+      "BG_BIPHENYL",
+      "BG_BENZAMIDE",
+      "BG_QUINOLINE"
+    ],
+    "next_tuning_recommendation": {
+      "target_compound_id": "BG_BIPHENYL",
+      "target_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+      "recommended_knob": "simple_aromatic_penalty",
+      "recommended_direction": "increase_slightly",
+      "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+    },
+    "checklist_status": "healthy",
+    "v3_tuning_snapshot": {
+      "missing_ligand_penalty": 0.35,
+      "missing_pose_penalty": 0.65,
+      "atom_delta_weight": 0.015,
+      "torsdof_threshold": 12.0,
+      "torsdof_weight": 0.025,
+      "small_mw_floor": 180.0,
+      "small_mw_weight": 0.01,
+      "hetero_floor": 2.0,
+      "hetero_weight": 0.55,
+      "aromatic_fraction_threshold": 0.75,
+      "aromatic_fraction_weight": 2.35,
+      "simple_aromatic_penalty": 1.3,
+      "polyaryl_hydrophobe_penalty": 0.7,
+      "single_ring_background_penalty": 2.1
+    }
+  },
+  "first_snapshot": {
+    "archived_at_utc": "2026-04-15T15:40:19.100926+00:00",
+    "label": "auto",
+    "baseline_case_id": "BRD4_BD1_LIT002",
+    "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+    "enhancement_shortlist_count": 1,
+    "enhancement_shortlist_ids": [
+      "I-BET762"
+    ],
+    "best_background_compound_id": "BG_BIPHENYL",
+    "active_best_background_gap": 5.146,
+    "top12_rerank_gap": 5.146,
+    "shortlist_compression_ratio": 0.5,
+    "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+    "watchlist_top_compounds": [
+      "BG_BIPHENYL",
+      "BG_BENZAMIDE",
+      "BG_QUINOLINE"
+    ],
+    "checklist_status": "healthy"
+  },
+  "previous_snapshot": {
+    "archived_at_utc": "2026-04-16T03:21:17.598039+00:00",
+    "label": "poly0.7_single2.0_simple1.3",
+    "baseline_case_id": "BRD4_BD1_LIT002",
+    "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+    "enhancement_shortlist_count": 1,
+    "enhancement_shortlist_ids": [
+      "I-BET762"
+    ],
+    "best_background_compound_id": "BG_BENZAMIDE",
+    "active_best_background_gap": 6.059,
+    "top12_rerank_gap": 6.059,
+    "shortlist_compression_ratio": 0.5,
+    "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+    "watchlist_top_compounds": [
+      "BG_BENZAMIDE",
+      "BG_BIPHENYL",
+      "BG_QUINOLINE"
+    ],
+    "next_tuning_recommendation": {
+      "target_compound_id": "BG_BENZAMIDE",
+      "target_flags": [
+        "single_ring_background"
+      ],
+      "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+      "recommended_knob": "single_ring_background_penalty",
+      "recommended_direction": "increase_slightly",
+      "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+    },
+    "checklist_status": "healthy",
+    "v3_tuning_snapshot": {
+      "missing_ligand_penalty": 0.35,
+      "missing_pose_penalty": 0.65,
+      "atom_delta_weight": 0.015,
+      "torsdof_threshold": 12.0,
+      "torsdof_weight": 0.025,
+      "small_mw_floor": 180.0,
+      "small_mw_weight": 0.01,
+      "hetero_floor": 2.0,
+      "hetero_weight": 0.55,
+      "aromatic_fraction_threshold": 0.75,
+      "aromatic_fraction_weight": 2.35,
+      "simple_aromatic_penalty": 1.3,
+      "polyaryl_hydrophobe_penalty": 0.7,
+      "single_ring_background_penalty": 2.0
+    }
+  },
+  "improvement_since_first": {
+    "active_best_background_gap": 1.0,
+    "top12_rerank_gap": 1.0
+  },
+  "delta_since_previous": {
+    "active_best_background_gap": 0.087,
+    "top12_rerank_gap": 0.087,
+    "best_background_changed": true
+  },
+  "current_attention_target": {
+    "compound_id": "BG_BIPHENYL",
+    "best_background_compound_id": "BG_BIPHENYL",
+    "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+    "recommended_knob": "simple_aromatic_penalty",
+    "recommended_direction": "increase_slightly"
+  },
+  "history": [
+    {
+      "archived_at_utc": "2026-04-15T15:40:19.100926+00:00",
+      "label": "auto",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.146,
+      "top12_rerank_gap": 5.146,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "checklist_status": "healthy"
+    },
+    {
+      "archived_at_utc": "2026-04-15T15:56:52.606914+00:00",
+      "label": "auto",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.159,
+      "top12_rerank_gap": 5.159,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "checklist_status": "healthy"
+    },
+    {
+      "archived_at_utc": "2026-04-16T01:20:39.582865+00:00",
+      "label": "poly0.6_single1.2_simple0.5",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.246,
+      "top12_rerank_gap": 5.246,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.5,
+        "polyaryl_hydrophobe_penalty": 0.6,
+        "single_ring_background_penalty": 1.2
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T01:35:50.326509+00:00",
+      "label": "poly0.7_single1.2_simple0.5",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.259,
+      "top12_rerank_gap": 5.259,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.5,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.2
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T01:45:37.310038+00:00",
+      "label": "poly0.7_single1.3_simple0.5",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.346,
+      "top12_rerank_gap": 5.346,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.5,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.3
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T01:51:41.923824+00:00",
+      "label": "poly0.7_single1.3_simple0.6",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.359,
+      "top12_rerank_gap": 5.359,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BENZAMIDE",
+        "target_flags": [
+          "single_ring_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "single_ring_background_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.6,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.3
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T02:03:46.342238+00:00",
+      "label": "poly0.7_single1.4_simple0.6",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.446,
+      "top12_rerank_gap": 5.446,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.6,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.4
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T02:22:33.285799+00:00",
+      "label": "poly0.7_single1.4_simple0.7",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.459,
+      "top12_rerank_gap": 5.459,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BENZAMIDE",
+        "target_flags": [
+          "single_ring_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "single_ring_background_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.7,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.4
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T02:26:03.468598+00:00",
+      "label": "poly0.7_single1.5_simple0.7",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.546,
+      "top12_rerank_gap": 5.546,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.7,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.5
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T02:27:22.545856+00:00",
+      "label": "poly0.7_single1.5_simple0.8",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.559,
+      "top12_rerank_gap": 5.559,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BENZAMIDE",
+        "target_flags": [
+          "single_ring_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "single_ring_background_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.8,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.5
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T02:52:37.859796+00:00",
+      "label": "poly0.7_single1.6_simple0.8",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.646,
+      "top12_rerank_gap": 5.646,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.8,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.6
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T02:54:22.455375+00:00",
+      "label": "poly0.7_single1.6_simple0.9",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.659,
+      "top12_rerank_gap": 5.659,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BENZAMIDE",
+        "target_flags": [
+          "single_ring_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "single_ring_background_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.9,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.6
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T02:58:52.593446+00:00",
+      "label": "poly0.7_single1.7_simple0.9",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.746,
+      "top12_rerank_gap": 5.746,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 0.9,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.7
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T02:59:54.709111+00:00",
+      "label": "poly0.7_single1.7_simple1.0",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.759,
+      "top12_rerank_gap": 5.759,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BENZAMIDE",
+        "target_flags": [
+          "single_ring_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "single_ring_background_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 1.0,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.7
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T03:02:51.193259+00:00",
+      "label": "poly0.7_single1.8_simple1.0",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.846,
+      "top12_rerank_gap": 5.846,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 1.0,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.8
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T03:03:55.469709+00:00",
+      "label": "poly0.7_single1.8_simple1.1",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.859,
+      "top12_rerank_gap": 5.859,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BENZAMIDE",
+        "target_flags": [
+          "single_ring_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "single_ring_background_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 1.1,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.8
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T03:14:38.335743+00:00",
+      "label": "poly0.7_single1.9_simple1.1",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 5.946,
+      "top12_rerank_gap": 5.946,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 1.1,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.9
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T03:16:06.871789+00:00",
+      "label": "poly0.7_single1.9_simple1.2",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 5.959,
+      "top12_rerank_gap": 5.959,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BENZAMIDE",
+        "target_flags": [
+          "single_ring_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "single_ring_background_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 1.2,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 1.9
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T03:20:11.224929+00:00",
+      "label": "poly0.7_single2.0_simple1.2",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 6.046,
+      "top12_rerank_gap": 6.046,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 1.2,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 2.0
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T03:21:17.598039+00:00",
+      "label": "poly0.7_single2.0_simple1.3",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 6.059,
+      "top12_rerank_gap": 6.059,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BENZAMIDE",
+        "BG_BIPHENYL",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BENZAMIDE",
+        "target_flags": [
+          "single_ring_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "single_ring_background_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BENZAMIDE` is still closest to the known active. It is currently explained most directly by `single_ring_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 1.3,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 2.0
+      }
+    },
+    {
+      "archived_at_utc": "2026-04-16T06:31:46.921925+00:00",
+      "label": "poly0.7_single2.1_simple1.3",
+      "baseline_case_id": "BRD4_BD1_LIT002",
+      "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+      "enhancement_shortlist_count": 1,
+      "enhancement_shortlist_ids": [
+        "I-BET762"
+      ],
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 6.146,
+      "top12_rerank_gap": 6.146,
+      "shortlist_compression_ratio": 0.5,
+      "strongest_flag_by_average_score_delta": "polyaryl_hydrophobe_background",
+      "watchlist_top_compounds": [
+        "BG_BIPHENYL",
+        "BG_BENZAMIDE",
+        "BG_QUINOLINE"
+      ],
+      "next_tuning_recommendation": {
+        "target_compound_id": "BG_BIPHENYL",
+        "target_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ],
+        "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+        "recommended_knob": "simple_aromatic_penalty",
+        "recommended_direction": "increase_slightly",
+        "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+      },
+      "checklist_status": "healthy",
+      "v3_tuning_snapshot": {
+        "missing_ligand_penalty": 0.35,
+        "missing_pose_penalty": 0.65,
+        "atom_delta_weight": 0.015,
+        "torsdof_threshold": 12.0,
+        "torsdof_weight": 0.025,
+        "small_mw_floor": 180.0,
+        "small_mw_weight": 0.01,
+        "hetero_floor": 2.0,
+        "hetero_weight": 0.55,
+        "aromatic_fraction_threshold": 0.75,
+        "aromatic_fraction_weight": 2.35,
+        "simple_aromatic_penalty": 1.3,
+        "polyaryl_hydrophobe_penalty": 0.7,
+        "single_ring_background_penalty": 2.1
+      }
+    }
+  ]
+}

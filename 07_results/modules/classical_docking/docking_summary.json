@@ -1,0 +1,26 @@
+{
+  "module": "classical_docking",
+  "generated_at_utc": "2026-04-15T03:14:38.768831+00:00",
+  "enabled_case_count": 1,
+  "result_row_count": 28,
+  "requested_backend": "vina_cpu",
+  "engine_mode": "scaffold_heuristic",
+  "runtime_seconds": 0.002756,
+  "execution_status": "executed",
+  "selected_case_ids": [
+    "BRD4_BD1_LIT002"
+  ],
+  "partial_rerun_active": true,
+  "cached_case_count": 0,
+  "cached_result_count": 0,
+  "ligand_cache_hit_count": 0,
+  "top_hits": [
+    {
+      "case_id": "BRD4_BD1_LIT002",
+      "top_compound_id": "I-BET762",
+      "top_docking_score": -55.058,
+      "case_execution_status": "executed"
+    }
+  ],
+  "output_table": "07_results/modules/classical_docking/docking_results.tsv"
+}

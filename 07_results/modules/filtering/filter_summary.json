@@ -1,0 +1,27 @@
+{
+  "module": "filtering",
+  "generated_at_utc": "2026-04-15T03:14:38.846147+00:00",
+  "runtime_seconds": 0.002433,
+  "execution_status": "executed",
+  "selected_case_ids": [
+    "BRD4_BD1_LIT002"
+  ],
+  "partial_rerun_active": true,
+  "enabled_benchmark_case_count": 1,
+  "candidate_count": 0,
+  "evaluated_candidate_count": 28,
+  "decision_counts": {
+    "keep": 0,
+    "exclude_missing_or_anomalous": 24,
+    "exclude_by_rule": 0
+  },
+  "candidates_per_case": {},
+  "filter_policy": "lightweight_real_filter_v1",
+  "consumed_inputs": {
+    "docking_results": "07_results/modules/classical_docking/docking_results.tsv",
+    "reranked_candidates": "07_results/modules/ai_reranking/reranked_candidates.tsv",
+    "prepared_library": "07_results/modules/compound_library_preparation/prepared_library.tsv",
+    "benchmark_cases": "04_metadata/benchmark_cases.tsv"
+  },
+  "source_run_manifest": "07_results/run_manifest.json"
+}

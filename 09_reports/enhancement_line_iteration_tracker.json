@@ -1,0 +1,44 @@
+{
+  "generated_at_utc": "2026-04-16T06:31:46.689113+00:00",
+  "source_report": "09_reports/enhancement_line_v2_vs_v3_comparison.json",
+  "comparison_scope": {
+    "baseline_case_id": "BRD4_BD1_LIT002",
+    "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP"
+  },
+  "headline_metrics": {
+    "baseline_top12_rerank_gap": 0.81,
+    "enhancement_top12_rerank_gap": 6.146,
+    "rerank_gap_improvement": 5.336,
+    "baseline_active_best_background_gap": 0.81,
+    "enhancement_active_best_background_gap": 6.146,
+    "active_margin_improvement": 5.336,
+    "baseline_shortlist_compression_ratio": 1.0,
+    "enhancement_shortlist_compression_ratio": 0.5,
+    "shortlist_compression_improvement": 0.5
+  },
+  "shortlist_behavior": {
+    "baseline_filter_keep_count": 2,
+    "baseline_shortlist_count": 2,
+    "enhancement_filter_keep_count": 2,
+    "enhancement_shortlist_count": 1,
+    "baseline_shortlist_ids": [
+      "I-BET762",
+      "BG_BIPHENYL"
+    ],
+    "enhancement_shortlist_ids": [
+      "I-BET762"
+    ],
+    "baseline_known_active_shortlisted": true,
+    "enhancement_known_active_shortlisted": true
+  },
+  "cache_behavior": {
+    "ai_reranking_cache_hit_runtime_seconds": 0.002139,
+    "clustering_cache_hit_runtime_seconds": 0.00015
+  },
+  "decision": {
+    "did_rerank_gap_improve": true,
+    "did_active_margin_improve": true,
+    "did_shortlist_compress": true,
+    "should_continue_v3_line": true
+  }
+}

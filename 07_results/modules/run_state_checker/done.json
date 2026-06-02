@@ -1,0 +1,47 @@
+{
+  "module": "run_state_checker",
+  "status": "workflow_health_checked",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/benchmark_cases.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.986841+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "workflow_health_summary_written": true,
+    "workflow_health_report_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "module_profile": {
+    "stage_type": "run_state_checker",
+    "primary_inputs": [
+      "run manifest",
+      "module done files",
+      "module summaries",
+      "module logs"
+    ],
+    "primary_outputs": [
+      "07_results/modules/run_state_checker/workflow_health_summary.json",
+      "07_results/modules/run_state_checker/workflow_health_report.md",
+      "07_results/modules/run_state_checker/done.json"
+    ],
+    "next_action_hint": "fix failed modules first, then rerun only affected downstream stages"
+  },
+  "input_summary": {
+    "row_count": 5,
+    "preview_ids": []
+  },
+  "health_outputs": {
+    "workflow_health_summary_json": "07_results/modules/run_state_checker/workflow_health_summary.json",
+    "workflow_health_report_markdown": "07_results/modules/run_state_checker/workflow_health_report.md",
+    "workflow_status": "failed"
+  },
+  "notes": [
+    "The run-state checker performs lightweight file, status, and backend-mode consistency checks.",
+    "This module is intended for operational trust and recovery support, not scientific scoring."
+  ]
+}

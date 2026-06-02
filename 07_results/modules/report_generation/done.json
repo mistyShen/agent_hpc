@@ -1,0 +1,59 @@
+{
+  "module": "report_generation",
+  "status": "report_generated",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/benchmark_cases.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.920396+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "benchmark_summary_json_written": true,
+    "benchmark_summary_markdown_written": true,
+    "project_summary_json_written": true,
+    "project_summary_markdown_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "module_profile": {
+    "stage_type": "report_generation",
+    "primary_inputs": [
+      "module summaries",
+      "benchmark case metadata",
+      "run manifest"
+    ],
+    "primary_outputs": [
+      "09_reports/benchmark_summary.json",
+      "09_reports/benchmark_summary.md",
+      "09_reports/project_summary.json",
+      "09_reports/project_summary.md",
+      "07_results/modules/report_generation/done.json"
+    ],
+    "next_action_hint": "attach richer tables and cross-module provenance once upstream modules become more detailed"
+  },
+  "input_summary": {
+    "row_count": 5,
+    "preview_ids": [
+      "DEMO_CASE_001",
+      "DEMO_CASE_002",
+      "DEMO_CASE_003"
+    ]
+  },
+  "report_outputs": {
+    "benchmark_json": "09_reports/benchmark_summary.json",
+    "benchmark_markdown": "09_reports/benchmark_summary.md",
+    "project_json": "09_reports/project_summary.json",
+    "project_markdown": "09_reports/project_summary.md",
+    "comparison_json": "09_reports/benchmark_comparison.json",
+    "comparison_markdown": "09_reports/benchmark_comparison.md"
+  },
+  "notes": [
+    "Report generation now creates project-level summaries by aggregating concrete module outputs.",
+    "Top-level summaries now expose benchmark comparison outputs for case-level reporting.",
+    "Comparison snapshot is formatted as a stable table for manuscript-style reuse.",
+    "Keep both benchmark_summary and project_summary artifacts for backward compatibility."
+  ]
+}

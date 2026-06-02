@@ -1,0 +1,52 @@
+{
+  "case_id": "PXR_LBD_LIT001_V3EXP",
+  "case_type": "literature_backed",
+  "rerank_strategy": "ai_rerank_v3",
+  "target_id": "PXR_LBD_8F5Y",
+  "library_id": "BRD4_LIT_FOCUSED_001",
+  "known_active_compound_id": "JQ1",
+  "truth_row_count": 1,
+  "docking_candidate_count": 24,
+  "reranked_candidate_count": 24,
+  "filter_keep_count": 3,
+  "shortlist_count": 1,
+  "shortlist_ids": [
+    "JQ1"
+  ],
+  "known_active_rank": 1,
+  "known_active_shortlisted": true,
+  "best_background_compound_id": "BG_ASPIRIN",
+  "active_best_background_gap": 3.159,
+  "top_rerank": [
+    {
+      "compound_id": "JQ1",
+      "rerank_rank": 1,
+      "rerank_score": -9.9,
+      "vina_affinity_kcal_mol": -9.9
+    },
+    {
+      "compound_id": "BG_ASPIRIN",
+      "rerank_rank": 2,
+      "rerank_score": -6.741,
+      "vina_affinity_kcal_mol": -7.1
+    },
+    {
+      "compound_id": "BG_SALICYLIC_ACID",
+      "rerank_rank": 3,
+      "rerank_score": -6.121,
+      "vina_affinity_kcal_mol": -6.6
+    },
+    {
+      "compound_id": "BG_ETHYL_PARABEN",
+      "rerank_rank": 4,
+      "rerank_score": -6.061,
+      "vina_affinity_kcal_mol": -6.3
+    },
+    {
+      "compound_id": "BG_BENZOIC_ACID",
+      "rerank_rank": 5,
+      "rerank_score": -5.861,
+      "vina_affinity_kcal_mol": -6.5
+    }
+  ]
+}

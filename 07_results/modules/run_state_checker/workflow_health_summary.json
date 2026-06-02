@@ -1,0 +1,430 @@
+{
+  "module": "run_state_checker",
+  "generated_at_utc": "2026-04-15T03:14:38.985368+00:00",
+  "workflow_status": "failed",
+  "runtime_state_validation": {
+    "single_case_runtime_state_validated": true,
+    "heterogeneous_target_two_case_validated": true,
+    "heterogeneous_library_two_case_validated": true,
+    "three_or_more_active_cases_validated": true,
+    "partial_rerun_isolation_validated": true,
+    "multi_case_merge_validated": true,
+    "multi_case_merge_validation_status": "validated_for_three_case_runs_with_heterogeneous_target_and_library_coverage",
+    "remaining_unvalidated_scope": [
+      "larger_scale_multi_case_benchmarks"
+    ]
+  },
+  "checked_module_count": 8,
+  "failing_modules": [
+    "classical_docking"
+  ],
+  "warning_modules": [
+    "target_preparation",
+    "compound_library_preparation",
+    "ai_reranking",
+    "filtering",
+    "clustering_and_prioritization",
+    "report_generation",
+    "benchmark_evaluation"
+  ],
+  "real_backend_modules": [
+    "ai_reranking",
+    "classical_docking"
+  ],
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/benchmark_cases.tsv",
+  "module_results": [
+    {
+      "module": "target_preparation",
+      "status": "warning",
+      "checks": {
+        "done_exists": true,
+        "log_exists": false,
+        "summary_exists": true,
+        "outputs_nonempty": true,
+        "outputs_with_rows": true,
+        "done_execution_present": true,
+        "done_cache_present": true,
+        "selected_case_ids": [
+          "BRD4_BD1_LIT002"
+        ],
+        "partial_rerun_active": true,
+        "done_execution_status": "executed",
+        "done_backend_mode": "lightweight_copy_annotation",
+        "cache_hit": false,
+        "cache_hit_artifact": false,
+        "manifest_module_state_present": true,
+        "manifest_selected_case_count": 1,
+        "target_partial_rerun_case_scope_present": true
+      },
+      "issues": [],
+      "warnings": [
+        "missing_log"
+      ],
+      "done_json": "07_results/modules/target_preparation/done.json",
+      "summary_json": "07_results/modules/target_preparation/target_summary.json",
+      "log_path": "07_results/logs/target_preparation.log",
+      "output_checks": [
+        {
+          "path": "07_results/modules/target_preparation/prepared_targets.tsv",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/target_preparation/target_file_manifest.tsv",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/target_preparation/target_summary.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/target_preparation/target_preparation_report.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        }
+      ]
+    },
+    {
+      "module": "compound_library_preparation",
+      "status": "warning",
+      "checks": {
+        "done_exists": true,
+        "log_exists": false,
+        "summary_exists": true,
+        "outputs_nonempty": true,
+        "outputs_with_rows": true,
+        "done_execution_present": true,
+        "done_cache_present": true,
+        "selected_case_ids": [
+          "BRD4_BD1_LIT002"
+        ],
+        "partial_rerun_active": true,
+        "done_execution_status": "executed",
+        "done_backend_mode": "lightweight_smiles_standardization",
+        "cache_hit": false,
+        "cache_hit_artifact": false,
+        "manifest_module_state_present": true,
+        "manifest_selected_case_count": 1,
+        "library_partial_rerun_case_scope_present": true
+      },
+      "issues": [],
+      "warnings": [
+        "missing_log"
+      ],
+      "done_json": "07_results/modules/compound_library_preparation/done.json",
+      "summary_json": "07_results/modules/compound_library_preparation/library_summary.json",
+      "log_path": "07_results/logs/compound_library_preparation.log",
+      "output_checks": [
+        {
+          "path": "07_results/modules/compound_library_preparation/prepared_library.tsv",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/compound_library_preparation/library_summary.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/compound_library_preparation/library_preparation_report.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        }
+      ]
+    },
+    {
+      "module": "classical_docking",
+      "status": "failed",
+      "checks": {
+        "done_exists": true,
+        "log_exists": false,
+        "summary_exists": true,
+        "outputs_nonempty": true,
+        "outputs_with_rows": true,
+        "done_execution_present": true,
+        "done_cache_present": true,
+        "selected_case_ids": [
+          "BRD4_BD1_LIT002"
+        ],
+        "partial_rerun_active": true,
+        "done_execution_status": "executed",
+        "done_backend_mode": "scaffold_heuristic",
+        "cache_hit": false,
+        "cache_hit_artifact": false,
+        "manifest_module_state_present": true,
+        "manifest_selected_case_count": 1,
+        "backend_requested_matches_config": true,
+        "backend_engine_matches_config": false
+      },
+      "issues": [
+        "classical_docking_engine_mode_mismatch:config=vina_cpu,summary=scaffold_heuristic"
+      ],
+      "warnings": [
+        "missing_log"
+      ],
+      "done_json": "07_results/modules/classical_docking/done.json",
+      "summary_json": "07_results/modules/classical_docking/docking_summary.json",
+      "log_path": "07_results/logs/classical_docking.log",
+      "output_checks": [
+        {
+          "path": "07_results/modules/classical_docking/docking_results.tsv",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/classical_docking/docking_summary.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/classical_docking/classical_docking_report.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        }
+      ]
+    },
+    {
+      "module": "ai_reranking",
+      "status": "warning",
+      "checks": {
+        "done_exists": true,
+        "log_exists": false,
+        "summary_exists": true,
+        "outputs_nonempty": true,
+        "outputs_with_rows": true,
+        "done_execution_present": true,
+        "done_cache_present": true,
+        "selected_case_ids": [
+          "BRD4_BD1_LIT002"
+        ],
+        "partial_rerun_active": true,
+        "done_execution_status": "executed",
+        "done_backend_mode": "cpu_docking_rerank_v2",
+        "cache_hit": false,
+        "cache_hit_artifact": false,
+        "manifest_module_state_present": true,
+        "manifest_selected_case_count": 1,
+        "docking_engine_matches_upstream": true,
+        "real_docking_rows_consumed": 0
+      },
+      "issues": [],
+      "warnings": [
+        "missing_log"
+      ],
+      "done_json": "07_results/modules/ai_reranking/done.json",
+      "summary_json": "07_results/modules/ai_reranking/reranking_summary.json",
+      "log_path": "07_results/logs/ai_reranking.log",
+      "output_checks": [
+        {
+          "path": "07_results/modules/ai_reranking/reranked_candidates.tsv",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/ai_reranking/reranking_summary.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/ai_reranking/ai_reranking_report.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        }
+      ]
+    },
+    {
+      "module": "filtering",
+      "status": "warning",
+      "checks": {
+        "done_exists": true,
+        "log_exists": false,
+        "summary_exists": true,
+        "outputs_nonempty": true,
+        "outputs_with_rows": true,
+        "done_execution_present": true,
+        "done_cache_present": true,
+        "selected_case_ids": [
+          "BRD4_BD1_LIT002"
+        ],
+        "partial_rerun_active": true,
+        "done_execution_status": "executed",
+        "done_backend_mode": "lightweight_real_filter_v1",
+        "cache_hit": false,
+        "cache_hit_artifact": false,
+        "manifest_module_state_present": true,
+        "manifest_selected_case_count": 1
+      },
+      "issues": [],
+      "warnings": [
+        "missing_log"
+      ],
+      "done_json": "07_results/modules/filtering/done.json",
+      "summary_json": "07_results/modules/filtering/filter_summary.json",
+      "log_path": "07_results/logs/filtering.log",
+      "output_checks": [
+        {
+          "path": "07_results/modules/filtering/filtered_candidates.tsv",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/filtering/filter_summary.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/filtering/filtering_report.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        }
+      ]
+    },
+    {
+      "module": "clustering_and_prioritization",
+      "status": "warning",
+      "checks": {
+        "done_exists": true,
+        "log_exists": false,
+        "summary_exists": true,
+        "outputs_nonempty": true,
+        "outputs_with_rows": false,
+        "done_execution_present": true,
+        "done_cache_present": true,
+        "selected_case_ids": [
+          "BRD4_BD1_LIT002"
+        ],
+        "partial_rerun_active": true,
+        "done_execution_status": "executed",
+        "done_backend_mode": "filter_keep_then_rerank_score_then_vina_affinity_v1",
+        "cache_hit": false,
+        "cache_hit_artifact": false,
+        "manifest_module_state_present": true,
+        "manifest_selected_case_count": 1
+      },
+      "issues": [],
+      "warnings": [
+        "missing_log",
+        "one_or_more_tsv_outputs_have_no_data_rows"
+      ],
+      "done_json": "07_results/modules/clustering_and_prioritization/done.json",
+      "summary_json": "07_results/modules/clustering_and_prioritization/clustering_summary.json",
+      "log_path": "07_results/logs/clustering_and_prioritization.log",
+      "output_checks": [
+        {
+          "path": "07_results/modules/clustering_and_prioritization/clustered_priorities.tsv",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": false
+        },
+        {
+          "path": "07_results/modules/clustering_and_prioritization/clustering_summary.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "07_results/modules/clustering_and_prioritization/clustering_report.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        }
+      ]
+    },
+    {
+      "module": "report_generation",
+      "status": "warning",
+      "checks": {
+        "done_exists": true,
+        "log_exists": false,
+        "summary_exists": true,
+        "outputs_nonempty": true,
+        "outputs_with_rows": true
+      },
+      "issues": [],
+      "warnings": [
+        "missing_log"
+      ],
+      "done_json": "07_results/modules/report_generation/done.json",
+      "summary_json": "09_reports/project_summary.json",
+      "log_path": "07_results/logs/report_generation.log",
+      "output_checks": [
+        {
+          "path": "09_reports/benchmark_summary.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "09_reports/benchmark_summary.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "09_reports/project_summary.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "09_reports/project_summary.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        }
+      ]
+    },
+    {
+      "module": "benchmark_evaluation",
+      "status": "warning",
+      "checks": {
+        "done_exists": true,
+        "log_exists": false,
+        "summary_exists": true,
+        "outputs_nonempty": true,
+        "outputs_with_rows": true
+      },
+      "issues": [],
+      "warnings": [
+        "missing_log"
+      ],
+      "done_json": "07_results/modules/benchmark_evaluation/done.json",
+      "summary_json": "09_reports/benchmark_evaluation.json",
+      "log_path": "07_results/logs/benchmark_evaluation.log",
+      "output_checks": [
+        {
+          "path": "09_reports/benchmark_evaluation.json",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        },
+        {
+          "path": "09_reports/benchmark_evaluation.md",
+          "exists": true,
+          "nonempty": true,
+          "has_rows": true
+        }
+      ]
+    }
+  ],
+  "output_report": "07_results/modules/run_state_checker/workflow_health_report.md"
+}

@@ -1,0 +1,151 @@
+{
+  "generated_at_utc": "2026-04-16T03:52:39.351783+00:00",
+  "baseline_case_id": "BRD4_BD1_LIT002",
+  "enhancement_case_id": "BRD4_BD1_LIT002_V3EXP",
+  "known_active_compound_id": "I-BET762",
+  "best_background_compound_id": "BG_BIPHENYL",
+  "active_best_background_gap": 6.146,
+  "flagged_background_count": 5,
+  "rows": [
+    {
+      "compound_id": "I-BET762",
+      "is_known_active": true,
+      "baseline_rank": 1,
+      "enhancement_rank": 1,
+      "rank_delta": 0,
+      "baseline_score": -7.68,
+      "enhancement_score": -8.9,
+      "score_delta": -1.22,
+      "baseline_shortlisted": true,
+      "enhancement_shortlisted": true,
+      "physchem_flags": [],
+      "physchem_snapshot": {
+        "molecular_weight_estimate": 401.725,
+        "heavy_atom_count": 30,
+        "hetero_atom_count": 8,
+        "aromatic_atom_count": 0,
+        "ring_index_count": 4,
+        "aromatic_fraction": 0.0
+      }
+    },
+    {
+      "compound_id": "BG_BIPHENYL",
+      "is_known_active": false,
+      "baseline_rank": 2,
+      "enhancement_rank": 2,
+      "rank_delta": 0,
+      "baseline_score": -6.87,
+      "enhancement_score": -2.754,
+      "score_delta": 4.116,
+      "baseline_shortlisted": true,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "physchem_snapshot": {
+        "molecular_weight_estimate": 144.132,
+        "heavy_atom_count": 12,
+        "hetero_atom_count": 0,
+        "aromatic_atom_count": 12,
+        "ring_index_count": 2,
+        "aromatic_fraction": 1.0
+      }
+    },
+    {
+      "compound_id": "BG_BENZAMIDE",
+      "is_known_active": false,
+      "baseline_rank": 3,
+      "enhancement_rank": 3,
+      "rank_delta": 0,
+      "baseline_score": -6.47,
+      "enhancement_score": -2.741,
+      "score_delta": 3.729,
+      "baseline_shortlisted": false,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "single_ring_background"
+      ],
+      "physchem_snapshot": {
+        "molecular_weight_estimate": 114.083,
+        "heavy_atom_count": 9,
+        "hetero_atom_count": 2,
+        "aromatic_atom_count": 6,
+        "ring_index_count": 1,
+        "aromatic_fraction": 0.667
+      }
+    },
+    {
+      "compound_id": "BG_QUINOLINE",
+      "is_known_active": false,
+      "baseline_rank": 5,
+      "enhancement_rank": 4,
+      "rank_delta": 1,
+      "baseline_score": -5.93,
+      "enhancement_score": -2.284,
+      "score_delta": 3.646,
+      "baseline_shortlisted": false,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "physchem_snapshot": {
+        "molecular_weight_estimate": 122.106,
+        "heavy_atom_count": 10,
+        "hetero_atom_count": 1,
+        "aromatic_atom_count": 10,
+        "ring_index_count": 2,
+        "aromatic_fraction": 1.0
+      }
+    },
+    {
+      "compound_id": "BG_INDOLE",
+      "is_known_active": false,
+      "baseline_rank": 6,
+      "enhancement_rank": 5,
+      "rank_delta": 1,
+      "baseline_score": -5.585,
+      "enhancement_score": -1.863,
+      "score_delta": 3.722,
+      "baseline_shortlisted": false,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "physchem_snapshot": {
+        "molecular_weight_estimate": 110.095,
+        "heavy_atom_count": 9,
+        "hetero_atom_count": 1,
+        "aromatic_atom_count": 9,
+        "ring_index_count": 2,
+        "aromatic_fraction": 1.0
+      }
+    },
+    {
+      "compound_id": "BG_NAPHTHALENE",
+      "is_known_active": false,
+      "baseline_rank": 4,
+      "enhancement_rank": 6,
+      "rank_delta": -2,
+      "baseline_score": -6.025,
+      "enhancement_score": -1.814,
+      "score_delta": 4.211,
+      "baseline_shortlisted": false,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "physchem_snapshot": {
+        "molecular_weight_estimate": 120.11,
+        "heavy_atom_count": 10,
+        "hetero_atom_count": 0,
+        "aromatic_atom_count": 10,
+        "ring_index_count": 2,
+        "aromatic_fraction": 1.0
+      }
+    }
+  ]
+}

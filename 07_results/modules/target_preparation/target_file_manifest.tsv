@@ -1,0 +1,4 @@
+target_id	prepared_structure_path	receptor_pdbqt_path	target_type	chain_count	residue_count	center_x	center_y	center_z	size_x	size_y	size_z	docking_ready
+DEMO_TARGET_001	07_results/modules/target_preparation/prepared_structures/DEMO_TARGET_001_prepared.pdb	07_results/modules/target_preparation/prepared_structures/DEMO_TARGET_001_prepared.pdbqt	protein	1	1	12.471	12.492	9.447	12.0	12.0	12.0	true
+BRD4_BD1_4QZS	07_results/modules/target_preparation/prepared_structures/BRD4_BD1_4QZS_prepared.pdb	07_results/modules/target_preparation/prepared_structures/BRD4_BD1_4QZS_prepared.pdbqt	protein	1	120	10.367	-6.491	-2.411	16.0	16.0	16.0	true
+BRD4_BD1_4C66	07_results/modules/target_preparation/prepared_structures/BRD4_BD1_4C66_prepared.pdb	07_results/modules/target_preparation/prepared_structures/BRD4_BD1_4C66_prepared.pdbqt	protein	1	126	25.287	50.878	-1.347	16.0	16.0	16.0	true

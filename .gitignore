@@ -1,0 +1,58 @@
+# OS / editor state
+.DS_Store
+.idea/
+.vscode/
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Local secrets and machine-specific config
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+known_hosts
+
+# HPC/runtime scratch
+11_tmp/
+05_data_processed/
+07_results/logs/
+*.lock
+*.tmp
+*.bak
+slurm-*.out
+*.sbatch.out
+*.sbatch.err
+
+# Large or machine-local data drops should live under /shared and be
+# documented in manifests rather than committed directly.
+*.bam
+*.bai
+*.cram
+*.crai
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.sam
+*.vcf
+*.vcf.gz
+*.h5ad
+*.h5
+*.loom
+*.mtx
+*.rds
+*.RData
+
+# Tiny committed example data used by tests/docs.
+!singlecell_workbench/example_data/minimal_example/data/stim_b/filtered_feature_bc_matrix.h5

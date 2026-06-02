@@ -1,0 +1,187 @@
+{
+  "report_type": "enhancement_line_comparison",
+  "isolated_execution_root": "/shared/shen/cpu_ai_drug_design_v3exp",
+  "baseline_case": {
+    "case_id": "BRD4_BD1_LIT001",
+    "rerank_model": "cpu_docking_rerank_v2",
+    "top_rerank": [
+      {
+        "compound_id": "JQ1",
+        "rerank_score": -6.23,
+        "rerank_rank": 1
+      },
+      {
+        "compound_id": "BG_ANILINE",
+        "rerank_score": -2.43,
+        "rerank_rank": 2
+      },
+      {
+        "compound_id": "BG_PHENOL",
+        "rerank_score": -2.275,
+        "rerank_rank": 3
+      }
+    ],
+    "filter_keep_count": 1,
+    "shortlist_count": 1,
+    "shortlist_ids": [
+      "JQ1"
+    ],
+    "ground_truth": {
+      "known_active_count": 1,
+      "known_active_recovered_in_filter_keep": 1,
+      "known_active_recovered_in_shortlist": 1,
+      "shortlist_contains_known_active": true,
+      "best_known_active_rank": 1
+    },
+    "known_active_compound_id": "JQ1",
+    "active_margin": {
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_rerank_score": -6.23,
+      "known_active_shortlisted": true,
+      "best_background_compound_id": "BG_ANILINE",
+      "best_background_rank": 2,
+      "best_background_rerank_score": -2.43,
+      "known_active_to_best_background_gap": 3.8
+    }
+  },
+  "enhancement_case": {
+    "case_id": "BRD4_BD1_LIT001_V3EXP",
+    "rerank_model": "cpu_docking_rerank_v3",
+    "top_rerank": [
+      {
+        "compound_id": "JQ1",
+        "rerank_score": -7.4,
+        "rerank_rank": 1
+      },
+      {
+        "compound_id": "BG_ASPIRIN",
+        "rerank_score": -5.541,
+        "rerank_rank": 2
+      },
+      {
+        "compound_id": "BG_PARACETAMOL",
+        "rerank_score": -5.121,
+        "rerank_rank": 3
+      }
+    ],
+    "filter_keep_count": 1,
+    "shortlist_count": 1,
+    "shortlist_ids": [
+      "JQ1"
+    ],
+    "ground_truth": {
+      "note": "no separate truth row added for the experimental case"
+    },
+    "known_active_compound_id": "JQ1",
+    "active_margin": {
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_rerank_score": -7.4,
+      "known_active_shortlisted": true,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "best_background_rank": 2,
+      "best_background_rerank_score": -5.541,
+      "known_active_to_best_background_gap": 1.859
+    },
+    "rerank_diagnostics": {
+      "top_preview": [
+        {
+          "compound_id": "JQ1",
+          "docking_core": -7.4,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 0.0,
+          "total_penalty": 0.0,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 431.789,
+            "hetero_atom_count": 8,
+            "aromatic_atom_count": 0,
+            "ring_index_count": 4,
+            "aromatic_fraction": 0.0
+          }
+        },
+        {
+          "compound_id": "BG_ASPIRIN",
+          "docking_core": -5.9,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 0.359,
+          "total_penalty": 0.359,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 144.085,
+            "hetero_atom_count": 3,
+            "aromatic_atom_count": 5,
+            "ring_index_count": 1,
+            "aromatic_fraction": 0.455
+          }
+        },
+        {
+          "compound_id": "BG_PARACETAMOL",
+          "docking_core": -5.5,
+          "artifact_penalty": 0.0,
+          "physchem_penalty": 0.379,
+          "total_penalty": 0.379,
+          "physchem_flags": [],
+          "physchem_snapshot": {
+            "molecular_weight_estimate": 142.093,
+            "hetero_atom_count": 3,
+            "aromatic_atom_count": 0,
+            "ring_index_count": 1,
+            "aromatic_fraction": 0.0
+          }
+        }
+      ],
+      "v3_component_averages": {
+        "artifact_penalty": 0.0,
+        "physchem_penalty": 0.287
+      },
+      "cache_status": "miss"
+    },
+    "priority_diagnostics": {
+      "selection_policy": "filter_keep_then_v3_rerank_margin_then_vina_v2",
+      "filter_keep_input_count": 1,
+      "shortlist_count": 1,
+      "shortlist_cap": 1,
+      "top_score_gap": 0.0,
+      "v3_priority_tuning": {
+        "top1_only_gap": 0.75,
+        "top2_gap": 0.35,
+        "mid_gap_shortlist_cap": 2
+      },
+      "cache_status": "miss"
+    }
+  },
+  "performance": {
+    "ai_reranking": {
+      "phase_timings_seconds": {
+        "read": 0.007055,
+        "scoring": 0.030849,
+        "output": 0.002744
+      },
+      "per_case_runtime_seconds": {
+        "BRD4_BD1_LIT001_V3EXP": {
+          "runtime_seconds": 0.023339,
+          "scoring_runtime_seconds": 0.014456
+        },
+        "BRD4_BD1_LIT002_V3EXP": {
+          "runtime_seconds": 0.006333,
+          "scoring_runtime_seconds": 0.003475
+        }
+      },
+      "cache_hit_case_runtime_seconds": {}
+    },
+    "clustering_and_prioritization": {
+      "phase_timings_seconds": {
+        "read": 0.005679,
+        "scoring": 0.000687,
+        "output": 0.005719
+      },
+      "cache_hit_case_runtime_seconds": {}
+    }
+  },
+  "conclusion": {
+    "summary": "v3 improves rerank separation and clustering v2 converts that difference into a tighter shortlist without touching the frozen baseline line.",
+    "next_recommended_action": "Use the enhancement-line iteration tracker after each v3 tweak to verify that rerank gap or shortlist compression still improves before expanding the experiment scope."
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "module": "benchmark_evaluation",
+  "status": "evaluation_completed",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/benchmark_cases.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.954510+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "filtering_summary_exists": true,
+    "report_summary_exists": true,
+    "evaluation_json_written": true,
+    "evaluation_markdown_written": true,
+    "comparison_json_written": true,
+    "comparison_markdown_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "module_profile": {
+    "stage_type": "benchmark_evaluation",
+    "primary_inputs": [
+      "run manifest",
+      "filter summary",
+      "benchmark summary"
+    ],
+    "primary_outputs": [
+      "09_reports/benchmark_evaluation.json",
+      "09_reports/benchmark_evaluation.md",
+      "09_reports/benchmark_comparison.json",
+      "09_reports/benchmark_comparison.md",
+      "07_results/modules/benchmark_evaluation/done.json"
+    ],
+    "next_action_hint": "use case typing to separate debug runs from future comparison-grade benchmark cases"
+  },
+  "input_summary": {
+    "row_count": 5,
+    "preview_ids": [
+      "DEMO_CASE_001",
+      "DEMO_CASE_002",
+      "DEMO_CASE_003"
+    ]
+  },
+  "evaluation_outputs": {
+    "json": "09_reports/benchmark_evaluation.json",
+    "markdown": "09_reports/benchmark_evaluation.md",
+    "comparison_json": "09_reports/benchmark_comparison.json",
+    "comparison_markdown": "09_reports/benchmark_comparison.md"
+  },
+  "notes": [
+    "Benchmark evaluation now produces grouped comparison views by case type, run purpose, and primary metric.",
+    "Bringup/debug cases are explicitly separated from more comparison-oriented cases using case tier and run purpose.",
+    "Case-level comparison outputs now include final shortlist summaries and candidate counts across docking, reranking, filtering, and clustering stages."
+  ]
+}

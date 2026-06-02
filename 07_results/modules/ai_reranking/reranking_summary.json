@@ -1,0 +1,24 @@
+{
+  "module": "ai_reranking",
+  "generated_at_utc": "2026-04-15T03:14:38.806892+00:00",
+  "enabled_case_count": 1,
+  "reranked_row_count": 28,
+  "rerank_model": "cpu_docking_rerank_v2",
+  "runtime_seconds": 0.002775,
+  "execution_status": "executed",
+  "selected_case_ids": [
+    "BRD4_BD1_LIT002"
+  ],
+  "partial_rerun_active": true,
+  "docking_summary_available": true,
+  "real_docking_rows_consumed": 0,
+  "docking_engine_mode": "scaffold_heuristic",
+  "top_hits": [
+    {
+      "case_id": "BRD4_BD1_LIT002",
+      "top_compound_id": "I-BET762",
+      "top_rerank_score": -51.125
+    }
+  ],
+  "output_table": "07_results/modules/ai_reranking/reranked_candidates.tsv"
+}

@@ -1,0 +1,105 @@
+{
+  "module": "filtering",
+  "status": "filtering_completed",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/benchmark_cases.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.846999+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "docking_results_exists": true,
+    "reranked_candidates_exists": true,
+    "prepared_library_exists": true,
+    "filtered_candidates_written": true,
+    "filter_summary_written": true,
+    "filter_report_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "execution": {
+    "runtime_seconds": 0.002433,
+    "execution_status": "executed",
+    "backend_mode": "lightweight_real_filter_v1",
+    "skipped_cache": false,
+    "skip_reason": "",
+    "selected_case_ids": [
+      "BRD4_BD1_LIT002"
+    ],
+    "partial_rerun_active": true
+  },
+  "module_profile": {
+    "stage_type": "filtering",
+    "primary_inputs": [
+      "benchmark case metadata",
+      "docking results",
+      "reranked candidates",
+      "prepared library"
+    ],
+    "primary_outputs": [
+      "07_results/modules/filtering/filtered_candidates.tsv",
+      "07_results/modules/filtering/filter_summary.json",
+      "07_results/modules/filtering/filtering_report.md",
+      "07_results/modules/filtering/done.json"
+    ],
+    "next_action_hint": "extend this lightweight filter with case-aware comparison policies before adding heavier chemistry filters"
+  },
+  "input_summary": {
+    "row_count": 5,
+    "preview_ids": [
+      "DEMO_CASE_001",
+      "DEMO_CASE_002",
+      "DEMO_CASE_003"
+    ]
+  },
+  "filter_outputs": {
+    "filtered_candidates_tsv": "07_results/modules/filtering/filtered_candidates.tsv",
+    "filter_summary_json": "07_results/modules/filtering/filter_summary.json",
+    "filter_report_markdown": "07_results/modules/filtering/filtering_report.md",
+    "candidate_count": 0,
+    "evaluated_candidate_count": 28
+  },
+  "cache": {
+    "signature": {
+      "input_manifest": {
+        "path": "04_metadata/benchmark_cases.tsv",
+        "size": 1832,
+        "mtime_ns": 1776222811375648115
+      },
+      "config": {
+        "path": "config.yaml",
+        "size": 2448,
+        "mtime_ns": 1776079264482346662
+      },
+      "docking_results_tsv": {
+        "path": "07_results/modules/classical_docking/docking_results.tsv",
+        "size": 9200,
+        "mtime_ns": 1776222878768139610
+      },
+      "reranked_candidates_tsv": {
+        "path": "07_results/modules/ai_reranking/reranked_candidates.tsv",
+        "size": 3658,
+        "mtime_ns": 1776222878806230429
+      },
+      "prepared_library_tsv": {
+        "path": "07_results/modules/compound_library_preparation/prepared_library.tsv",
+        "size": 4872,
+        "mtime_ns": 1776222878720067139
+      },
+      "enabled_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "enabled_case_count": 1
+    },
+    "cache_scope": "module",
+    "cache_hit": false,
+    "cache_hit_artifact": false
+  },
+  "notes": [
+    "Filtering now consumes real docking affinity, rerank score, lightweight physicochemical fields, and benchmark case metadata.",
+    "Decisions are explicitly separated into keep, missing_or_anomalous exclusion, and rule-based exclusion."
+  ]
+}

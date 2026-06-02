@@ -1,0 +1,511 @@
+{
+  "project_name": "singlecell_workbench_minimal_example",
+  "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example",
+  "config": {
+    "project_name": "singlecell_workbench_minimal_example",
+    "output_dir": "runs/minimal_example",
+    "samples": [
+      {
+        "sample_id": "ctrl_a",
+        "condition": "control",
+        "input_path": "data/ctrl_a/filtered_feature_bc_matrix"
+      },
+      {
+        "sample_id": "stim_b",
+        "condition": "treated",
+        "input_path": "data/stim_b/filtered_feature_bc_matrix.h5"
+      }
+    ],
+    "schema": {
+      "apply_fixes": true,
+      "required_obs_columns": [
+        "sample_id",
+        "condition"
+      ]
+    },
+    "qc": {
+      "rna_modality": "Gene Expression",
+      "qc_vars": [
+        "mt"
+      ],
+      "solo": {
+        "enabled": true
+      },
+      "scar": {
+        "enabled": true
+      }
+    },
+    "annotation": {
+      "modality": "Gene Expression",
+      "method_priority": [
+        "scarches_scanvi",
+        "celltypist",
+        "unassigned"
+      ],
+      "placeholder_label": "unassigned",
+      "fallback_label": "unassigned"
+    },
+    "stats": {
+      "modality": "Gene Expression",
+      "cell_type_column": "cell_type",
+      "sample_column": "sample_id",
+      "condition_column": "condition",
+      "run_decoupler": true
+    },
+    "reports": {
+      "title": "Single-cell Workbench Minimal Example"
+    }
+  },
+  "ingest": {
+    "samples": [
+      {
+        "sample_id": "ctrl_a",
+        "condition": "control",
+        "input_path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/data/ctrl_a/filtered_feature_bc_matrix",
+        "input_kind": "10x_mtx",
+        "feature_types": [
+          "Antibody Capture",
+          "Gene Expression"
+        ],
+        "n_cells": 6
+      },
+      {
+        "sample_id": "stim_b",
+        "condition": "treated",
+        "input_path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/data/stim_b/filtered_feature_bc_matrix.h5",
+        "input_kind": "10x_h5",
+        "feature_types": [
+          "Antibody Capture",
+          "Gene Expression"
+        ],
+        "n_cells": 6
+      }
+    ],
+    "feature_types": [
+      "Gene Expression",
+      "Antibody Capture"
+    ],
+    "n_cells": 12,
+    "kind": "h5mu",
+    "modalities": [
+      "Gene Expression",
+      "Antibody Capture"
+    ],
+    "modality_summaries": {
+      "Gene Expression": {
+        "n_vars": 4,
+        "feature_type": "Gene Expression"
+      },
+      "Antibody Capture": {
+        "n_vars": 2,
+        "feature_type": "Antibody Capture"
+      }
+    },
+    "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/ingest",
+    "normalized_path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/ingest/normalized.h5mu",
+    "schema_report_path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/ingest/schema_report.json",
+    "schema_issue_count": 0
+  },
+  "schema": {
+    "issues": [],
+    "applied_fixes": []
+  },
+  "qc": {
+    "module": "qc",
+    "data_kind": "MuData",
+    "rna_modality": "Gene Expression",
+    "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/qc",
+    "per_cell_qc_csv": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/qc/per_cell_qc.csv",
+    "qc_backend": "fallback",
+    "qc_metrics": {
+      "qc_vars": [
+        "mt"
+      ],
+      "percent_top": null,
+      "log1p": true
+    },
+    "mirrored_columns": [
+      "total_counts",
+      "n_genes_by_counts",
+      "log1p_total_counts",
+      "log1p_n_genes_by_counts",
+      "pct_counts_mt"
+    ],
+    "solo": {
+      "name": "solo",
+      "status": "skipped",
+      "available": false,
+      "reason": "dependency_missing: scvi-tools"
+    },
+    "scar": {
+      "name": "scar",
+      "status": "skipped",
+      "available": false,
+      "reason": "dependency_missing: scar"
+    },
+    "schema_notes": [],
+    "manifest_json": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/qc/manifest.json"
+  },
+  "annotation": {
+    "backend_priority": [
+      "scarches_scanvi",
+      "celltypist",
+      "placeholder"
+    ],
+    "available_optional_dependencies": {
+      "scarches": false,
+      "scvi": false,
+      "celltypist": false
+    },
+    "selected_backend": "placeholder",
+    "selected_reason": "deterministic fallback",
+    "selected_details": {},
+    "working_modality": "Gene Expression",
+    "label_key": "cell_type",
+    "confidence_key": "cell_type_confidence",
+    "method_key": "cell_type_method",
+    "placeholder_label": "unassigned",
+    "n_cells": 12,
+    "obs_columns_written": [
+      "cell_type",
+      "cell_type_confidence",
+      "cell_type_method"
+    ],
+    "attempts": [
+      {
+        "backend": "scarches_scanvi",
+        "status": "unavailable",
+        "reason": "missing optional dependencies",
+        "missing_dependencies": [
+          "scarches",
+          "scvi"
+        ]
+      },
+      {
+        "backend": "celltypist",
+        "status": "unavailable",
+        "reason": "missing optional dependency",
+        "missing_dependencies": [
+          "celltypist"
+        ]
+      }
+    ],
+    "missing_optional_dependencies": [
+      "celltypist",
+      "scarches",
+      "scvi"
+    ],
+    "output_files": {
+      "obs_csv": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/annotation/annotation_obs.csv",
+      "manifest_json": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/annotation/annotation_manifest.json"
+    }
+  },
+  "stats": {
+    "module": "stats",
+    "status": "completed",
+    "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats",
+    "working_modality": "Gene Expression",
+    "warnings": [],
+    "schema": {
+      "requested_keys": {
+        "sample": "sample_id",
+        "cell_type": "cell_type",
+        "condition": "condition"
+      },
+      "missing_or_repaired_values": {},
+      "total_cells": 12
+    },
+    "tables": {
+      "sample_cell_type_condition_summary": {
+        "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_cell_type_condition_summary.csv",
+        "rows": 2
+      },
+      "sample_totals": {
+        "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_totals.csv",
+        "rows": 2
+      },
+      "sample_condition_totals": {
+        "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_condition_totals.csv",
+        "rows": 2
+      }
+    },
+    "decoupler": {
+      "status": "skipped",
+      "reason": "decoupler is not installed"
+    },
+    "manifest_path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/manifest.json"
+  },
+  "reports": {
+    "title": "Single-cell Workbench Minimal Example",
+    "generated_at": "2026-04-16T16:33:35.109534+00:00",
+    "report_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/reports",
+    "html_report": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/reports/report.html",
+    "methods_draft": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/reports/methods.md",
+    "manifest_path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/reports/report_manifest.json",
+    "data": {
+      "kind": "MuData",
+      "n_obs": 12,
+      "n_vars": 6,
+      "modalities": {
+        "Gene Expression": {
+          "kind": "AnnData",
+          "n_obs": 12,
+          "n_vars": 4,
+          "obs_columns": [
+            "barcode",
+            "cell_type",
+            "cell_type_confidence",
+            "cell_type_method",
+            "condition",
+            "input_path",
+            "log1p_n_genes_by_counts",
+            "log1p_total_counts",
+            "n_genes_by_counts",
+            "pct_counts_mt",
+            "sample_id",
+            "total_counts"
+          ],
+          "var_columns": [
+            "feature_id",
+            "feature_name",
+            "feature_type",
+            "genome",
+            "mt"
+          ],
+          "layers": [],
+          "obsm": [],
+          "uns": [
+            "feature_type"
+          ]
+        },
+        "Antibody Capture": {
+          "kind": "AnnData",
+          "n_obs": 12,
+          "n_vars": 2,
+          "obs_columns": [
+            "barcode",
+            "condition",
+            "input_path",
+            "sample_id"
+          ],
+          "var_columns": [
+            "feature_id",
+            "feature_name",
+            "feature_type",
+            "genome"
+          ],
+          "layers": [],
+          "obsm": [],
+          "uns": [
+            "feature_type"
+          ]
+        }
+      },
+      "obs_columns": [
+        "barcode",
+        "cell_type",
+        "cell_type_confidence",
+        "cell_type_method",
+        "condition",
+        "input_path",
+        "log1p_n_genes_by_counts",
+        "log1p_total_counts",
+        "n_genes_by_counts",
+        "pct_counts_mt",
+        "sample_id",
+        "total_counts"
+      ],
+      "var_columns": [
+        "feature_id",
+        "feature_name",
+        "feature_type",
+        "genome",
+        "modality",
+        "mt"
+      ],
+      "layers": [],
+      "obsm": [],
+      "uns": [
+        "kind"
+      ]
+    },
+    "schema": {
+      "name": "schema",
+      "status": "complete",
+      "decisions": [],
+      "artifacts": [],
+      "dependency_skips": [],
+      "raw": {
+        "issues": [],
+        "applied_fixes": []
+      }
+    },
+    "qc": {
+      "name": "qc",
+      "status": "complete",
+      "decisions": [
+        {
+          "key": "rna_modality",
+          "value": "Gene Expression"
+        }
+      ],
+      "artifacts": [],
+      "dependency_skips": [],
+      "raw": {
+        "module": "qc",
+        "data_kind": "MuData",
+        "rna_modality": "Gene Expression",
+        "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/qc",
+        "per_cell_qc_csv": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/qc/per_cell_qc.csv",
+        "qc_backend": "fallback",
+        "qc_metrics": {
+          "qc_vars": [
+            "mt"
+          ],
+          "percent_top": null,
+          "log1p": true
+        },
+        "mirrored_columns": [
+          "total_counts",
+          "n_genes_by_counts",
+          "log1p_total_counts",
+          "log1p_n_genes_by_counts",
+          "pct_counts_mt"
+        ],
+        "solo": {
+          "name": "solo",
+          "status": "skipped",
+          "available": false,
+          "reason": "dependency_missing: scvi-tools"
+        },
+        "scar": {
+          "name": "scar",
+          "status": "skipped",
+          "available": false,
+          "reason": "dependency_missing: scar"
+        },
+        "schema_notes": [],
+        "manifest_json": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/qc/manifest.json"
+      }
+    },
+    "annotation": {
+      "name": "annotation",
+      "status": "complete",
+      "decisions": [],
+      "artifacts": [],
+      "dependency_skips": [],
+      "raw": {
+        "backend_priority": [
+          "scarches_scanvi",
+          "celltypist",
+          "placeholder"
+        ],
+        "available_optional_dependencies": {
+          "scarches": false,
+          "scvi": false,
+          "celltypist": false
+        },
+        "selected_backend": "placeholder",
+        "selected_reason": "deterministic fallback",
+        "selected_details": {},
+        "working_modality": "Gene Expression",
+        "label_key": "cell_type",
+        "confidence_key": "cell_type_confidence",
+        "method_key": "cell_type_method",
+        "placeholder_label": "unassigned",
+        "n_cells": 12,
+        "obs_columns_written": [
+          "cell_type",
+          "cell_type_confidence",
+          "cell_type_method"
+        ],
+        "attempts": [
+          {
+            "backend": "scarches_scanvi",
+            "status": "unavailable",
+            "reason": "missing optional dependencies",
+            "missing_dependencies": [
+              "scarches",
+              "scvi"
+            ]
+          },
+          {
+            "backend": "celltypist",
+            "status": "unavailable",
+            "reason": "missing optional dependency",
+            "missing_dependencies": [
+              "celltypist"
+            ]
+          }
+        ],
+        "missing_optional_dependencies": [
+          "celltypist",
+          "scarches",
+          "scvi"
+        ],
+        "output_files": {
+          "obs_csv": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/annotation/annotation_obs.csv",
+          "manifest_json": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/annotation/annotation_manifest.json"
+        }
+      }
+    },
+    "stats": {
+      "name": "stats",
+      "status": "completed",
+      "decisions": [],
+      "artifacts": [
+        {
+          "key": "manifest_path",
+          "value": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/manifest.json"
+        }
+      ],
+      "dependency_skips": [],
+      "raw": {
+        "module": "stats",
+        "status": "completed",
+        "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats",
+        "working_modality": "Gene Expression",
+        "warnings": [],
+        "schema": {
+          "requested_keys": {
+            "sample": "sample_id",
+            "cell_type": "cell_type",
+            "condition": "condition"
+          },
+          "missing_or_repaired_values": {},
+          "total_cells": 12
+        },
+        "tables": {
+          "sample_cell_type_condition_summary": {
+            "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_cell_type_condition_summary.csv",
+            "rows": 2
+          },
+          "sample_totals": {
+            "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_totals.csv",
+            "rows": 2
+          },
+          "sample_condition_totals": {
+            "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/sample_condition_totals.csv",
+            "rows": 2
+          }
+        },
+        "decoupler": {
+          "status": "skipped",
+          "reason": "decoupler is not installed"
+        },
+        "manifest_path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/manifest.json"
+      }
+    },
+    "dependency_skips": [],
+    "artifacts": [
+      {
+        "key": "manifest_path",
+        "value": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/stats/manifest.json"
+      }
+    ]
+  },
+  "final_export": {
+    "path": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/final/final_dataset.h5mu",
+    "kind": "h5mu"
+  }
+}

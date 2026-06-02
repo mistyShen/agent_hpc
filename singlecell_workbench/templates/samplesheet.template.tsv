@@ -1,0 +1,3 @@
+sample_id	input_path	condition	organism	reference_build	gene_id_type	donor	batch	modality	library_type	chemistry	tissue
+SAMPLE_A	path/to/SAMPLE_A/filtered_feature_bc_matrix	control	human	GRCh38	gene_symbol	donor_01	batch_01	rna	10x_3prime_v3	Chromium_v3	blood
+SAMPLE_B	path/to/SAMPLE_B/filtered_feature_bc_matrix.h5	treated	human	GRCh38	gene_symbol	donor_02	batch_01	rna	10x_3prime_v3	Chromium_v3	blood

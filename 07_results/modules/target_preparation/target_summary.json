@@ -1,0 +1,13 @@
+{
+  "module": "target_preparation",
+  "generated_at_utc": "2026-04-15T03:14:38.680317+00:00",
+  "target_count": 3,
+  "prepared_target_count": 3,
+  "prepared_targets_tsv": "07_results/modules/target_preparation/prepared_targets.tsv",
+  "target_file_manifest_tsv": "07_results/modules/target_preparation/target_file_manifest.tsv",
+  "box_source": "mixed_manual_and_centroid",
+  "selected_case_ids": [
+    "BRD4_BD1_LIT002"
+  ],
+  "partial_rerun_active": true
+}

@@ -1,0 +1,239 @@
+{
+  "project_name": "cpu_ai_drug_design",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "generated_at_utc": "2026-04-15T03:14:38.951771+00:00",
+  "run_manifest": "07_results/run_manifest.json",
+  "enabled_benchmark_case_count": 5,
+  "candidate_count": 0,
+  "avg_candidates_per_enabled_case": 0.0,
+  "enabled_case_type_counts": {
+    "toy": 1,
+    "debug": 2,
+    "realistic": 0,
+    "literature_backed": 2
+  },
+  "enabled_case_tier_counts": {
+    "bringup": 1,
+    "comparison": 2,
+    "smoke": 2
+  },
+  "enabled_run_purpose_counts": {
+    "comparison": 2,
+    "debug": 3
+  },
+  "enabled_primary_metric_counts": {
+    "none": 3,
+    "shortlist_contains_known_active": 2
+  },
+  "completed_case_count": 2,
+  "valid_artifact_case_count": 0,
+  "grouped_comparisons": {
+    "by_case_type": {
+      "debug": {
+        "case_count": 2,
+        "enabled_case_count": 2,
+        "completed_case_count": 0,
+        "valid_artifact_case_count": 0
+      },
+      "literature_backed": {
+        "case_count": 2,
+        "enabled_case_count": 2,
+        "completed_case_count": 1,
+        "valid_artifact_case_count": 0
+      },
+      "toy": {
+        "case_count": 1,
+        "enabled_case_count": 1,
+        "completed_case_count": 1,
+        "valid_artifact_case_count": 0
+      }
+    },
+    "by_run_purpose": {
+      "comparison": {
+        "case_count": 2,
+        "enabled_case_count": 2,
+        "completed_case_count": 1,
+        "valid_artifact_case_count": 0
+      },
+      "debug": {
+        "case_count": 3,
+        "enabled_case_count": 3,
+        "completed_case_count": 1,
+        "valid_artifact_case_count": 0
+      }
+    },
+    "by_primary_metric": {
+      "none": {
+        "case_count": 3,
+        "enabled_case_count": 3,
+        "completed_case_count": 1,
+        "valid_artifact_case_count": 0
+      },
+      "shortlist_contains_known_active": {
+        "case_count": 2,
+        "enabled_case_count": 2,
+        "completed_case_count": 1,
+        "valid_artifact_case_count": 0
+      }
+    },
+    "by_comparison_band": {
+      "bringup_debug": {
+        "case_count": 3,
+        "enabled_case_count": 3,
+        "completed_case_count": 1,
+        "valid_artifact_case_count": 0
+      },
+      "comparison_oriented": {
+        "case_count": 2,
+        "enabled_case_count": 2,
+        "completed_case_count": 1,
+        "valid_artifact_case_count": 0
+      }
+    }
+  },
+  "ground_truth_summary": {
+    "BRD4_BD1_LIT001": {
+      "known_active_count": 1,
+      "known_active_recovered_in_filter_keep": 0,
+      "known_active_recovered_in_shortlist": 0,
+      "shortlist_contains_known_active": false,
+      "best_known_active_rank": null
+    },
+    "BRD4_BD1_LIT002": {
+      "known_active_count": 1,
+      "known_active_recovered_in_filter_keep": 0,
+      "known_active_recovered_in_shortlist": 0,
+      "shortlist_contains_known_active": false,
+      "best_known_active_rank": null
+    }
+  },
+  "case_module_counts": [
+    {
+      "case_id": "DEMO_CASE_001",
+      "case_type": "toy",
+      "run_purpose": "debug",
+      "primary_metric": "none",
+      "docking_candidate_count": 4,
+      "reranked_candidate_count": 4,
+      "filtered_candidate_count": 4,
+      "filter_keep_count": 0,
+      "shortlist_count": 0
+    },
+    {
+      "case_id": "DEMO_CASE_002",
+      "case_type": "debug",
+      "run_purpose": "debug",
+      "primary_metric": "none",
+      "docking_candidate_count": 0,
+      "reranked_candidate_count": 0,
+      "filtered_candidate_count": 0,
+      "filter_keep_count": 0,
+      "shortlist_count": 0
+    },
+    {
+      "case_id": "DEMO_CASE_003",
+      "case_type": "debug",
+      "run_purpose": "debug",
+      "primary_metric": "none",
+      "docking_candidate_count": 0,
+      "reranked_candidate_count": 0,
+      "filtered_candidate_count": 0,
+      "filter_keep_count": 0,
+      "shortlist_count": 0
+    },
+    {
+      "case_id": "BRD4_BD1_LIT001",
+      "case_type": "literature_backed",
+      "run_purpose": "comparison",
+      "primary_metric": "shortlist_contains_known_active",
+      "docking_candidate_count": 0,
+      "reranked_candidate_count": 0,
+      "filtered_candidate_count": 0,
+      "filter_keep_count": 0,
+      "shortlist_count": 0
+    },
+    {
+      "case_id": "BRD4_BD1_LIT002",
+      "case_type": "literature_backed",
+      "run_purpose": "comparison",
+      "primary_metric": "shortlist_contains_known_active",
+      "docking_candidate_count": 24,
+      "reranked_candidate_count": 24,
+      "filtered_candidate_count": 24,
+      "filter_keep_count": 0,
+      "shortlist_count": 0
+    }
+  ],
+  "case_final_shortlists": [
+    {
+      "case_id": "DEMO_CASE_001",
+      "shortlist": []
+    },
+    {
+      "case_id": "DEMO_CASE_002",
+      "shortlist": []
+    },
+    {
+      "case_id": "DEMO_CASE_003",
+      "shortlist": []
+    },
+    {
+      "case_id": "BRD4_BD1_LIT001",
+      "shortlist": []
+    },
+    {
+      "case_id": "BRD4_BD1_LIT002",
+      "shortlist": []
+    }
+  ],
+  "case_catalog": [
+    {
+      "case_id": "DEMO_CASE_001",
+      "case_type": "toy",
+      "case_tier": "bringup",
+      "run_purpose": "debug",
+      "primary_metric": "none",
+      "enabled": true,
+      "comparison_band": "bringup_debug"
+    },
+    {
+      "case_id": "DEMO_CASE_002",
+      "case_type": "debug",
+      "case_tier": "smoke",
+      "run_purpose": "debug",
+      "primary_metric": "none",
+      "enabled": true,
+      "comparison_band": "bringup_debug"
+    },
+    {
+      "case_id": "DEMO_CASE_003",
+      "case_type": "debug",
+      "case_tier": "smoke",
+      "run_purpose": "debug",
+      "primary_metric": "none",
+      "enabled": true,
+      "comparison_band": "bringup_debug"
+    },
+    {
+      "case_id": "BRD4_BD1_LIT001",
+      "case_type": "literature_backed",
+      "case_tier": "comparison",
+      "run_purpose": "comparison",
+      "primary_metric": "shortlist_contains_known_active",
+      "enabled": true,
+      "comparison_band": "comparison_oriented"
+    },
+    {
+      "case_id": "BRD4_BD1_LIT002",
+      "case_type": "literature_backed",
+      "case_tier": "comparison",
+      "run_purpose": "comparison",
+      "primary_metric": "shortlist_contains_known_active",
+      "enabled": true,
+      "comparison_band": "comparison_oriented"
+    }
+  ],
+  "report_available": true,
+  "filtering_available": true,
+  "evaluation_status": "typed_lightweight_complete"
+}

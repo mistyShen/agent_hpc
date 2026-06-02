@@ -1,0 +1,3 @@
+sample,condition,n_cells,fraction_of_all_cells,fraction_within_sample
+ctrl_a,control,6,0.5,1.0
+stim_b,treated,6,0.5,1.0

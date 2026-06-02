@@ -1,0 +1,52 @@
+{
+  "case_id": "BRD3_BD1_LIT001_V3EXP",
+  "case_type": "literature_backed",
+  "rerank_strategy": "ai_rerank_v3",
+  "target_id": "BRD3_BD1_3S91",
+  "library_id": "BRD4_LIT_FOCUSED_001",
+  "known_active_compound_id": "JQ1",
+  "truth_row_count": 1,
+  "docking_candidate_count": 24,
+  "reranked_candidate_count": 24,
+  "filter_keep_count": 1,
+  "shortlist_count": 1,
+  "shortlist_ids": [
+    "JQ1"
+  ],
+  "known_active_rank": 1,
+  "known_active_shortlisted": true,
+  "best_background_compound_id": "BG_ASPIRIN",
+  "active_best_background_gap": 1.759,
+  "top_rerank": [
+    {
+      "compound_id": "JQ1",
+      "rerank_rank": 1,
+      "rerank_score": -7.7,
+      "vina_affinity_kcal_mol": -7.7
+    },
+    {
+      "compound_id": "BG_ASPIRIN",
+      "rerank_rank": 2,
+      "rerank_score": -5.941,
+      "vina_affinity_kcal_mol": -6.3
+    },
+    {
+      "compound_id": "BG_ETHYL_PARABEN",
+      "rerank_rank": 3,
+      "rerank_score": -5.261,
+      "vina_affinity_kcal_mol": -5.5
+    },
+    {
+      "compound_id": "BG_CAFFEINE",
+      "rerank_rank": 4,
+      "rerank_score": -5.181,
+      "vina_affinity_kcal_mol": -5.4
+    },
+    {
+      "compound_id": "BG_SALICYLIC_ACID",
+      "rerank_rank": 5,
+      "rerank_score": -5.121,
+      "vina_affinity_kcal_mol": -5.6
+    }
+  ]
+}

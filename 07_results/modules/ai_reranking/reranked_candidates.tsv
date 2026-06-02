@@ -1,0 +1,5 @@
+case_id	target_id	library_id	compound_id	standardized_smiles	docking_score	rerank_bonus	rerank_score	rerank_rank	rerank_model
+DEMO_CASE_001	DEMO_TARGET_001	DEMO_LIB_001	DEMO_BENZENE	c1ccccc1	-12.385	0.559	-11.826	1	cpu_docking_rerank_v2
+DEMO_CASE_001	DEMO_TARGET_001	DEMO_LIB_001	DEMO_TRIETHYLAMINE	CCN(CC)CC	-12.256	0.433	-11.823	2	cpu_docking_rerank_v2
+DEMO_CASE_001	DEMO_TARGET_001	DEMO_LIB_001	DEMO_ACETIC_ACID	CC(=O)O	-8.302	0.425	-7.877	3	cpu_docking_rerank_v2
+DEMO_CASE_001	DEMO_TARGET_001	DEMO_LIB_001	DEMO_ETHANOL	CCO	-6.172	0.199	-5.973	4	cpu_docking_rerank_v2

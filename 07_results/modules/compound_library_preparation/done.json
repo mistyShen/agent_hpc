@@ -1,0 +1,115 @@
+{
+  "module": "compound_library_preparation",
+  "status": "library_preparation_completed",
+  "config": "config.yaml",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "run_manifest": "07_results/run_manifest.json",
+  "input_manifest": "04_metadata/compound_libraries.tsv",
+  "timestamp_utc": "2026-04-15T03:14:38.721566+00:00",
+  "validation": {
+    "run_manifest_exists": true,
+    "input_manifest_exists": true,
+    "selected_library_count_gt_zero": true,
+    "all_selected_library_sources_exist": true,
+    "prepared_table_written": true,
+    "summary_written": true,
+    "report_written": true
+  },
+  "run_context": {
+    "run_mode": "scaffold_only",
+    "enabled_benchmark_cases": 5
+  },
+  "execution": {
+    "runtime_seconds": 0.004254,
+    "execution_status": "executed",
+    "backend_mode": "lightweight_smiles_standardization",
+    "skipped_cache": false,
+    "skip_reason": "",
+    "selected_case_ids": [
+      "BRD4_BD1_LIT002"
+    ],
+    "partial_rerun_active": true,
+    "selected_library_ids": [
+      "BRD4_LIT_FOCUSED_002"
+    ]
+  },
+  "module_profile": {
+    "stage_type": "compound_library_preparation",
+    "primary_inputs": [
+      "compound library metadata",
+      "SMILES library file"
+    ],
+    "primary_outputs": [
+      "07_results/modules/compound_library_preparation/prepared_library.tsv",
+      "07_results/modules/compound_library_preparation/library_summary.json",
+      "07_results/modules/compound_library_preparation/library_preparation_report.md",
+      "07_results/modules/compound_library_preparation/done.json"
+    ],
+    "next_action_hint": "attach chemistry-aware standardization and richer property calculation later"
+  },
+  "input_summary": {
+    "row_count": 24,
+    "preview_ids": [
+      "BRD4_LIT_FOCUSED_002"
+    ]
+  },
+  "library_outputs": {
+    "prepared_library_tsv": "07_results/modules/compound_library_preparation/prepared_library.tsv",
+    "library_summary_json": "07_results/modules/compound_library_preparation/library_summary.json",
+    "library_report_markdown": "07_results/modules/compound_library_preparation/library_preparation_report.md",
+    "selected_library_ids": [
+      "BRD4_LIT_FOCUSED_002"
+    ],
+    "library_count": 1,
+    "library_summaries": [
+      {
+        "library_id": "BRD4_LIT_FOCUSED_002",
+        "source_path": "03_data_raw/compound_libraries/BRD4_LIT_FOCUSED_002.smi",
+        "input_record_count": 24,
+        "prepared_record_count": 24,
+        "duplicate_count": 0,
+        "related_case_ids": [
+          "BRD4_BD1_LIT002"
+        ],
+        "runtime_seconds": 0.000402
+      }
+    ]
+  },
+  "cache": {
+    "signature": {
+      "input_manifest": {
+        "path": "04_metadata/compound_libraries.tsv",
+        "size": 717,
+        "mtime_ns": 1776222811375422860
+      },
+      "config": {
+        "path": "config.yaml",
+        "size": 2448,
+        "mtime_ns": 1776079264482346662
+      },
+      "selected_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "selected_library_ids": [
+        "BRD4_LIT_FOCUSED_002"
+      ],
+      "library_sources": [
+        {
+          "library_id": "BRD4_LIT_FOCUSED_002",
+          "source_path": {
+            "path": "03_data_raw/compound_libraries/BRD4_LIT_FOCUSED_002.smi",
+            "size": 724,
+            "mtime_ns": 1776222811376231545
+          }
+        }
+      ]
+    },
+    "cache_scope": "module",
+    "cache_hit": false,
+    "cache_hit_artifact": false
+  },
+  "notes": [
+    "Compound library preparation now standardizes, deduplicates, and annotates a small SMILES library.",
+    "Property calculation is intentionally lightweight and approximate in this minimal CPU-only implementation."
+  ]
+}

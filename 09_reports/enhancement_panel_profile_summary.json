@@ -1,0 +1,150 @@
+{
+  "generated_at_utc": "2026-04-16T10:03:16.172582+00:00",
+  "current_v3_tuning": {
+    "hetero_floor": 2.0,
+    "aromatic_fraction_threshold": 0.75,
+    "simple_aromatic_penalty": 1.3,
+    "polyaryl_hydrophobe_penalty": 0.7,
+    "single_ring_background_penalty": 2.1
+  },
+  "cases": [
+    {
+      "case_id": "BRD4_BD1_LIT001_V3EXP",
+      "library_id": "BRD4_LIT_FOCUSED_001",
+      "known_active_compound_id": "JQ1",
+      "panel_size": 24,
+      "background_count": 23,
+      "active_profile": {
+        "compound_id": "JQ1",
+        "molecular_weight_estimate": 431.789,
+        "heavy_atom_count": 31,
+        "hetero_atom_count": 8,
+        "aromatic_atom_count": 0,
+        "ring_index_count": 4,
+        "aromatic_fraction": 0.0,
+        "simple_aromatic_background": false,
+        "polyaryl_hydrophobe_background": false,
+        "single_ring_background": false,
+        "any_background_flag": false,
+        "active_current_penalty_knobs": {
+          "simple_aromatic_penalty": 0.0,
+          "polyaryl_hydrophobe_penalty": 0.0,
+          "single_ring_background_penalty": 0.0
+        }
+      },
+      "flag_counts": {
+        "simple_aromatic_background": 4,
+        "polyaryl_hydrophobe_background": 4,
+        "single_ring_background": 7,
+        "any_background_flag": 11
+      },
+      "flagged_background_ids": {
+        "simple_aromatic_background": [
+          "BG_BIPHENYL",
+          "BG_NAPHTHALENE",
+          "BG_QUINOLINE",
+          "BG_INDOLE"
+        ],
+        "polyaryl_hydrophobe_background": [
+          "BG_BIPHENYL",
+          "BG_NAPHTHALENE",
+          "BG_QUINOLINE",
+          "BG_INDOLE"
+        ],
+        "single_ring_background": [
+          "BG_BENZENE",
+          "BG_BENZOIC_ACID",
+          "BG_BENZAMIDE",
+          "BG_SALICYLIC_ACID",
+          "BG_ACETOPHENONE",
+          "BG_PYRIDINE",
+          "BG_NICOTINAMIDE"
+        ],
+        "any_background_flag": [
+          "BG_BENZENE",
+          "BG_BENZOIC_ACID",
+          "BG_BENZAMIDE",
+          "BG_SALICYLIC_ACID",
+          "BG_ACETOPHENONE",
+          "BG_BIPHENYL",
+          "BG_NAPHTHALENE",
+          "BG_QUINOLINE",
+          "BG_INDOLE",
+          "BG_PYRIDINE",
+          "BG_NICOTINAMIDE"
+        ]
+      },
+      "background_flag_coverage": 0.478,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "best_background_interpretation": [
+        "best background is not directly captured by current background flags"
+      ]
+    },
+    {
+      "case_id": "BRD4_BD1_LIT002_V3EXP",
+      "library_id": "BRD4_LIT_FOCUSED_002",
+      "known_active_compound_id": "I-BET762",
+      "panel_size": 6,
+      "background_count": 5,
+      "active_profile": {
+        "compound_id": "I-BET762",
+        "molecular_weight_estimate": 401.725,
+        "heavy_atom_count": 30,
+        "hetero_atom_count": 8,
+        "aromatic_atom_count": 0,
+        "ring_index_count": 4,
+        "aromatic_fraction": 0.0,
+        "simple_aromatic_background": false,
+        "polyaryl_hydrophobe_background": false,
+        "single_ring_background": false,
+        "any_background_flag": false,
+        "active_current_penalty_knobs": {
+          "simple_aromatic_penalty": 0.0,
+          "polyaryl_hydrophobe_penalty": 0.0,
+          "single_ring_background_penalty": 0.0
+        }
+      },
+      "flag_counts": {
+        "simple_aromatic_background": 4,
+        "polyaryl_hydrophobe_background": 4,
+        "single_ring_background": 1,
+        "any_background_flag": 5
+      },
+      "flagged_background_ids": {
+        "simple_aromatic_background": [
+          "BG_BIPHENYL",
+          "BG_NAPHTHALENE",
+          "BG_QUINOLINE",
+          "BG_INDOLE"
+        ],
+        "polyaryl_hydrophobe_background": [
+          "BG_BIPHENYL",
+          "BG_NAPHTHALENE",
+          "BG_QUINOLINE",
+          "BG_INDOLE"
+        ],
+        "single_ring_background": [
+          "BG_BENZAMIDE"
+        ],
+        "any_background_flag": [
+          "BG_BENZAMIDE",
+          "BG_BIPHENYL",
+          "BG_NAPHTHALENE",
+          "BG_QUINOLINE",
+          "BG_INDOLE"
+        ]
+      },
+      "background_flag_coverage": 1.0,
+      "best_background_compound_id": "BG_BIPHENYL",
+      "best_background_interpretation": [
+        "best background matches simple_aromatic rule",
+        "best background matches polyaryl_hydrophobe rule"
+      ]
+    }
+  ],
+  "reading_notes": [
+    "Panel composition is asymmetric across the two enhancement-only BRD4 cases: `BRD4_BD1_LIT002_V3EXP` contains multiple backgrounds that directly match the current v3 aromatic/hydrophobe heuristics, while `BRD4_BD1_LIT001_V3EXP` has much broader and softer background chemistry.",
+    "This explains why the same penalty family is material on `LIT002_V3EXP` but weak on `LIT001_V3EXP` without requiring a change to frozen-line logic.",
+    "Use this panel-profile summary together with the dual-case validation summary before proposing case-aware gating or broader rollout."
+  ]
+}

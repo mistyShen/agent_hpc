@@ -1,0 +1,26 @@
+case_id	compound_id	truth_label	truth_role	reference_source	reference_doi_or_url	notes
+BRD4_BD1_LIT001	JQ1	known_active	anchor_active	BRD4_BD1_JQ1_4QZS	https://www.rcsb.org/structure/4QZS	Co-crystallized anchor ligand for BRD4 BD1 literature-backed recovery case
+BRD4_BD1_LIT001_V3EXP	JQ1	known_active	anchor_active	BRD4_BD1_JQ1_4QZS_V3EXP	https://www.rcsb.org/structure/4QZS	Experimental v3 line reuses the frozen JQ1-focused panel without touching the frozen case line
+BRD4_BD1_LIT002	I-BET762	known_active	anchor_active	BRD4_BD1_IBET762_4C66	https://www.rcsb.org/structure/4C66	Co-crystallized anchor ligand for BRD4 BD1 literature-backed recovery case based on I-BET762
+BRD4_BD1_LIT003	I-BET762	known_active	anchor_active	BRD4_BD1_IBET762_4QZS	https://www.rcsb.org/structure/4QZS	Non-frozen v2 baseline for the cross-structure I-BET762 focused panel used only for enhancement-line comparison
+BRD4_BD1_LIT003_V3EXP	I-BET762	known_active	anchor_active	BRD4_BD1_IBET762_4QZS_V3EXP	https://www.rcsb.org/structure/4QZS	Enhancement-only cross-structure validation surface using the I-BET762 focused panel on the BRD4 BD1 4QZS structure
+BRD2_BD2_LIT001	JQ1	known_active	anchor_active	BRD2_BD2_JQ1_3ONI	https://www.rcsb.org/structure/3ONI	Non-frozen v2 baseline for a bounded non-BRD4 JQ1-focused enhancement-line validation surface
+BRD2_BD2_LIT001_V3EXP	JQ1	known_active	anchor_active	BRD2_BD2_JQ1_3ONI_V3EXP	https://www.rcsb.org/structure/3ONI	Enhancement-only non-BRD4 validation surface using the JQ1-focused panel on BRD2 BD2 3ONI
+BRDT_BD1_LIT001	JQ1	known_active	anchor_active	BRDT_BD1_JQ1_4FLP	https://www.rcsb.org/structure/4FLP	Non-frozen v2 baseline for a second bounded non-BRD4 JQ1-focused enhancement-line validation surface
+BRDT_BD1_LIT001_V3EXP	JQ1	known_active	anchor_active	BRDT_BD1_JQ1_4FLP_V3EXP	https://www.rcsb.org/structure/4FLP	Enhancement-only non-BRD4 validation surface using the JQ1-focused panel on BRDT BD1 4FLP
+PXR_LBD_LIT001	JQ1	known_active	anchor_active	PXR_LBD_JQ1_8F5Y	https://www.rcsb.org/structure/8F5Y	Non-frozen v2 baseline for a bounded new-target-family JQ1-focused enhancement-line validation surface
+PXR_LBD_LIT001_V3EXP	JQ1	known_active	anchor_active	PXR_LBD_JQ1_8F5Y_V3EXP	https://www.rcsb.org/structure/8F5Y	Enhancement-only new-target-family validation surface using the JQ1-focused panel on PXR LBD 8F5Y
+BRD3_BD1_LIT001	JQ1	known_active	anchor_active	BRD3_BD1_JQ1_3S91	https://www.rcsb.org/structure/3S91	Non-frozen v2 baseline for another bounded JQ1-focused enhancement-line validation surface
+BRD3_BD1_LIT001_V3EXP	JQ1	known_active	anchor_active	BRD3_BD1_JQ1_3S91_V3EXP	https://www.rcsb.org/structure/3S91	Enhancement-only validation surface using the JQ1-focused panel on BRD3 BD1 3S91
+BRD3_BD2_LIT001	JQ1	known_active	anchor_active	BRD3_BD2_JQ1_3S92	https://www.rcsb.org/structure/3S92	Non-frozen v2 baseline for another bounded JQ1-focused enhancement-line validation surface
+BRD3_BD2_LIT001_V3EXP	JQ1	known_active	anchor_active	BRD3_BD2_JQ1_3S92_V3EXP	https://www.rcsb.org/structure/3S92	Enhancement-only validation surface using the JQ1-focused panel on BRD3 BD2 3S92
+BRD2_BD1_LIT002	I-BET762	known_active	anchor_active	BRD2_BD1_IBET762_2YEK	https://www.rcsb.org/structure/2YEK	Non-frozen v2 baseline for a bounded non-BRD4 I-BET762-focused enhancement-line validation surface
+BRD2_BD1_LIT002_V3EXP	I-BET762	known_active	anchor_active	BRD2_BD1_IBET762_2YEK_V3EXP	https://www.rcsb.org/structure/2YEK	Enhancement-only validation surface using the I-BET762-focused panel on BRD2 BD1 2YEK
+BRD3_BD1_LIT002	I-BET762	known_active	anchor_active	BRD3_BD1_IBET762_24OS	https://www.rcsb.org/structure/24OS	Non-frozen v2 baseline for a bounded non-BRD4 I-BET762-focused enhancement-line validation surface
+BRD3_BD1_LIT002_V3EXP	I-BET762	known_active	anchor_active	BRD3_BD1_IBET762_24OS_V3EXP	https://www.rcsb.org/structure/24OS	Enhancement-only validation surface using the I-BET762-focused panel on BRD3 BD1 24OS
+BRDT_BD1_LIT002	I-BET762	known_active	anchor_active	BRDT_BD1_IBET762_4FLP	https://www.rcsb.org/structure/4FLP	Non-frozen v2 baseline for a bounded non-BRD4 I-BET762-focused enhancement-line validation surface
+BRDT_BD1_LIT002_V3EXP	I-BET762	known_active	anchor_active	BRDT_BD1_IBET762_4FLP_V3EXP	https://www.rcsb.org/structure/4FLP	Enhancement-only validation surface using the I-BET762-focused panel on BRDT BD1 4FLP
+BRD3_BD2_LIT002	I-BET762	known_active	anchor_active	BRD3_BD2_IBET762_3S92	https://www.rcsb.org/structure/3S92	Non-frozen v2 baseline for a bounded non-BRD4 I-BET762-focused enhancement-line validation surface
+BRD3_BD2_LIT002_V3EXP	I-BET762	known_active	anchor_active	BRD3_BD2_IBET762_3S92_V3EXP	https://www.rcsb.org/structure/3S92	Enhancement-only validation surface using the I-BET762-focused panel on BRD3 BD2 3S92
+BRD2_BD2_LIT002	I-BET762	known_active	anchor_active	BRD2_BD2_IBET762_3ONI	https://www.rcsb.org/structure/3ONI	Non-frozen v2 baseline for a low-variable non-BRD3/non-BRD4 I-BET762-focused enhancement-line validation surface
+BRD2_BD2_LIT002_V3EXP	I-BET762	known_active	anchor_active	BRD2_BD2_IBET762_3ONI_V3EXP	https://www.rcsb.org/structure/3ONI	Enhancement-only validation surface using the I-BET762-focused panel on BRD2 BD2 3ONI

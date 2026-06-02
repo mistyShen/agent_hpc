@@ -1,0 +1,470 @@
+{
+  "generated_at_utc": "2026-04-28T11:49:42.953631+00:00",
+  "current_validation_status": "bounded_multi_surface_readout_with_boundary_challenge",
+  "expansion_readiness": "interim_brd4_brd3_boundary_ready",
+  "recommended_next_action": "pause_same_panel_tuning_and_expand_validation_or_prepare_rollout_boundary",
+  "cases": [
+    {
+      "case_id": "BRD2_BD1_LIT002_V3EXP",
+      "known_active_compound_id": "I-BET762",
+      "known_active_rank": 1,
+      "known_active_shortlisted": false,
+      "shortlist_count": 0,
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 4.359,
+      "best_background_flags": [
+        "single_ring_background"
+      ],
+      "rollout_preserved": false,
+      "failure_reasons": [
+        "known_active_not_shortlisted",
+        "empty_shortlist"
+      ],
+      "effect_class": "failed_shortlist_preservation",
+      "dominant_driver": {
+        "variant_name": "ablate_single_ring_background_penalty",
+        "gap_loss_vs_current": 2.1,
+        "contribution_class": "dominant_on_current_panel"
+      },
+      "material_drivers": [
+        {
+          "variant_name": "ablate_simple_aromatic_penalty",
+          "gap_loss_vs_current": 0.543,
+          "contribution_class": "material_on_current_panel"
+        }
+      ],
+      "interpretation": "Current v3 rerank separation may improve, but this surface fails bounded rollout criteria because known-active shortlist/rank preservation is not intact.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "I-BET762",
+          "rerank_rank": 1,
+          "rerank_score": -5.4,
+          "vina_affinity_kcal_mol": -5.4
+        },
+        {
+          "compound_id": "BG_BENZAMIDE",
+          "rerank_rank": 2,
+          "rerank_score": -1.041,
+          "vina_affinity_kcal_mol": -3.8
+        },
+        {
+          "compound_id": "BG_QUINOLINE",
+          "rerank_rank": 3,
+          "rerank_score": -0.284,
+          "vina_affinity_kcal_mol": -4.0
+        }
+      ]
+    },
+    {
+      "case_id": "BRD2_BD2_LIT001_V3EXP",
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "active_best_background_gap": 2.459,
+      "best_background_flags": [],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "weak_on_panel",
+      "dominant_driver": null,
+      "material_drivers": [],
+      "interpretation": "Current v3 penalties preserve shortlist/rank on this panel, but the audited penalty family does not materially change the gap.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "JQ1",
+          "rerank_rank": 1,
+          "rerank_score": -8.5,
+          "vina_affinity_kcal_mol": -8.5
+        },
+        {
+          "compound_id": "BG_ASPIRIN",
+          "rerank_rank": 2,
+          "rerank_score": -6.041,
+          "vina_affinity_kcal_mol": -6.4
+        },
+        {
+          "compound_id": "BG_ETHYL_PARABEN",
+          "rerank_rank": 3,
+          "rerank_score": -5.561,
+          "vina_affinity_kcal_mol": -5.8
+        }
+      ]
+    },
+    {
+      "case_id": "BRD3_BD1_LIT001_V3EXP",
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "active_best_background_gap": 1.759,
+      "best_background_flags": [],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "weak_on_panel",
+      "dominant_driver": null,
+      "material_drivers": [],
+      "interpretation": "Current v3 penalties preserve shortlist/rank on this panel, but the audited penalty family does not materially change the gap.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "JQ1",
+          "rerank_rank": 1,
+          "rerank_score": -7.7,
+          "vina_affinity_kcal_mol": -7.7
+        },
+        {
+          "compound_id": "BG_ASPIRIN",
+          "rerank_rank": 2,
+          "rerank_score": -5.941,
+          "vina_affinity_kcal_mol": -6.3
+        },
+        {
+          "compound_id": "BG_ETHYL_PARABEN",
+          "rerank_rank": 3,
+          "rerank_score": -5.261,
+          "vina_affinity_kcal_mol": -5.5
+        }
+      ]
+    },
+    {
+      "case_id": "BRD3_BD1_LIT002_V3EXP",
+      "known_active_compound_id": "I-BET762",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 6.559,
+      "best_background_flags": [
+        "single_ring_background"
+      ],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "material_on_panel",
+      "dominant_driver": {
+        "variant_name": "ablate_single_ring_background_penalty",
+        "gap_loss_vs_current": 2.1,
+        "contribution_class": "dominant_on_current_panel"
+      },
+      "material_drivers": [
+        {
+          "variant_name": "ablate_simple_aromatic_penalty",
+          "gap_loss_vs_current": 1.113,
+          "contribution_class": "material_on_current_panel"
+        },
+        {
+          "variant_name": "ablate_polyaryl_hydrophobe_penalty",
+          "gap_loss_vs_current": 0.513,
+          "contribution_class": "material_on_current_panel"
+        }
+      ],
+      "interpretation": "Current v3 penalties materially widen the active-best-background gap on this focused panel.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "I-BET762",
+          "rerank_rank": 1,
+          "rerank_score": -8.9,
+          "vina_affinity_kcal_mol": -8.9
+        },
+        {
+          "compound_id": "BG_BENZAMIDE",
+          "rerank_rank": 2,
+          "rerank_score": -2.341,
+          "vina_affinity_kcal_mol": -5.1
+        },
+        {
+          "compound_id": "BG_BIPHENYL",
+          "rerank_rank": 3,
+          "rerank_score": -2.154,
+          "vina_affinity_kcal_mol": -6.2
+        }
+      ]
+    },
+    {
+      "case_id": "BRD3_BD2_LIT001_V3EXP",
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "active_best_background_gap": 2.259,
+      "best_background_flags": [],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "weak_on_panel",
+      "dominant_driver": null,
+      "material_drivers": [],
+      "interpretation": "Current v3 penalties preserve shortlist/rank on this panel, but the audited penalty family does not materially change the gap.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "JQ1",
+          "rerank_rank": 1,
+          "rerank_score": -7.9,
+          "vina_affinity_kcal_mol": -7.9
+        },
+        {
+          "compound_id": "BG_ASPIRIN",
+          "rerank_rank": 2,
+          "rerank_score": -5.641,
+          "vina_affinity_kcal_mol": -6.0
+        },
+        {
+          "compound_id": "BG_ETHYL_PARABEN",
+          "rerank_rank": 3,
+          "rerank_score": -5.461,
+          "vina_affinity_kcal_mol": -5.7
+        }
+      ]
+    },
+    {
+      "case_id": "BRD3_BD2_LIT002_V3EXP",
+      "known_active_compound_id": "I-BET762",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 7.459,
+      "best_background_flags": [],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "material_on_panel",
+      "dominant_driver": {
+        "variant_name": "promotion_review_material_signal",
+        "gap_loss_vs_current": null,
+        "contribution_class": "review_supported_material_signal"
+      },
+      "material_drivers": [],
+      "interpretation": "Promotion review classifies this surface as a shortlist-preserving material signal.",
+      "top_rerank_preview": [],
+      "evidence_source": "09_reports/enhancement_boundary_promotion_review_BRD3.json"
+    },
+    {
+      "case_id": "BRD4_BD1_LIT001_V3EXP",
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "active_best_background_gap": 1.859,
+      "best_background_flags": [],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "weak_on_panel",
+      "dominant_driver": null,
+      "material_drivers": [],
+      "interpretation": "Current v3 penalties preserve shortlist/rank on this panel, but the audited penalty family does not materially change the gap.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "JQ1",
+          "rerank_rank": 1,
+          "rerank_score": -7.4,
+          "vina_affinity_kcal_mol": -7.4
+        },
+        {
+          "compound_id": "BG_ASPIRIN",
+          "rerank_rank": 2,
+          "rerank_score": -5.541,
+          "vina_affinity_kcal_mol": -5.9
+        },
+        {
+          "compound_id": "BG_PARACETAMOL",
+          "rerank_rank": 3,
+          "rerank_score": -5.121,
+          "vina_affinity_kcal_mol": -5.5
+        }
+      ]
+    },
+    {
+      "case_id": "BRD4_BD1_LIT002_V3EXP",
+      "known_active_compound_id": "I-BET762",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_BIPHENYL",
+      "active_best_background_gap": 6.146,
+      "best_background_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "material_on_panel",
+      "dominant_driver": {
+        "variant_name": "ablate_single_ring_background_penalty",
+        "gap_loss_vs_current": 2.087,
+        "contribution_class": "dominant_on_current_panel"
+      },
+      "material_drivers": [
+        {
+          "variant_name": "ablate_simple_aromatic_penalty",
+          "gap_loss_vs_current": 1.3,
+          "contribution_class": "material_on_current_panel"
+        },
+        {
+          "variant_name": "ablate_polyaryl_hydrophobe_penalty",
+          "gap_loss_vs_current": 0.7,
+          "contribution_class": "material_on_current_panel"
+        }
+      ],
+      "interpretation": "Current v3 penalties materially widen the active-best-background gap on this focused panel.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "I-BET762",
+          "rerank_rank": 1,
+          "rerank_score": -8.9,
+          "vina_affinity_kcal_mol": -8.9
+        },
+        {
+          "compound_id": "BG_BIPHENYL",
+          "rerank_rank": 2,
+          "rerank_score": -2.754,
+          "vina_affinity_kcal_mol": -6.8
+        },
+        {
+          "compound_id": "BG_BENZAMIDE",
+          "rerank_rank": 3,
+          "rerank_score": -2.741,
+          "vina_affinity_kcal_mol": -5.5
+        }
+      ]
+    },
+    {
+      "case_id": "BRD4_BD1_LIT003_V3EXP",
+      "known_active_compound_id": "I-BET762",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "active_best_background_gap": 6.159,
+      "best_background_flags": [
+        "single_ring_background"
+      ],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "material_on_panel",
+      "dominant_driver": {
+        "variant_name": "ablate_single_ring_background_penalty",
+        "gap_loss_vs_current": 2.1,
+        "contribution_class": "dominant_on_current_panel"
+      },
+      "material_drivers": [
+        {
+          "variant_name": "ablate_simple_aromatic_penalty",
+          "gap_loss_vs_current": 0.913,
+          "contribution_class": "material_on_current_panel"
+        },
+        {
+          "variant_name": "ablate_polyaryl_hydrophobe_penalty",
+          "gap_loss_vs_current": 0.313,
+          "contribution_class": "modest_on_current_panel"
+        }
+      ],
+      "interpretation": "Current v3 penalties materially widen the active-best-background gap on this focused panel.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "I-BET762",
+          "rerank_rank": 1,
+          "rerank_score": -8.7,
+          "vina_affinity_kcal_mol": -8.7
+        },
+        {
+          "compound_id": "BG_BENZAMIDE",
+          "rerank_rank": 2,
+          "rerank_score": -2.541,
+          "vina_affinity_kcal_mol": -5.3
+        },
+        {
+          "compound_id": "BG_BIPHENYL",
+          "rerank_rank": 3,
+          "rerank_score": -2.154,
+          "vina_affinity_kcal_mol": -6.2
+        }
+      ]
+    },
+    {
+      "case_id": "BRDT_BD1_LIT001_V3EXP",
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "active_best_background_gap": 2.959,
+      "best_background_flags": [],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "weak_on_panel",
+      "dominant_driver": null,
+      "material_drivers": [],
+      "interpretation": "Current v3 penalties preserve shortlist/rank on this panel, but the audited penalty family does not materially change the gap.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "JQ1",
+          "rerank_rank": 1,
+          "rerank_score": -8.9,
+          "vina_affinity_kcal_mol": -8.9
+        },
+        {
+          "compound_id": "BG_ASPIRIN",
+          "rerank_rank": 2,
+          "rerank_score": -5.941,
+          "vina_affinity_kcal_mol": -6.3
+        },
+        {
+          "compound_id": "BG_PARACETAMOL",
+          "rerank_rank": 3,
+          "rerank_score": -5.321,
+          "vina_affinity_kcal_mol": -5.7
+        }
+      ]
+    },
+    {
+      "case_id": "PXR_LBD_LIT001_V3EXP",
+      "known_active_compound_id": "JQ1",
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "shortlist_count": 1,
+      "best_background_compound_id": "BG_ASPIRIN",
+      "active_best_background_gap": 3.159,
+      "best_background_flags": [],
+      "rollout_preserved": true,
+      "failure_reasons": [],
+      "effect_class": "weak_on_panel",
+      "dominant_driver": null,
+      "material_drivers": [],
+      "interpretation": "Current v3 penalties preserve shortlist/rank on this panel, but the audited penalty family does not materially change the gap.",
+      "top_rerank_preview": [
+        {
+          "compound_id": "JQ1",
+          "rerank_rank": 1,
+          "rerank_score": -9.9,
+          "vina_affinity_kcal_mol": -9.9
+        },
+        {
+          "compound_id": "BG_ASPIRIN",
+          "rerank_rank": 2,
+          "rerank_score": -6.741,
+          "vina_affinity_kcal_mol": -7.1
+        },
+        {
+          "compound_id": "BG_SALICYLIC_ACID",
+          "rerank_rank": 3,
+          "rerank_score": -6.121,
+          "vina_affinity_kcal_mol": -6.6
+        }
+      ]
+    }
+  ],
+  "synthesis_notes": [
+    "Current v3 behavior remains panel-sensitive across the checked enhancement-only surfaces: material on `BRD3_BD1_LIT002_V3EXP, BRD3_BD2_LIT002_V3EXP, BRD4_BD1_LIT002_V3EXP, BRD4_BD1_LIT003_V3EXP`, weak on `BRD2_BD2_LIT001_V3EXP, BRD3_BD1_LIT001_V3EXP, BRD3_BD2_LIT001_V3EXP, BRD4_BD1_LIT001_V3EXP, BRDT_BD1_LIT001_V3EXP, PXR_LBD_LIT001_V3EXP`.",
+    "Boundary-challenge surfaces `BRD2_BD1_LIT002_V3EXP` currently improve rerank separation but fail shortlist/rank preservation, so they are excluded from rollout-safe material evidence.",
+    "Non-BRD4 bounded surfaces are now present (`BRD2_BD1_LIT002_V3EXP, BRD2_BD2_LIT001_V3EXP, BRD3_BD1_LIT001_V3EXP, BRD3_BD1_LIT002_V3EXP, BRD3_BD2_LIT001_V3EXP, BRD3_BD2_LIT002_V3EXP, BRDT_BD1_LIT001_V3EXP, PXR_LBD_LIT001_V3EXP`), but they should still be read as bounded evidence rather than cross-target generalization.",
+    "The BRD3 promotion review supports the interim boundary `bounded material gain supported in BRD4 and BRD3 I-BET762-focused surfaces` while still rejecting a full BET-family headline.",
+    "The current penalty family should therefore still be treated as enhancement-line, bounded, and panel-aware rather than as a generally validated improvement."
+  ],
+  "boundary_notes": [
+    "This summary remains bounded to the enhancement line and the explicitly checked literature-backed enhancement-only surfaces.",
+    "Material results on BRD4 and BRD3 I-BET762-focused surfaces should not yet be generalized as full BET-family, cross-target, or universal reranking improvement.",
+    "Weak-on-panel behavior on checked enhancement-only surfaces remains evidence against broad claims and in favor of bounded rollout logic.",
+    "Any surface that fails known-active shortlist/rank preservation must be treated as a boundary challenge rather than as rollout-safe evidence."
+  ]
+}

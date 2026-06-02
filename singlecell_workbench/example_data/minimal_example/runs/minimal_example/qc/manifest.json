@@ -1,0 +1,35 @@
+{
+  "data_kind": "MuData",
+  "mirrored_columns": [
+    "total_counts",
+    "n_genes_by_counts",
+    "log1p_total_counts",
+    "log1p_n_genes_by_counts",
+    "pct_counts_mt"
+  ],
+  "module": "qc",
+  "output_dir": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/qc",
+  "per_cell_qc_csv": "/Users/a1234/Documents/coding/projects/agent_hpc/singlecell_workbench/example_data/minimal_example/runs/minimal_example/qc/per_cell_qc.csv",
+  "qc_backend": "fallback",
+  "qc_metrics": {
+    "log1p": true,
+    "percent_top": null,
+    "qc_vars": [
+      "mt"
+    ]
+  },
+  "rna_modality": "Gene Expression",
+  "scar": {
+    "available": false,
+    "name": "scar",
+    "reason": "dependency_missing: scar",
+    "status": "skipped"
+  },
+  "schema_notes": [],
+  "solo": {
+    "available": false,
+    "name": "solo",
+    "reason": "dependency_missing: scvi-tools",
+    "status": "skipped"
+  }
+}

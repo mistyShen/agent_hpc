@@ -1,0 +1,609 @@
+{
+  "project_name": "cpu_ai_drug_design",
+  "project_root": "/shared/shen/cpu_ai_drug_design",
+  "generated_at_utc": "2026-04-15T03:14:38.916834+00:00",
+  "run_manifest": "07_results/run_manifest.json",
+  "benchmark_case_count": 5,
+  "enabled_benchmark_case_count": 5,
+  "case_ids": [
+    "DEMO_CASE_001",
+    "DEMO_CASE_002",
+    "DEMO_CASE_003",
+    "BRD4_BD1_LIT001",
+    "BRD4_BD1_LIT002"
+  ],
+  "module_overview": {
+    "ai_reranking": {
+      "status": "reranking_completed",
+      "timestamp_utc": "2026-04-15T03:14:38.807691+00:00"
+    },
+    "benchmark_evaluation": {
+      "status": "evaluation_completed",
+      "timestamp_utc": "2026-04-14T13:27:39.836691+00:00"
+    },
+    "classical_docking": {
+      "status": "docking_completed",
+      "timestamp_utc": "2026-04-15T03:14:38.769763+00:00"
+    },
+    "clustering_and_prioritization": {
+      "status": "clustering_completed",
+      "timestamp_utc": "2026-04-15T03:14:38.885775+00:00"
+    },
+    "compound_library_preparation": {
+      "status": "library_preparation_completed",
+      "timestamp_utc": "2026-04-15T03:14:38.721566+00:00"
+    },
+    "filtering": {
+      "status": "filtering_completed",
+      "timestamp_utc": "2026-04-15T03:14:38.846999+00:00"
+    },
+    "report_generation": {
+      "status": "report_generated",
+      "timestamp_utc": "2026-04-14T12:41:18.937426+00:00"
+    },
+    "run_state_checker": {
+      "status": "workflow_health_checked",
+      "timestamp_utc": "2026-04-14T12:13:16.734728+00:00"
+    },
+    "target_preparation": {
+      "status": "target_preparation_completed",
+      "timestamp_utc": "2026-04-15T03:14:38.681894+00:00"
+    }
+  },
+  "module_summaries": {
+    "target_preparation": {
+      "module": "target_preparation",
+      "generated_at_utc": "2026-04-15T03:14:38.680317+00:00",
+      "target_count": 3,
+      "prepared_target_count": 3,
+      "prepared_targets_tsv": "07_results/modules/target_preparation/prepared_targets.tsv",
+      "target_file_manifest_tsv": "07_results/modules/target_preparation/target_file_manifest.tsv",
+      "box_source": "mixed_manual_and_centroid",
+      "selected_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "partial_rerun_active": true
+    },
+    "compound_library_preparation": {
+      "module": "compound_library_preparation",
+      "generated_at_utc": "2026-04-15T03:14:38.720117+00:00",
+      "library_id": "BRD4_LIT_FOCUSED_002",
+      "library_count": 1,
+      "selected_library_ids": [
+        "BRD4_LIT_FOCUSED_002"
+      ],
+      "input_record_count": 24,
+      "prepared_record_count": 56,
+      "duplicate_count": 0,
+      "source_path": "03_data_raw/compound_libraries/BRD4_LIT_FOCUSED_002.smi",
+      "output_table": "07_results/modules/compound_library_preparation/prepared_library.tsv",
+      "selected_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "partial_rerun_active": true,
+      "library_summaries": [
+        {
+          "library_id": "BRD4_LIT_FOCUSED_002",
+          "source_path": "03_data_raw/compound_libraries/BRD4_LIT_FOCUSED_002.smi",
+          "input_record_count": 24,
+          "prepared_record_count": 24,
+          "duplicate_count": 0,
+          "related_case_ids": [
+            "BRD4_BD1_LIT002"
+          ],
+          "runtime_seconds": 0.000402
+        }
+      ]
+    },
+    "classical_docking": {
+      "module": "classical_docking",
+      "generated_at_utc": "2026-04-15T03:14:38.768831+00:00",
+      "enabled_case_count": 1,
+      "result_row_count": 28,
+      "requested_backend": "vina_cpu",
+      "engine_mode": "scaffold_heuristic",
+      "runtime_seconds": 0.002756,
+      "execution_status": "executed",
+      "selected_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "partial_rerun_active": true,
+      "cached_case_count": 0,
+      "cached_result_count": 0,
+      "ligand_cache_hit_count": 0,
+      "top_hits": [
+        {
+          "case_id": "BRD4_BD1_LIT002",
+          "top_compound_id": "I-BET762",
+          "top_docking_score": -55.058,
+          "case_execution_status": "executed"
+        }
+      ],
+      "output_table": "07_results/modules/classical_docking/docking_results.tsv"
+    },
+    "ai_reranking": {
+      "module": "ai_reranking",
+      "generated_at_utc": "2026-04-15T03:14:38.806892+00:00",
+      "enabled_case_count": 1,
+      "reranked_row_count": 28,
+      "rerank_model": "cpu_docking_rerank_v2",
+      "runtime_seconds": 0.002775,
+      "execution_status": "executed",
+      "selected_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "partial_rerun_active": true,
+      "docking_summary_available": true,
+      "real_docking_rows_consumed": 0,
+      "docking_engine_mode": "scaffold_heuristic",
+      "top_hits": [
+        {
+          "case_id": "BRD4_BD1_LIT002",
+          "top_compound_id": "I-BET762",
+          "top_rerank_score": -51.125
+        }
+      ],
+      "output_table": "07_results/modules/ai_reranking/reranked_candidates.tsv"
+    },
+    "filtering": {
+      "module": "filtering",
+      "generated_at_utc": "2026-04-15T03:14:38.846147+00:00",
+      "runtime_seconds": 0.002433,
+      "execution_status": "executed",
+      "selected_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "partial_rerun_active": true,
+      "enabled_benchmark_case_count": 1,
+      "candidate_count": 0,
+      "evaluated_candidate_count": 28,
+      "decision_counts": {
+        "keep": 0,
+        "exclude_missing_or_anomalous": 24,
+        "exclude_by_rule": 0
+      },
+      "candidates_per_case": {},
+      "filter_policy": "lightweight_real_filter_v1",
+      "consumed_inputs": {
+        "docking_results": "07_results/modules/classical_docking/docking_results.tsv",
+        "reranked_candidates": "07_results/modules/ai_reranking/reranked_candidates.tsv",
+        "prepared_library": "07_results/modules/compound_library_preparation/prepared_library.tsv",
+        "benchmark_cases": "04_metadata/benchmark_cases.tsv"
+      },
+      "source_run_manifest": "07_results/run_manifest.json"
+    },
+    "clustering_and_prioritization": {
+      "module": "clustering_and_prioritization",
+      "generated_at_utc": "2026-04-15T03:14:38.885439+00:00",
+      "runtime_seconds": 0.002625,
+      "execution_status": "executed",
+      "selected_case_ids": [
+        "BRD4_BD1_LIT002"
+      ],
+      "partial_rerun_active": true,
+      "enabled_case_count": 1,
+      "prioritized_candidate_count": 0,
+      "kept_candidate_count": 0,
+      "cluster_counts": {},
+      "filtering_available": true,
+      "evaluation_available": true,
+      "selection_policy": "filter_keep_then_rerank_score_then_vina_affinity_v1",
+      "output_table": "07_results/modules/clustering_and_prioritization/clustered_priorities.tsv"
+    },
+    "benchmark_evaluation": {
+      "project_name": "cpu_ai_drug_design",
+      "project_root": ".",
+      "generated_at_utc": "2026-04-14T13:27:39.831832+00:00",
+      "run_manifest": "07_results/run_manifest.json",
+      "enabled_benchmark_case_count": 4,
+      "candidate_count": 0,
+      "avg_candidates_per_enabled_case": 0.0,
+      "enabled_case_type_counts": {
+        "toy": 1,
+        "debug": 2,
+        "realistic": 0,
+        "literature_backed": 1
+      },
+      "enabled_case_tier_counts": {
+        "bringup": 1,
+        "comparison": 1,
+        "smoke": 2
+      },
+      "enabled_run_purpose_counts": {
+        "comparison": 1,
+        "debug": 3
+      },
+      "enabled_primary_metric_counts": {
+        "none": 3,
+        "shortlist_contains_known_active": 1
+      },
+      "completed_case_count": 1,
+      "valid_artifact_case_count": 0,
+      "grouped_comparisons": {
+        "by_case_type": {
+          "debug": {
+            "case_count": 2,
+            "enabled_case_count": 2,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          },
+          "literature_backed": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          },
+          "toy": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 1,
+            "valid_artifact_case_count": 0
+          }
+        },
+        "by_run_purpose": {
+          "comparison": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          },
+          "debug": {
+            "case_count": 3,
+            "enabled_case_count": 3,
+            "completed_case_count": 1,
+            "valid_artifact_case_count": 0
+          }
+        },
+        "by_primary_metric": {
+          "none": {
+            "case_count": 3,
+            "enabled_case_count": 3,
+            "completed_case_count": 1,
+            "valid_artifact_case_count": 0
+          },
+          "shortlist_contains_known_active": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          }
+        },
+        "by_comparison_band": {
+          "bringup_debug": {
+            "case_count": 3,
+            "enabled_case_count": 3,
+            "completed_case_count": 1,
+            "valid_artifact_case_count": 0
+          },
+          "comparison_oriented": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          }
+        }
+      },
+      "ground_truth_summary": {
+        "BRD4_BD1_LIT001": {
+          "known_active_count": 1,
+          "known_active_recovered_in_filter_keep": 0,
+          "known_active_recovered_in_shortlist": 0,
+          "shortlist_contains_known_active": false,
+          "best_known_active_rank": null
+        }
+      },
+      "case_module_counts": [
+        {
+          "case_id": "DEMO_CASE_001",
+          "case_type": "toy",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 4,
+          "reranked_candidate_count": 4,
+          "filtered_candidate_count": 4,
+          "filter_keep_count": 0,
+          "shortlist_count": 0
+        },
+        {
+          "case_id": "DEMO_CASE_002",
+          "case_type": "debug",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0
+        },
+        {
+          "case_id": "DEMO_CASE_003",
+          "case_type": "debug",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0
+        },
+        {
+          "case_id": "BRD4_BD1_LIT001",
+          "case_type": "literature_backed",
+          "run_purpose": "comparison",
+          "primary_metric": "shortlist_contains_known_active",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0
+        }
+      ],
+      "case_final_shortlists": [
+        {
+          "case_id": "DEMO_CASE_001",
+          "shortlist": []
+        },
+        {
+          "case_id": "DEMO_CASE_002",
+          "shortlist": []
+        },
+        {
+          "case_id": "DEMO_CASE_003",
+          "shortlist": []
+        },
+        {
+          "case_id": "BRD4_BD1_LIT001",
+          "shortlist": []
+        }
+      ],
+      "case_catalog": [
+        {
+          "case_id": "DEMO_CASE_001",
+          "case_type": "toy",
+          "case_tier": "bringup",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "enabled": true,
+          "comparison_band": "bringup_debug"
+        },
+        {
+          "case_id": "DEMO_CASE_002",
+          "case_type": "debug",
+          "case_tier": "smoke",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "enabled": true,
+          "comparison_band": "bringup_debug"
+        },
+        {
+          "case_id": "DEMO_CASE_003",
+          "case_type": "debug",
+          "case_tier": "smoke",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "enabled": true,
+          "comparison_band": "bringup_debug"
+        },
+        {
+          "case_id": "BRD4_BD1_LIT001",
+          "case_type": "literature_backed",
+          "case_tier": "comparison",
+          "run_purpose": "comparison",
+          "primary_metric": "shortlist_contains_known_active",
+          "enabled": true,
+          "comparison_band": "comparison_oriented"
+        }
+      ],
+      "report_available": true,
+      "filtering_available": true,
+      "evaluation_status": "typed_lightweight_complete"
+    },
+    "benchmark_comparison": {
+      "project_name": "cpu_ai_drug_design",
+      "generated_at_utc": "2026-04-14T13:27:39.834720+00:00",
+      "comparison_overview_rows": [
+        {
+          "case_id": "DEMO_CASE_001",
+          "target_id": "DEMO_TARGET_001",
+          "library_id": "DEMO_LIB_001",
+          "case_type": "toy",
+          "case_tier": "bringup",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 4,
+          "reranked_candidate_count": 4,
+          "filtered_candidate_count": 4,
+          "filter_keep_count": 0,
+          "shortlist_count": 0,
+          "top_1_compound": "-",
+          "top_2_compound": "-"
+        },
+        {
+          "case_id": "DEMO_CASE_002",
+          "target_id": "DEMO_TARGET_002",
+          "library_id": "DEMO_LIB_002",
+          "case_type": "debug",
+          "case_tier": "smoke",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0,
+          "top_1_compound": "-",
+          "top_2_compound": "-"
+        },
+        {
+          "case_id": "DEMO_CASE_003",
+          "target_id": "DEMO_TARGET_001",
+          "library_id": "DEMO_LIB_002",
+          "case_type": "debug",
+          "case_tier": "smoke",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0,
+          "top_1_compound": "-",
+          "top_2_compound": "-"
+        },
+        {
+          "case_id": "BRD4_BD1_LIT001",
+          "target_id": "BRD4_BD1_4QZS",
+          "library_id": "BRD4_LIT_FOCUSED_001",
+          "case_type": "literature_backed",
+          "case_tier": "comparison",
+          "run_purpose": "comparison",
+          "primary_metric": "shortlist_contains_known_active",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0,
+          "top_1_compound": "-",
+          "top_2_compound": "-"
+        }
+      ],
+      "case_module_counts": [
+        {
+          "case_id": "DEMO_CASE_001",
+          "case_type": "toy",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 4,
+          "reranked_candidate_count": 4,
+          "filtered_candidate_count": 4,
+          "filter_keep_count": 0,
+          "shortlist_count": 0
+        },
+        {
+          "case_id": "DEMO_CASE_002",
+          "case_type": "debug",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0
+        },
+        {
+          "case_id": "DEMO_CASE_003",
+          "case_type": "debug",
+          "run_purpose": "debug",
+          "primary_metric": "none",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0
+        },
+        {
+          "case_id": "BRD4_BD1_LIT001",
+          "case_type": "literature_backed",
+          "run_purpose": "comparison",
+          "primary_metric": "shortlist_contains_known_active",
+          "docking_candidate_count": 0,
+          "reranked_candidate_count": 0,
+          "filtered_candidate_count": 0,
+          "filter_keep_count": 0,
+          "shortlist_count": 0
+        }
+      ],
+      "case_final_shortlists": [
+        {
+          "case_id": "DEMO_CASE_001",
+          "shortlist": []
+        },
+        {
+          "case_id": "DEMO_CASE_002",
+          "shortlist": []
+        },
+        {
+          "case_id": "DEMO_CASE_003",
+          "shortlist": []
+        },
+        {
+          "case_id": "BRD4_BD1_LIT001",
+          "shortlist": []
+        }
+      ],
+      "grouped_summary_tables": {
+        "by_case_type": {
+          "debug": {
+            "case_count": 2,
+            "enabled_case_count": 2,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          },
+          "literature_backed": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          },
+          "toy": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 1,
+            "valid_artifact_case_count": 0
+          }
+        },
+        "by_run_purpose": {
+          "comparison": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          },
+          "debug": {
+            "case_count": 3,
+            "enabled_case_count": 3,
+            "completed_case_count": 1,
+            "valid_artifact_case_count": 0
+          }
+        },
+        "by_primary_metric": {
+          "none": {
+            "case_count": 3,
+            "enabled_case_count": 3,
+            "completed_case_count": 1,
+            "valid_artifact_case_count": 0
+          },
+          "shortlist_contains_known_active": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          }
+        },
+        "by_comparison_band": {
+          "bringup_debug": {
+            "case_count": 3,
+            "enabled_case_count": 3,
+            "completed_case_count": 1,
+            "valid_artifact_case_count": 0
+          },
+          "comparison_oriented": {
+            "case_count": 1,
+            "enabled_case_count": 1,
+            "completed_case_count": 0,
+            "valid_artifact_case_count": 0
+          }
+        }
+      },
+      "ground_truth_summary": {
+        "BRD4_BD1_LIT001": {
+          "known_active_count": 1,
+          "known_active_recovered_in_filter_keep": 0,
+          "known_active_recovered_in_shortlist": 0,
+          "shortlist_contains_known_active": false,
+          "best_known_active_rank": null
+        }
+      }
+    }
+  }
+}

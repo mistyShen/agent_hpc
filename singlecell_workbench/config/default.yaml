@@ -1,0 +1,41 @@
+project_name: singlecell_workbench
+output_dir: runs/default_run
+samples:
+  - sample_id: replace_me
+    condition: replace_me
+    input_path: path/to/filtered_feature_bc_matrix
+schema:
+  apply_fixes: true
+  required_obs_columns:
+    - sample_id
+    - condition
+qc:
+  rna_modality: Gene Expression
+  qc_vars:
+    - mt
+  solo:
+    enabled: true
+  scar:
+    enabled: true
+annotation:
+  modality: Gene Expression
+  method_priority:
+    - scarches_scanvi
+    - celltypist
+    - unassigned
+  placeholder_label: unassigned
+  fallback_label: unassigned
+stats:
+  modality: Gene Expression
+  cell_type_column: cell_type
+  sample_column: sample_id
+  condition_column: condition
+  run_decoupler: true
+  decoupler:
+    enabled: true
+    runner: mlm
+    min_targets: 3
+    pathway_network: ../resources/priors/human_academic/progeny.tsv
+    tf_network: ../resources/priors/human_academic/collectri.tsv
+reports:
+  title: Single-cell Workbench Report

@@ -1,0 +1,8 @@
+name: cpu_ai_drug_design
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pyyaml
+  - snakemake-minimal

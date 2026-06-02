@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "singlecell-workbench"
+version = "0.1.0"
+description = "Reproducible single-cell analysis scaffold for 10x data with QC, annotation, statistics, and reporting."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Codex"}]
+dependencies = [
+  "anndata>=0.10",
+  "click>=8.1",
+  "h5py>=3.10",
+  "jinja2>=3.1",
+  "matplotlib>=3.8",
+  "mudata>=0.2.4",
+  "nbformat>=5.10",
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "pyyaml>=6.0",
+  "scanpy>=1.10",
+  "scipy>=1.11",
+  "seaborn>=0.13",
+]
+
+[project.optional-dependencies]
+annotation = [
+  "celltypist>=1.6",
+  "scarches>=0.5.10",
+  "scvi-tools>=1.1",
+]
+qc = [
+  "scvi-tools>=1.1",
+  "scar>=0.1.0",
+]
+stats = [
+  "decoupler>=2.1,<2.2",
+]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.scripts]
+scw = "singlecell_workbench.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

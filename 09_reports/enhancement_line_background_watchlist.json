@@ -1,0 +1,95 @@
+{
+  "generated_at_utc": "2026-04-16T06:31:46.862354+00:00",
+  "source_file": "09_reports/enhancement_line_background_delta.json",
+  "known_active_compound_id": "I-BET762",
+  "best_background_compound_id": "BG_BIPHENYL",
+  "active_best_background_gap": 6.146,
+  "next_tuning_recommendation": {
+    "target_compound_id": "BG_BIPHENYL",
+    "target_flags": [
+      "simple_aromatic_background",
+      "polyaryl_hydrophobe_background"
+    ],
+    "strongest_aggregate_flag": "polyaryl_hydrophobe_background",
+    "recommended_knob": "simple_aromatic_penalty",
+    "recommended_direction": "increase_slightly",
+    "rationale": "Current best background `BG_BIPHENYL` is still closest to the known active. It is currently explained most directly by `simple_aromatic_background`. Aggregate suppression remains strongest for `polyaryl_hydrophobe_background`, so keep that signal stable while nudging the current bottleneck."
+  },
+  "watchlist_rows": [
+    {
+      "compound_id": "BG_BIPHENYL",
+      "baseline_rank": 2,
+      "enhancement_rank": 2,
+      "rank_delta": 0,
+      "baseline_score": -6.87,
+      "enhancement_score": -2.754,
+      "score_delta": 4.116,
+      "baseline_shortlisted": true,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "watch_labels": [
+        "current_best_background",
+        "removed_from_shortlist",
+        "explained_by_physchem_flags"
+      ]
+    },
+    {
+      "compound_id": "BG_BENZAMIDE",
+      "baseline_rank": 3,
+      "enhancement_rank": 3,
+      "rank_delta": 0,
+      "baseline_score": -6.47,
+      "enhancement_score": -2.741,
+      "score_delta": 3.729,
+      "baseline_shortlisted": false,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "single_ring_background"
+      ],
+      "watch_labels": [
+        "explained_by_physchem_flags"
+      ]
+    },
+    {
+      "compound_id": "BG_QUINOLINE",
+      "baseline_rank": 5,
+      "enhancement_rank": 4,
+      "rank_delta": 1,
+      "baseline_score": -5.93,
+      "enhancement_score": -2.284,
+      "score_delta": 3.646,
+      "baseline_shortlisted": false,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "watch_labels": [
+        "moved_up",
+        "explained_by_physchem_flags"
+      ]
+    },
+    {
+      "compound_id": "BG_INDOLE",
+      "baseline_rank": 6,
+      "enhancement_rank": 5,
+      "rank_delta": 1,
+      "baseline_score": -5.585,
+      "enhancement_score": -1.863,
+      "score_delta": 3.722,
+      "baseline_shortlisted": false,
+      "enhancement_shortlisted": false,
+      "physchem_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "watch_labels": [
+        "moved_up",
+        "explained_by_physchem_flags"
+      ]
+    }
+  ]
+}

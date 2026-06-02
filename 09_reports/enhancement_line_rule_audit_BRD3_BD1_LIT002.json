@@ -1,0 +1,181 @@
+{
+  "generated_at_utc": "2026-04-17T13:50:50.920987+00:00",
+  "scope_note": "Enhancement-line rule audit only. Results are limited to BRD3_BD1_LIT002_V3EXP and must not be promoted to frozen benchmark/manuscript claims.",
+  "current_label": "current",
+  "current_metrics": {
+    "known_active_compound_id": "I-BET762",
+    "known_active_rank": 1,
+    "known_active_rerank_score": -8.9,
+    "known_active_shortlisted": true,
+    "best_background_compound_id": "BG_BENZAMIDE",
+    "best_background_rank": 2,
+    "best_background_rerank_score": -2.341,
+    "active_best_background_gap": 6.559,
+    "best_background_flags": [
+      "single_ring_background"
+    ],
+    "filter_keep_count": 1,
+    "shortlist_count": 1,
+    "shortlist_ids": [
+      "I-BET762"
+    ],
+    "top_rerank": [
+      {
+        "compound_id": "I-BET762",
+        "rerank_rank": 1,
+        "rerank_score": -8.9,
+        "rerank_bonus": -0.0,
+        "physchem_flags": []
+      },
+      {
+        "compound_id": "BG_BENZAMIDE",
+        "rerank_rank": 2,
+        "rerank_score": -2.341,
+        "rerank_bonus": -2.759,
+        "physchem_flags": [
+          "single_ring_background"
+        ]
+      },
+      {
+        "compound_id": "BG_BIPHENYL",
+        "rerank_rank": 3,
+        "rerank_score": -2.154,
+        "rerank_bonus": -4.046,
+        "physchem_flags": [
+          "simple_aromatic_background",
+          "polyaryl_hydrophobe_background"
+        ]
+      }
+    ],
+    "shortlist_diagnostics": {
+      "selection_policy": "filter_keep_then_v3_rerank_margin_then_vina_v2",
+      "filter_keep_input_count": 1,
+      "shortlist_count": 1,
+      "shortlist_cap": 1,
+      "top_score_gap": 0.0,
+      "v3_priority_policy": true,
+      "v3_priority_tuning": {
+        "top1_only_gap": 0.75,
+        "top2_gap": 0.35,
+        "mid_gap_shortlist_cap": 2
+      }
+    }
+  },
+  "reproduces_existing_comparison_gap": true,
+  "ablation_rows": [
+    {
+      "variant_name": "ablate_all_background_penalties",
+      "overrides": {
+        "simple_aromatic_penalty": 0.0,
+        "polyaryl_hydrophobe_penalty": 0.0,
+        "single_ring_background_penalty": 0.0
+      },
+      "active_best_background_gap": 4.459,
+      "gap_loss_vs_current": 2.1,
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "best_background_flags": [
+        "single_ring_background"
+      ],
+      "filter_keep_count": 1,
+      "shortlist_count": 1,
+      "shortlist_ids": [
+        "I-BET762"
+      ],
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "top_score_gap": 0.0,
+      "contribution_class": "dominant_on_current_panel",
+      "shortlist_expanded_vs_current": false
+    },
+    {
+      "variant_name": "ablate_single_ring_background_penalty",
+      "overrides": {
+        "single_ring_background_penalty": 0.0
+      },
+      "active_best_background_gap": 4.459,
+      "gap_loss_vs_current": 2.1,
+      "best_background_compound_id": "BG_BENZAMIDE",
+      "best_background_flags": [
+        "single_ring_background"
+      ],
+      "filter_keep_count": 1,
+      "shortlist_count": 1,
+      "shortlist_ids": [
+        "I-BET762"
+      ],
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "top_score_gap": 0.0,
+      "contribution_class": "dominant_on_current_panel",
+      "shortlist_expanded_vs_current": false
+    },
+    {
+      "variant_name": "ablate_simple_aromatic_penalty",
+      "overrides": {
+        "simple_aromatic_penalty": 0.0
+      },
+      "active_best_background_gap": 5.446,
+      "gap_loss_vs_current": 1.113,
+      "best_background_compound_id": "BG_BIPHENYL",
+      "best_background_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "filter_keep_count": 1,
+      "shortlist_count": 1,
+      "shortlist_ids": [
+        "I-BET762"
+      ],
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "top_score_gap": 0.0,
+      "contribution_class": "material_on_current_panel",
+      "shortlist_expanded_vs_current": false
+    },
+    {
+      "variant_name": "ablate_polyaryl_hydrophobe_penalty",
+      "overrides": {
+        "polyaryl_hydrophobe_penalty": 0.0
+      },
+      "active_best_background_gap": 6.046,
+      "gap_loss_vs_current": 0.513,
+      "best_background_compound_id": "BG_BIPHENYL",
+      "best_background_flags": [
+        "simple_aromatic_background",
+        "polyaryl_hydrophobe_background"
+      ],
+      "filter_keep_count": 1,
+      "shortlist_count": 1,
+      "shortlist_ids": [
+        "I-BET762"
+      ],
+      "known_active_rank": 1,
+      "known_active_shortlisted": true,
+      "top_score_gap": 0.0,
+      "contribution_class": "material_on_current_panel",
+      "shortlist_expanded_vs_current": false
+    }
+  ],
+  "main_driver_ranking": [
+    {
+      "variant_name": "ablate_all_background_penalties",
+      "gap_loss_vs_current": 2.1,
+      "contribution_class": "dominant_on_current_panel"
+    },
+    {
+      "variant_name": "ablate_single_ring_background_penalty",
+      "gap_loss_vs_current": 2.1,
+      "contribution_class": "dominant_on_current_panel"
+    },
+    {
+      "variant_name": "ablate_simple_aromatic_penalty",
+      "gap_loss_vs_current": 1.113,
+      "contribution_class": "material_on_current_panel"
+    },
+    {
+      "variant_name": "ablate_polyaryl_hydrophobe_penalty",
+      "gap_loss_vs_current": 0.513,
+      "contribution_class": "material_on_current_panel"
+    }
+  ]
+}
