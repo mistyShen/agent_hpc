@@ -1,10 +1,12 @@
-name: ultimate-methylation
+name: ultimate-publicdb
 channels:
   - conda-forge
   - bioconda
 dependencies:
   - r-base=4.4
   - r-ggplot2
-  - r-pheatmap
-  - bioconductor-minfi
+  - r-survival
+  - r-survminer
+  - bioconductor-geoquery
+  - bioconductor-gsva
   - bioconductor-limma

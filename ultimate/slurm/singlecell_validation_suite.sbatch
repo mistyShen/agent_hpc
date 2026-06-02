@@ -12,6 +12,8 @@ PROJECT_ROOT="${ULTIMATE_ROOT:-/shared/shen/2026/ultimate}"
 CORE_ENV="${ULTIMATE_CORE_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-core}"
 SCRNA_ENV="${ULTIMATE_SCRNA_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-scrna}"
 SCRNA_FALLBACK_ENV="${ULTIMATE_SCRNA_FALLBACK_ENV:-/shared/shen/2026/singlecell_workbench/.conda/envs/scw-py311}"
+SCATAC_ENV="${ULTIMATE_SCATAC_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-scatac-py}"
+SPATIAL_ENV="${ULTIMATE_SPATIAL_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-spatial-py}"
 GENOME_ENV="${ULTIMATE_GENOME_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-genome-mtdna}"
 CONDA_SH="${CONDA_SH:-/share/home/nshen/miniconda3/etc/profile.d/conda.sh}"
 
@@ -109,6 +111,61 @@ PY
   fi
 }
 
+run_scatac_validation() {
+  local out_dir="$PROJECT_ROOT/validations/slurm_scatac_10x_pbmc"
+  local input_h5="$PROJECT_ROOT/public_data/scatac/10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5"
+  if [[ ! -s "$input_h5" ]]; then
+    write_skip_manifest "$out_dir" "partial:data_required" "未找到 public_data/scatac 下的 10x scATAC filtered peak matrix；请先运行公开数据下载。"
+    return 0
+  fi
+  if [[ -x "$SCATAC_ENV/bin/python" ]]; then
+    "$SCATAC_ENV/bin/python" "$PROJECT_ROOT/01_tools/validate_scatac_public.py" \
+      --input-h5 "$input_h5" \
+      --output-dir "$out_dir" \
+      --public-data-dir "$PROJECT_ROOT/public_data/scatac"
+  elif [[ -x "$SCRNA_FALLBACK_ENV/bin/python" ]]; then
+    "$SCRNA_FALLBACK_ENV/bin/python" "$PROJECT_ROOT/01_tools/validate_scatac_public.py" \
+      --input-h5 "$input_h5" \
+      --output-dir "$out_dir" \
+      --public-data-dir "$PROJECT_ROOT/public_data/scatac"
+  else
+    write_skip_manifest "$out_dir" "partial:dependency_required" "未找到可读取 10x H5 的 scATAC Python 环境。"
+  fi
+}
+
+run_multiome_validation() {
+  local out_dir="$PROJECT_ROOT/validations/slurm_multiome_10x_pbmc"
+  local input_h5="$PROJECT_ROOT/public_data/multiome/10k_PBMC_Multiome_nextgem_Chromium_Controller_filtered_feature_bc_matrix.h5"
+  if [[ ! -s "$input_h5" ]]; then
+    write_skip_manifest "$out_dir" "partial:data_required" "未找到 public_data/multiome 下的 10x Multiome filtered feature matrix；请先运行公开数据下载。"
+    return 0
+  fi
+  if [[ -x "$SCATAC_ENV/bin/python" ]]; then
+    "$SCATAC_ENV/bin/python" "$PROJECT_ROOT/01_tools/validate_multiome_public.py" \
+      --input-h5 "$input_h5" \
+      --output-dir "$out_dir" \
+      --public-data-dir "$PROJECT_ROOT/public_data/multiome"
+  elif [[ -x "$SCRNA_FALLBACK_ENV/bin/python" ]]; then
+    "$SCRNA_FALLBACK_ENV/bin/python" "$PROJECT_ROOT/01_tools/validate_multiome_public.py" \
+      --input-h5 "$input_h5" \
+      --output-dir "$out_dir" \
+      --public-data-dir "$PROJECT_ROOT/public_data/multiome"
+  else
+    write_skip_manifest "$out_dir" "partial:dependency_required" "未找到可读取 10x Multiome H5 的 Python 环境。"
+  fi
+}
+
+run_spatial_validation() {
+  local out_dir="$PROJECT_ROOT/validations/slurm_spatial_squidpy_visium"
+  if [[ -x "$SPATIAL_ENV/bin/python" ]]; then
+    "$SPATIAL_ENV/bin/python" "$PROJECT_ROOT/01_tools/validate_spatial_public.py" \
+      --output-dir "$out_dir" \
+      --public-data-dir "$PROJECT_ROOT/public_data/spatial"
+  else
+    write_skip_manifest "$out_dir" "partial:dependency_required" "未找到 ultimate-spatial-py 环境，无法运行 Squidpy Visium 验证。"
+  fi
+}
+
 run_final_audit() {
   conda activate "$CORE_ENV"
   cd "$PROJECT_ROOT"
@@ -121,4 +178,7 @@ run_initial_audit
 run_scrna_validation
 run_mtdna_validation
 run_vdj_validation
+run_scatac_validation
+run_multiome_validation
+run_spatial_validation
 run_final_audit

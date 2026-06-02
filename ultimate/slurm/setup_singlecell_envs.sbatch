@@ -14,7 +14,7 @@ MAMBA_EXE="${MAMBA_EXE:-mamba}"
 CONDARC_PATH="${ULTIMATE_CONDARC:-$PROJECT_ROOT/config/condarc.mirrors.tuna.yml}"
 ENV_KEYS=("$@")
 if [[ ${#ENV_KEYS[@]} -eq 0 ]]; then
-  ENV_KEYS=(genome_mtdna scrna vdj spatial scatac_multiome)
+  ENV_KEYS=(genome_mtdna scrna vdj spatial scatac_multiome rnaseq methylation proteomics publicdb wgcna)
 fi
 
 mkdir -p "$PROJECT_ROOT/.conda/envs" "$PROJECT_ROOT/.conda/pkgs" "$PROJECT_ROOT/logs" "$PROJECT_ROOT/audits/env_setup"
@@ -31,6 +31,11 @@ env_file_for_key() {
     vdj) echo "$PROJECT_ROOT/envs/environment.vdj.yml" ;;
     spatial) echo "$PROJECT_ROOT/envs/environment.spatial.yml" ;;
     scatac_multiome) echo "$PROJECT_ROOT/envs/environment.scatac_multiome.yml" ;;
+    rnaseq) echo "$PROJECT_ROOT/envs/environment.rnaseq.yml" ;;
+    methylation) echo "$PROJECT_ROOT/envs/environment.methylation.yml" ;;
+    proteomics) echo "$PROJECT_ROOT/envs/environment.proteomics.yml" ;;
+    publicdb) echo "$PROJECT_ROOT/envs/environment.publicdb.yml" ;;
+    wgcna) echo "$PROJECT_ROOT/envs/environment.wgcna.yml" ;;
     *) return 1 ;;
   esac
 }
@@ -42,6 +47,11 @@ env_name_for_key() {
     vdj) echo "ultimate-vdj" ;;
     spatial) echo "ultimate-spatial" ;;
     scatac_multiome) echo "ultimate-scatac-multiome" ;;
+    rnaseq) echo "ultimate-rnaseq" ;;
+    methylation) echo "ultimate-methylation" ;;
+    proteomics) echo "ultimate-proteomics" ;;
+    publicdb) echo "ultimate-publicdb" ;;
+    wgcna) echo "ultimate-wgcna" ;;
     *) return 1 ;;
   esac
 }

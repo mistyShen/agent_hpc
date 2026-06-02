@@ -8,6 +8,7 @@ import pandas as pd
 
 from ultimate.config import dump_yaml, validate_project_type
 from ultimate.constants import MODULE_ORDER
+from ultimate.raw_qc import RAW_CONTRACTS
 
 
 def init_project(project_type: str, output_dir: Path, *, demo_data: bool = False) -> dict[str, Any]:
@@ -30,12 +31,23 @@ def init_project(project_type: str, output_dir: Path, *, demo_data: bool = False
     for module_name in MODULE_ORDER:
         enabled = module_name in selected
         matrix_path = data_dir / f"{module_name}_matrix.tsv"
+        raw_samplesheet = sample_dir / f"raw_{module_name}.tsv"
+        _write_raw_samplesheet(raw_samplesheet, module_name)
         module_config[module_name] = {
             "enabled": enabled,
             "analysis_level": "smoke_then_formal_backend",
             "samplesheet": "../samples/samples.tsv",
             "input_matrix": f"../data/{module_name}_matrix.tsv",
             "r_entrypoint": f"scripts/R/{module_name}.R",
+            "raw": {
+                "enabled": True,
+                "input_type": RAW_CONTRACTS[module_name].input_types[0],
+                "samplesheet": f"../samples/raw_{module_name}.tsv",
+                "output_matrix": f"../data/raw_outputs/{module_name}_standard_matrix.tsv",
+                "output_object": f"../data/raw_outputs/{module_name}_standard_object.json",
+                "qc": {"enabled": True},
+                "toolchain": list(RAW_CONTRACTS[module_name].open_replacements),
+            },
         }
         if module_name == "publicdb":
             module_config[module_name]["cohort"] = "TCGA_demo"
@@ -110,6 +122,38 @@ def _demo_samples() -> pd.DataFrame:
     )
     frame["cohort_id"] = "TCGA_demo"
     return frame
+
+
+def _write_raw_samplesheet(path: Path, module_name: str) -> None:
+    contract = RAW_CONTRACTS[module_name]
+    rows: list[dict[str, Any]] = []
+    for sample_id, condition in (("CTRL_1", "control"), ("CTRL_2", "control"), ("TRT_1", "treated"), ("TRT_2", "treated")):
+        row: dict[str, Any] = {
+            "sample_id": sample_id,
+            "condition": condition,
+            "batch": "B1" if condition == "control" else "B2",
+            "raw_input_type": contract.input_types[0],
+        }
+        for column in contract.required_columns:
+            row.setdefault(column, _raw_placeholder(module_name, column, sample_id))
+        rows.append(row)
+    frame = pd.DataFrame(rows)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(path, sep="\t", index=False)
+
+
+def _raw_placeholder(module_name: str, column: str, sample_id: str) -> str:
+    if column == "cohort_id":
+        return "TCGA_demo"
+    if column in {"sample_id", "condition"}:
+        return sample_id if column == "sample_id" else "control"
+    if column == "fastq_1":
+        return f"../raw/{module_name}/{sample_id}_R1.fastq.gz"
+    if column == "fastq_2":
+        return f"../raw/{module_name}/{sample_id}_R2.fastq.gz"
+    if column == "input_path":
+        return f"../raw/{module_name}/{sample_id}"
+    return f"../raw/{module_name}/{sample_id}_{column}"
 
 
 def _write_demo_matrix(path: Path, module_name: str) -> None:

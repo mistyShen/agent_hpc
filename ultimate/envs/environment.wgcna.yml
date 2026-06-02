@@ -1,10 +1,12 @@
-name: ultimate-methylation
+name: ultimate-wgcna
 channels:
   - conda-forge
   - bioconda
 dependencies:
   - r-base=4.4
+  - r-wgcna
+  - r-dynamictreecut
+  - r-fastcluster
   - r-ggplot2
   - r-pheatmap
-  - bioconductor-minfi
   - bioconductor-limma

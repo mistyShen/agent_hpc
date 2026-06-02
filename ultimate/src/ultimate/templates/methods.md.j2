@@ -9,6 +9,7 @@
 - 物种：`{{ manifest.project.organism }}`
 - 输出目录：`{{ manifest.output_dir }}`
 - Preflight 状态：`{{ preflight.status }}`
+- 出图风格：临床期刊版（白底、蓝灰主色、红蓝差异强调）；审阅图清单：`{{ manifest.style_review.figure_manifest }}`
 
 ## 分析模块
 
@@ -16,6 +17,8 @@
 ### {{ module.title_cn }} (`{{ module.module }}`)
 
 - 状态：`{{ module.status }}`
+- Raw QC 状态：`{{ module.raw_qc.status }}`
+- Raw QC manifest：`{{ module.raw_qc.manifest_path }}`
 - 特征数：{{ module.n_features }}
 - 样本数：{{ module.n_samples }}
 - 统计结果：`{{ module.artifacts.tables.differential_results }}`

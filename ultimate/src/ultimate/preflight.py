@@ -12,6 +12,7 @@ import pandas as pd
 
 from ultimate.config import enabled_modules, load_samples, output_dir
 from ultimate.constants import MODULE_SPECS
+from ultimate.raw_qc import RAW_CONTRACTS
 
 
 def run_preflight(config: dict[str, Any], *, write: bool = True) -> dict[str, Any]:
@@ -55,6 +56,8 @@ def _check_module(config: dict[str, Any], samples: pd.DataFrame, module_name: st
         "optional_commands": {cmd: bool(shutil.which(cmd)) for cmd in spec.optional_commands},
         "optional_r_packages": _r_package_checks(spec.optional_r_packages),
     }
+    raw_report = _raw_preflight(module_cfg, samples, module_name)
+    checks["raw"] = raw_report
     warnings = []
     if checks["required_sample_columns"]:
         warnings.append("missing_required_sample_columns")
@@ -63,6 +66,10 @@ def _check_module(config: dict[str, Any], samples: pd.DataFrame, module_name: st
     missing_commands = [cmd for cmd, ok in checks["optional_commands"].items() if not ok]
     if missing_commands:
         warnings.append("optional_commands_missing:" + ",".join(missing_commands))
+    if raw_report["raw_enabled"] and raw_report["missing_required_columns"]:
+        warnings.append("raw_missing_required_columns:" + ",".join(raw_report["missing_required_columns"]))
+    if raw_report["raw_enabled"] and raw_report["input_type"] not in raw_report["supported_input_types"]:
+        warnings.append("raw_unsupported_input_type:" + raw_report["input_type"])
     return {
         "module": module_name,
         "title_cn": spec.title_cn,
@@ -70,6 +77,30 @@ def _check_module(config: dict[str, Any], samples: pd.DataFrame, module_name: st
         "checks": checks,
         "warnings": warnings,
         "status": "ready_with_warnings" if warnings else "ready",
+    }
+
+
+def _raw_preflight(module_cfg: dict[str, Any], samples: pd.DataFrame, module_name: str) -> dict[str, Any]:
+    contract = RAW_CONTRACTS[module_name]
+    raw_cfg = module_cfg.get("raw") or {}
+    enabled = bool(raw_cfg.get("enabled", True))
+    input_type = str(raw_cfg.get("input_type") or contract.input_types[0])
+    raw_samplesheet = raw_cfg.get("samplesheet")
+    raw_samples = samples
+    if raw_samplesheet and Path(raw_samplesheet).exists():
+        raw_samples = pd.read_csv(raw_samplesheet, sep=None, engine="python")
+    return {
+        "raw_enabled": enabled,
+        "input_type": input_type,
+        "supported_input_types": list(contract.input_types),
+        "samplesheet": _path_check(raw_samplesheet),
+        "required_columns": list(contract.required_columns),
+        "missing_required_columns": _missing_columns(raw_samples, contract.required_columns),
+        "declared_output_matrix": _path_check(raw_cfg.get("output_matrix")),
+        "declared_output_object": _path_check(raw_cfg.get("output_object")),
+        "toolchain": list(raw_cfg.get("toolchain") or contract.open_replacements),
+        "open_replacements": list(contract.open_replacements),
+        "raw_tools_on_path": {tool: bool(shutil.which(tool)) for tool in contract.tools},
     }
 
 

@@ -28,19 +28,47 @@ CITE_SEQ_DOWNLOADS = {
     ),
 }
 
+SCATAC_DOWNLOADS = {
+    "10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5": (
+        "https://cf.10xgenomics.com/samples/cell-atac/2.1.0/"
+        "10k_pbmc_ATACv2_nextgem_Chromium_Controller/"
+        "10k_pbmc_ATACv2_nextgem_Chromium_Controller_filtered_peak_bc_matrix.h5"
+    ),
+    "10k_pbmc_ATACv2_nextgem_Chromium_Controller_summary.csv": (
+        "https://cf.10xgenomics.com/samples/cell-atac/2.1.0/"
+        "10k_pbmc_ATACv2_nextgem_Chromium_Controller/"
+        "10k_pbmc_ATACv2_nextgem_Chromium_Controller_summary.csv"
+    ),
+}
+
+MULTIOME_DOWNLOADS = {
+    "10k_PBMC_Multiome_nextgem_Chromium_Controller_filtered_feature_bc_matrix.h5": (
+        "https://cf.10xgenomics.com/samples/cell-arc/2.0.0/"
+        "10k_PBMC_Multiome_nextgem_Chromium_Controller/"
+        "10k_PBMC_Multiome_nextgem_Chromium_Controller_filtered_feature_bc_matrix.h5"
+    ),
+    "10k_PBMC_Multiome_nextgem_Chromium_Controller_summary.csv": (
+        "https://cf.10xgenomics.com/samples/cell-arc/2.0.0/"
+        "10k_PBMC_Multiome_nextgem_Chromium_Controller/"
+        "10k_PBMC_Multiome_nextgem_Chromium_Controller_summary.csv"
+    ),
+}
+
 
 PUBLIC_DATASETS = {
     "scatac": {
         "title": "10x PBMC scATAC public tutorial data",
         "status": "manifest_only",
-        "required_inputs": ["fragments.tsv.gz", "fragments.tsv.gz.tbi", "peak_bc_matrix.h5 或 peaks/barcodes/matrix"],
-        "source_note": "用于 Signac/scATAC smoke test；实际下载可替换为 10x PBMC ATAC raw/filtered feature matrix 与 fragments。",
+        "required_inputs": ["filtered_peak_bc_matrix.h5", "summary.csv"],
+        "optional_inputs": ["fragments.tsv.gz", "fragments.tsv.gz.tbi", "peaks.bed"],
+        "source_note": "用于 scATAC matrix-level smoke test；peak calling、FRiP/TSS 和 fragments 级分析可补充 10x fragments 后运行。",
     },
     "multiome": {
         "title": "10x Human PBMC Multiome ATAC + Gene Expression",
         "status": "manifest_only",
-        "required_inputs": ["filtered_feature_bc_matrix.h5", "atac_fragments.tsv.gz", "atac_fragments.tsv.gz.tbi"],
-        "source_note": "用于 WNN/multi-modal clustering/linkage smoke test；大文件下载建议作为单独 Slurm 作业执行。",
+        "required_inputs": ["filtered_feature_bc_matrix.h5", "summary.csv"],
+        "optional_inputs": ["atac_fragments.tsv.gz", "atac_fragments.tsv.gz.tbi"],
+        "source_note": "用于 RNA+ATAC joint matrix smoke test；peak-gene linkage/fragments 级分析可补充 10x fragments 后运行。",
     },
     "vdj": {
         "title": "10x Cell Ranger VDJ contig/clonotype outputs",
@@ -52,6 +80,7 @@ PUBLIC_DATASETS = {
         "title": "10x Visium public spatial expression data",
         "status": "manifest_only",
         "required_inputs": ["filtered_feature_bc_matrix.h5", "spatial/tissue_positions*.csv", "spatial/scalefactors_json.json"],
+        "optional_inputs": ["tissue_hires_image.png 或 squidpy cached image"],
         "source_note": "可用 10x Visium 或 Bioconductor TENxVisiumData；图像数据较大，建议 Slurm 单独下载。",
     },
     "cite_seq": {
@@ -74,6 +103,10 @@ def main() -> None:
         out_dir = root / "public_data" / key
         out_dir.mkdir(parents=True, exist_ok=True)
         download_result = None
+        if args.mode == "download" and key == "scatac":
+            download_result = _download_files(out_dir, SCATAC_DOWNLOADS, "10x PBMC scATAC filtered peak matrix and summary")
+        if args.mode == "download" and key == "multiome":
+            download_result = _download_files(out_dir, MULTIOME_DOWNLOADS, "10x PBMC Multiome filtered feature matrix and summary")
         if args.mode == "download" and key == "vdj":
             download_result = _download_files(out_dir, VDJ_DOWNLOADS, "10x VDJ filtered contig and clonotype tables")
         if args.mode == "download" and key == "cite_seq":
@@ -93,6 +126,7 @@ def main() -> None:
             "download_status": download_status,
             "title": payload["title"],
             "required_inputs": payload["required_inputs"],
+            "optional_inputs": payload.get("optional_inputs", []),
             "source_note": payload["source_note"],
             "validation_status": validation_status,
             "reason": reason,
@@ -115,8 +149,12 @@ def _download_files(out_dir: Path, downloads: dict[str, str], description: str) 
                 downloaded[filename] = {"path": str(target), "bytes": target.stat().st_size, "cached": True}
                 continue
             request = urllib.request.Request(url, headers={"User-Agent": "curl/8.0 ultimate-bioinfo-validation"})
-            with urllib.request.urlopen(request, timeout=60) as response, target.open("wb") as handle:
-                handle.write(response.read())
+            with urllib.request.urlopen(request, timeout=90) as response, target.open("wb") as handle:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    handle.write(chunk)
             downloaded[filename] = {"path": str(target), "bytes": target.stat().st_size, "cached": False}
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             errors[filename] = f"{type(exc).__name__}: {exc}"

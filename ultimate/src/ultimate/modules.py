@@ -15,6 +15,7 @@ import pandas as pd
 import seaborn as sns
 
 from ultimate.constants import MODULE_SPECS
+from ultimate.plot_style import apply_clinical_journal_style, save_figure
 
 
 def run_module(
@@ -212,6 +213,7 @@ def _write_figures(
 
 
 def _plot_pca(matrix: pd.DataFrame, samples: pd.DataFrame, design: dict[str, Any], path: Path, title: str) -> None:
+    tokens = apply_clinical_journal_style()
     values = matrix.T.to_numpy(dtype=float)
     values = values - values.mean(axis=0, keepdims=True)
     _, _, vt = np.linalg.svd(values, full_matrices=False)
@@ -222,64 +224,79 @@ def _plot_pca(matrix: pd.DataFrame, samples: pd.DataFrame, design: dict[str, Any
         lookup = dict(zip(samples["sample_id"].astype(str), samples[condition_column].astype(str)))
         condition = [lookup.get(str(col), "sample") for col in matrix.columns]
     plt.figure(figsize=(6, 4))
-    sns.scatterplot(x=coords[:, 0], y=coords[:, 1], hue=condition, s=80)
+    palette = _condition_palette(condition, tokens)
+    sns.scatterplot(x=coords[:, 0], y=coords[:, 1], hue=condition, palette=palette, s=80, edgecolor="white", linewidth=0.4)
     for x, y, label in zip(coords[:, 0], coords[:, 1], matrix.columns):
         plt.text(x, y, str(label), fontsize=8)
     plt.title(title)
     plt.xlabel("PC1")
     plt.ylabel("PC2")
     plt.tight_layout()
-    plt.savefig(path, dpi=160)
-    plt.close()
+    save_figure(path, style=tokens)
+
+
+def _condition_palette(values: list[str], tokens: dict[str, Any]) -> dict[str, str]:
+    base = {"control": tokens["control"], "treated": tokens["case"], "case": tokens["case"], "sample": tokens["primary"]}
+    fallback = [tokens["primary"], tokens["case"], tokens["accent"], tokens["secondary"], tokens["neutral"]]
+    palette = {}
+    for idx, value in enumerate(sorted(set(map(str, values)))):
+        palette[value] = base.get(value, fallback[idx % len(fallback)])
+    return palette
 
 
 def _plot_volcano(stats: pd.DataFrame, path: Path, title: str) -> None:
+    tokens = apply_clinical_journal_style()
     plt.figure(figsize=(6, 4))
     plot_frame = stats.copy()
     plot_frame["neg_log10_padj"] = -np.log10(plot_frame["padj"].clip(lower=1e-12))
-    sns.scatterplot(data=plot_frame, x="log2FC", y="neg_log10_padj", hue=plot_frame["padj"] < 0.1, legend=False)
-    plt.axvline(1, color="grey", linestyle="--", linewidth=0.8)
-    plt.axvline(-1, color="grey", linestyle="--", linewidth=0.8)
+    plot_frame["class"] = np.where(
+        (plot_frame["padj"] < 0.1) & (plot_frame["log2FC"] > 1),
+        "Up",
+        np.where((plot_frame["padj"] < 0.1) & (plot_frame["log2FC"] < -1), "Down", "NS"),
+    )
+    palette = {"Up": tokens["case"], "Down": tokens["control"], "NS": tokens["neutral"]}
+    sns.scatterplot(data=plot_frame, x="log2FC", y="neg_log10_padj", hue="class", palette=palette, s=20, linewidth=0, alpha=0.85)
+    plt.axvline(1, color=tokens["muted"], linestyle="--", linewidth=0.8)
+    plt.axvline(-1, color=tokens["muted"], linestyle="--", linewidth=0.8)
     plt.title(title)
     plt.xlabel("log2FC")
     plt.ylabel("-log10(padj)")
     plt.tight_layout()
-    plt.savefig(path, dpi=160)
-    plt.close()
+    save_figure(path, style=tokens)
 
 
 def _plot_heatmap(matrix: pd.DataFrame, path: Path, title: str) -> None:
+    tokens = apply_clinical_journal_style()
     plt.figure(figsize=(7, 5))
-    sns.heatmap(matrix, cmap="vlag", yticklabels=True)
+    sns.heatmap(matrix, cmap=tokens["heatmap_cmap"], yticklabels=True, cbar_kws={"label": "Value"})
     plt.title(title)
     plt.tight_layout()
-    plt.savefig(path, dpi=160)
-    plt.close()
+    save_figure(path, style=tokens)
 
 
 def _plot_correlation(matrix: pd.DataFrame, path: Path, title: str) -> None:
+    tokens = apply_clinical_journal_style()
     plt.figure(figsize=(5, 4))
-    sns.heatmap(matrix.T.corr().iloc[:15, :15], cmap="coolwarm", center=0)
+    sns.heatmap(matrix.T.corr().iloc[:15, :15], cmap=tokens["heatmap_cmap"], center=0)
     plt.title(title)
     plt.tight_layout()
-    plt.savefig(path, dpi=160)
-    plt.close()
+    save_figure(path, style=tokens)
 
 
 def _plot_survival(path: Path) -> None:
+    tokens = apply_clinical_journal_style()
     months = np.arange(0, 61, 6)
     high = np.exp(-months / 38)
     low = np.exp(-months / 56)
     plt.figure(figsize=(6, 4))
-    plt.step(months, high, where="post", label="High expression")
-    plt.step(months, low, where="post", label="Low expression")
+    plt.step(months, high, where="post", label="High expression", color=tokens["case"], linewidth=1.7)
+    plt.step(months, low, where="post", label="Low expression", color=tokens["control"], linewidth=1.7)
     plt.xlabel("Months")
     plt.ylabel("Survival probability")
     plt.title("Kaplan-Meier demo")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(path, dpi=160)
-    plt.close()
+    save_figure(path, style=tokens)
 
 
 def _write_objects(module_name: str, matrix: pd.DataFrame, stats: pd.DataFrame, objects_dir: Path) -> dict[str, str]:

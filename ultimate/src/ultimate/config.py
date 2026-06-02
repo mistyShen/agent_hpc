@@ -58,6 +58,25 @@ def normalize_config(config: dict[str, Any], base_dir: Path) -> dict[str, Any]:
         for path_key in ("input_matrix", "samplesheet", "input_path", "clinical_table", "signature_matrix"):
             if module_cfg.get(path_key):
                 module_cfg[path_key] = str(resolve_path(base_dir, module_cfg[path_key]))
+        raw_cfg = module_cfg.get("raw")
+        if isinstance(raw_cfg, dict):
+            for path_key in (
+                "samplesheet",
+                "output_matrix",
+                "output_object",
+                "input_path",
+                "fastq_1",
+                "fastq_2",
+                "fragments",
+                "peak_matrix",
+                "matrix_path",
+                "idat_dir",
+                "visium_dir",
+                "clinical_table",
+                "signature_matrix",
+            ):
+                if raw_cfg.get(path_key):
+                    raw_cfg[path_key] = str(resolve_path(base_dir, raw_cfg[path_key]))
 
     samples = normalized.get("samples") or {}
     if isinstance(samples, dict) and samples.get("samplesheet"):

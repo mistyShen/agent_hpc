@@ -17,15 +17,17 @@
   <h1>{{ manifest.project.name }} - Ultimate 多组学生信分析报告</h1>
   <p>生成时间：{{ generated_at }}</p>
   <p>物种：{{ manifest.project.organism }}；输出目录：<code>{{ manifest.output_dir }}</code></p>
+  <p>出图风格：临床期刊版；审阅图清单：<code>{{ manifest.style_review.figure_manifest }}</code></p>
 
   <h2>运行概览</h2>
   <table>
-    <thead><tr><th>模块</th><th>状态</th><th>特征数</th><th>样本数</th><th>R后端</th></tr></thead>
+    <thead><tr><th>模块</th><th>状态</th><th>Raw QC</th><th>特征数</th><th>样本数</th><th>R后端</th></tr></thead>
     <tbody>
     {% for module in modules %}
       <tr>
         <td>{{ module.title_cn }} ({{ module.module }})</td>
         <td>{{ module.status }}</td>
+        <td>{{ module.raw_qc.status }}</td>
         <td>{{ module.n_features }}</td>
         <td>{{ module.n_samples }}</td>
         <td>{{ module.formal_backend.r_entrypoint }}</td>
@@ -45,6 +47,8 @@
   {% for module in modules %}
     <h3>{{ module.title_cn }}</h3>
     <ul>
+      <li>Raw QC manifest：<code>{{ module.raw_qc.manifest_path }}</code></li>
+      <li>Raw QC 标准矩阵：<code>{{ module.raw_qc.artifacts.objects.standard_matrix }}</code></li>
       {% for key, value in module.artifacts.tables.items() %}
         <li>表格 {{ key }}：<code>{{ value }}</code></li>
       {% endfor %}
