@@ -4,13 +4,15 @@
   <meta charset="utf-8">
   <title>{{ manifest.project.name }} - Ultimate 多组学报告</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 32px; color: #1f2933; }
-    h1, h2 { color: #102a43; }
+    {% set style = manifest.figure_style or {} %}
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 32px; color: {{ style.get("text", "#4B5368") }}; background: {{ style.get("background", "#FFFFFF") }}; }
+    h1, h2 { color: {{ style.get("primary", "#8C6FF7") }}; }
+    h3 { color: {{ style.get("secondary", "#31C5B7") }}; }
     table { border-collapse: collapse; width: 100%; margin: 12px 0 24px; }
-    th, td { border: 1px solid #d9e2ec; padding: 8px; text-align: left; font-size: 14px; }
-    th { background: #f0f4f8; }
-    code { background: #f0f4f8; padding: 2px 4px; border-radius: 4px; }
-    .warn { color: #9a3412; }
+    th, td { border: 1px solid {{ style.get("grid", "#EEF2F7") }}; padding: 8px; text-align: left; font-size: 14px; }
+    th { background: {{ style.get("bar_light", "#DDF4F3") }}; color: {{ style.get("text", "#4B5368") }}; }
+    code { background: #F6F8FB; color: {{ style.get("axis", "#7B8498") }}; padding: 2px 4px; border-radius: 4px; }
+    .warn { color: {{ style.get("case", "#F26F8F") }}; }
   </style>
 </head>
 <body>
@@ -21,18 +23,35 @@
 
   <h2>运行概览</h2>
   <table>
-    <thead><tr><th>模块</th><th>状态</th><th>Raw QC</th><th>特征数</th><th>样本数</th><th>R后端</th></tr></thead>
+    <thead><tr><th>模块</th><th>状态</th><th>analysis_level</th><th>交付许可</th><th>Raw QC</th><th>特征数</th><th>样本数</th><th>R后端</th></tr></thead>
     <tbody>
     {% for module in modules %}
       <tr>
         <td>{{ module.title_cn }} ({{ module.module }})</td>
         <td>{{ module.status }}</td>
+        <td>{{ module.get("analysis_level", "not_recorded") }}</td>
+        <td>{{ module.get("delivery_allowed", false) }}</td>
         <td>{{ (module.get("raw_qc") or {}).get("status", "not_recorded") }}</td>
         <td>{{ module.get("n_features", "NA") }}</td>
         <td>{{ module.get("n_samples", "NA") }}</td>
         <td>{{ (module.get("formal_backend") or {}).get("r_entrypoint", "python/backend") }}</td>
       </tr>
     {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>复现信息</h2>
+  {% set repro = manifest.get("reproducible_package") or {} %}
+  {% set slurm = manifest.get("slurm") or {} %}
+  <table>
+    <tbody>
+      <tr><th>可复现命令</th><td><code>{{ manifest.get("reproducible_command", "not_recorded") }}</code></td></tr>
+      <tr><th>配置快照</th><td><code>{{ manifest.get("config_snapshot", "not_recorded") }}</code></td></tr>
+      <tr><th>复现代码包</th><td><code>{{ repro.get("package_dir", "not_recorded") }}</code></td></tr>
+      <tr><th>重跑脚本</th><td><code>{{ repro.get("rerun_script", "not_recorded") }}</code></td></tr>
+      <tr><th>输入校验</th><td><code>{{ repro.get("input_checksums", "not_recorded") }}</code></td></tr>
+      <tr><th>软件版本</th><td><code>{{ repro.get("software_versions", "not_recorded") }}</code></td></tr>
+      <tr><th>Slurm Job ID</th><td><code>{{ slurm.get("slurm_job_id", "") or "not_recorded" }}</code></td></tr>
     </tbody>
   </table>
 
@@ -49,6 +68,8 @@
     <ul>
       {% set raw_qc = module.get("raw_qc") or {} %}
       {% set artifacts = module.get("artifacts") or {"tables": {}, "figures": {}, "objects": {}} %}
+      <li>analysis_level：<code>{{ module.get("analysis_level", "not_recorded") }}</code></li>
+      <li>交付许可：<code>{{ module.get("delivery_allowed", false) }}</code>；原因：<code>{{ module.get("non_delivery_reason", "") or "none" }}</code></li>
       <li>Raw QC manifest：<code>{{ raw_qc.get("manifest_path", "not_recorded") }}</code></li>
       <li>Raw QC 标准矩阵：<code>{{ ((raw_qc.get("artifacts") or {}).get("objects") or {}).get("standard_matrix", "not_recorded") }}</code></li>
       {% for key, value in (artifacts.get("tables") or {}).items() %}

@@ -1,0 +1,23 @@
+name: ultimate-scrna-heavy
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - pip
+  - scanpy
+  - anndata
+  - pandas
+  - numpy
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - h5py
+  - leidenalg
+  - python-igraph
+  - scvi-tools
+  - scvelo
+  - cellrank
+  - scarches
+  - pyscenic

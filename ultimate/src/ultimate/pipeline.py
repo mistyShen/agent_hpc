@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import json
+import os
 import platform
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from ultimate.config import dump_yaml, enabled_modules, load_config, load_samples, output_dir
+from ultimate.config import dump_yaml, enabled_modules, load_analysis_request, load_config, load_samples, output_dir
 from ultimate.modules import run_module
 from ultimate.plot_style import generate_style_review, set_active_style_from_config
 from ultimate.preflight import run_preflight
 from ultimate.raw_qc import run_raw_qc
 from ultimate.report import build_report
+from ultimate.reproducibility import export_reproducible_package
 
 
 def run_pipeline_from_config(config_path: Path) -> dict[str, Any]:
@@ -26,9 +28,12 @@ def run_pipeline(config: dict[str, Any]) -> dict[str, Any]:
     for directory in ("results/figures", "results/tables", "objects", "reports", "logs", "raw_qc"):
         (out_dir / directory).mkdir(parents=True, exist_ok=True)
     active_style = set_active_style_from_config(config)
-    dump_yaml(config, out_dir / "config_snapshot.yaml")
+    config_snapshot = dump_yaml(config, out_dir / "config_snapshot.yaml")
     preflight = run_preflight(config, write=True)
+    if str(preflight.get("status", "")).startswith("blocked"):
+        raise RuntimeError(f"Preflight blocked run: {preflight['status']}")
     samples = load_samples(config)
+    analysis_request = load_analysis_request(config)
     style_review = generate_style_review(out_dir / "reports" / "style_review")
     module_manifests = []
     for module_name in enabled_modules(config):
@@ -47,10 +52,17 @@ def run_pipeline(config: dict[str, Any]) -> dict[str, Any]:
         )
         module_manifest["raw_qc"] = raw_manifest
         module_manifests.append(module_manifest)
+    run_summary = _summarize_run(module_manifests)
     manifest = {
+        "run_id": _run_id(config),
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "status": run_summary["status"],
         "project": config.get("project", {}),
+        "analysis_request": analysis_request,
         "output_dir": str(out_dir),
+        "config_snapshot": str(config_snapshot),
+        "reproducible_command": f"ultimate run --config {config.get('_config_path', '<config.yaml>')}",
+        "slurm": _slurm_context(),
         "python": {
             "version": sys.version.split()[0],
             "executable": sys.executable,
@@ -60,6 +72,8 @@ def run_pipeline(config: dict[str, Any]) -> dict[str, Any]:
         "figure_style": active_style,
         "style_review": style_review,
         "modules": module_manifests,
+        "module_status": run_summary["module_status"],
+        "summary": run_summary,
         "artifacts_root": {
             "figures": str(out_dir / "results" / "figures"),
             "tables": str(out_dir / "results" / "tables"),
@@ -74,7 +88,19 @@ def run_pipeline(config: dict[str, Any]) -> dict[str, Any]:
     report_manifest = build_report(out_dir)
     manifest["report"] = report_manifest
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    repro_manifest = export_reproducible_package(out_dir)
+    manifest["reproducible_package"] = repro_manifest
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    report_manifest = build_report(out_dir)
+    manifest["report"] = report_manifest
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    export_reproducible_package(out_dir)
     return manifest
+
+
+def _slurm_context() -> dict[str, str]:
+    keys = ("SLURM_JOB_ID", "SLURM_JOB_NAME", "SLURM_SUBMIT_DIR", "SLURM_CPUS_PER_TASK", "SLURM_MEM_PER_NODE", "SLURM_JOB_NODELIST")
+    return {key.lower(): os.environ.get(key, "") for key in keys}
 
 
 def _attach_raw_handoff(config: dict[str, Any], module_name: str, raw_manifest: dict[str, Any]) -> None:
@@ -85,3 +111,34 @@ def _attach_raw_handoff(config: dict[str, Any], module_name: str, raw_manifest: 
     standard_matrix = ((raw_manifest.get("artifacts") or {}).get("objects") or {}).get("standard_matrix")
     if standard_matrix and Path(standard_matrix).exists():
         module_cfg["input_matrix"] = standard_matrix
+
+
+def _run_id(config: dict[str, Any]) -> str:
+    project = config.get("project") or {}
+    name = str(project.get("name") or "ultimate_run").strip() or "ultimate_run"
+    safe_name = "".join(ch if ch.isalnum() or ch in {"-", "_"} else "_" for ch in name)
+    return f"{safe_name}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+
+
+def _summarize_run(module_manifests: list[dict[str, Any]]) -> dict[str, Any]:
+    module_status = {str(module.get("module")): str(module.get("status", "unknown")) for module in module_manifests}
+    module_skip_reasons = {
+        str(module.get("module")): module.get("skip_reasons", [])
+        for module in module_manifests
+        if module.get("skip_reasons")
+    }
+    partial_modules = [
+        module_name
+        for module_name, status in module_status.items()
+        if status.startswith("partial") or status.startswith("missing") or status.startswith("failed")
+    ]
+    status = "ready" if not partial_modules else "partial"
+    return {
+        "status": status,
+        "module_count": len(module_manifests),
+        "ready_module_count": len(module_manifests) - len(partial_modules),
+        "partial_module_count": len(partial_modules),
+        "partial_modules": partial_modules,
+        "module_status": module_status,
+        "module_skip_reasons": module_skip_reasons,
+    }

@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from ultimate.analysis_levels import classify_analysis_level
 from ultimate.constants import MODULE_SPECS
 from ultimate.bulk import is_bulk_module, run_bulk_module
 from ultimate.plot_style import apply_clinical_journal_style, continuous_cmap, save_figure
@@ -38,7 +39,23 @@ def run_module(
         directory.mkdir(parents=True, exist_ok=True)
 
     module_cfg = (config.get("modules") or {}).get(module_name) or {}
-    matrix = _load_matrix(module_cfg.get("input_matrix"), samples)
+    validated_run_dir = _validated_run_dir(module_cfg)
+    if validated_run_dir is not None:
+        return _run_validated_run_backend(
+            module_name=module_name,
+            config=config,
+            run_dir=validated_run_dir,
+            tables_dir=tables_dir,
+        )
+
+    input_matrix = module_cfg.get("input_matrix")
+    matrix_is_stub = not (input_matrix and Path(str(input_matrix)).exists())
+    level = classify_analysis_level(
+        requested_level=module_cfg.get("analysis_level"),
+        input_path=input_matrix,
+        is_stub=matrix_is_stub,
+    )
+    matrix = _load_matrix(input_matrix, samples)
     design = config.get("design") or {}
     stats = _differential_stats(matrix, samples, design)
 
@@ -59,7 +76,7 @@ def run_module(
         "title_cn": MODULE_SPECS[module_name].title_cn,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": "complete_smoke_backend",
-        "analysis_level": module_cfg.get("analysis_level", "smoke_then_formal_backend"),
+        **level.to_manifest_fields(),
         "input_matrix": module_cfg.get("input_matrix"),
         "n_features": int(matrix.shape[0]),
         "n_samples": int(matrix.shape[1]),
@@ -79,6 +96,163 @@ def run_module(
     manifest_path.write_text(json.dumps(module_manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     module_manifest["manifest_path"] = str(manifest_path)
     return module_manifest
+
+
+def _validated_run_dir(module_cfg: dict[str, Any]) -> Path | None:
+    direct = module_cfg.get("validated_run_dir") or module_cfg.get("validation_run_dir")
+    validation_cfg = module_cfg.get("validation") if isinstance(module_cfg.get("validation"), dict) else {}
+    nested = validation_cfg.get("run_dir") if validation_cfg else None
+    value = direct or nested
+    return Path(str(value)).expanduser() if value else None
+
+
+def _run_validated_run_backend(
+    *,
+    module_name: str,
+    config: dict[str, Any],
+    run_dir: Path,
+    tables_dir: Path,
+) -> dict[str, Any]:
+    run_dir = run_dir.resolve()
+    source_manifest_path = run_dir / "run_manifest.json"
+    artifacts: dict[str, dict[str, str]] = {"tables": {}, "figures": {}, "objects": {}}
+    index_rows: list[dict[str, Any]] = []
+    skip_reasons: list[str] = []
+    source_manifest: dict[str, Any] = {}
+    status = "complete_validated_run_backend"
+
+    if not source_manifest_path.exists():
+        status = "partial:validated_run_manifest_missing"
+        skip_reasons.append(f"missing_run_manifest:{source_manifest_path}")
+    else:
+        try:
+            source_manifest = json.loads(source_manifest_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            status = "partial:validated_run_manifest_invalid"
+            skip_reasons.append(f"invalid_run_manifest:{type(exc).__name__}:{exc}")
+        else:
+            source_status = str(source_manifest.get("status", ""))
+            if source_status.lower() != "ready":
+                status = "partial:validated_run_not_ready"
+                skip_reasons.append(f"source_status:{source_status or 'missing'}")
+            artifacts = _validated_artifacts(source_manifest)
+            index_rows = _artifact_index_rows(artifacts)
+
+    index_path = tables_dir / "validated_artifact_index.tsv"
+    pd.DataFrame(
+        index_rows,
+        columns=["category", "key", "path", "exists", "size_bytes"],
+    ).to_csv(index_path, sep="\t", index=False)
+    artifacts["tables"]["validated_artifact_index"] = str(index_path)
+
+    summary_path = tables_dir / "validated_run_summary.json"
+    summary = {
+        "module": module_name,
+        "source_run_dir": str(run_dir),
+        "source_manifest": str(source_manifest_path),
+        "source_status": source_manifest.get("status"),
+        "source_analysis_level": source_manifest.get("analysis_level"),
+        "validation_scope": source_manifest.get("validation_scope"),
+        "n_cells": source_manifest.get("n_cells") or source_manifest.get("n_spots"),
+        "n_features": source_manifest.get("n_features") or source_manifest.get("n_genes") or source_manifest.get("n_peaks"),
+        "n_samples": source_manifest.get("n_samples"),
+    }
+    summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+    artifacts["tables"]["validated_run_summary"] = str(summary_path)
+    try:
+        level = classify_analysis_level(
+            requested_level=str(source_manifest.get("analysis_level") or "validated_backend"),
+            input_path=run_dir,
+            is_demo=bool(source_manifest.get("is_demo", False)),
+            is_stub=bool(source_manifest.get("is_stub", False)),
+            public_dataset=True,
+        )
+        level_fields = level.to_manifest_fields()
+    except ValueError as exc:
+        status = "partial:validated_run_analysis_level_invalid"
+        skip_reasons.append(f"analysis_level_invalid:{exc}")
+        level_fields = classify_analysis_level(requested_level="smoke_backend", is_stub=True).to_manifest_fields()
+
+    module_manifest = {
+        "module": module_name,
+        "title_cn": MODULE_SPECS[module_name].title_cn,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "status": status,
+        **level_fields,
+        "validated_run_dir": str(run_dir),
+        "source_manifest": str(source_manifest_path),
+        "source_status": source_manifest.get("status"),
+        "validation_scope": source_manifest.get("validation_scope"),
+        "n_features": int(summary["n_features"] or 0),
+        "n_samples": int(summary["n_samples"] or summary["n_cells"] or 0),
+        "artifacts": artifacts,
+        "reproducible_command": f"ultimate run --config {config.get('_config_path', '<config.yaml>')}",
+        "backend": {
+            "primary": "validated_run",
+            "source_run_dir": str(run_dir),
+            "storage_policy": "reference_existing_artifacts_without_copying_large_objects",
+        },
+        "formal_backend": {
+            "r_entrypoint": "validated_run_manifest",
+            "status": "validated_outputs_referenced_by_unified_run",
+        },
+        "skip_reasons": skip_reasons,
+    }
+    manifest_path = tables_dir / "module_manifest.json"
+    manifest_path.write_text(json.dumps(module_manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    module_manifest["manifest_path"] = str(manifest_path)
+    return module_manifest
+
+
+def _validated_artifacts(source_manifest: dict[str, Any]) -> dict[str, dict[str, str]]:
+    artifacts: dict[str, dict[str, str]] = {"tables": {}, "figures": {}, "objects": {}}
+    for category in ("tables", "figures"):
+        values = source_manifest.get(category) or []
+        if isinstance(values, dict):
+            iterable = values.items()
+        else:
+            iterable = ((_path_key(value), value) for value in values)
+        for key, value in iterable:
+            if value:
+                artifacts[category][_unique_key(artifacts[category], str(key))] = str(value)
+    objects = source_manifest.get("objects") or {}
+    if isinstance(objects, dict):
+        for key, value in objects.items():
+            if value:
+                artifacts["objects"][_unique_key(artifacts["objects"], str(key))] = str(value)
+    return artifacts
+
+
+def _artifact_index_rows(artifacts: dict[str, dict[str, str]]) -> list[dict[str, Any]]:
+    rows = []
+    for category, values in artifacts.items():
+        for key, value in values.items():
+            path = Path(value)
+            rows.append(
+                {
+                    "category": category,
+                    "key": key,
+                    "path": value,
+                    "exists": path.exists(),
+                    "size_bytes": path.stat().st_size if path.exists() and path.is_file() else "",
+                }
+            )
+    return rows
+
+
+def _path_key(value: Any) -> str:
+    path = Path(str(value))
+    return path.stem or path.name or "artifact"
+
+
+def _unique_key(existing: dict[str, str], key: str) -> str:
+    clean = key.replace(" ", "_").replace("/", "_") or "artifact"
+    if clean not in existing:
+        return clean
+    idx = 2
+    while f"{clean}_{idx}" in existing:
+        idx += 1
+    return f"{clean}_{idx}"
 
 
 def _load_matrix(path_value: Any, samples: pd.DataFrame) -> pd.DataFrame:
