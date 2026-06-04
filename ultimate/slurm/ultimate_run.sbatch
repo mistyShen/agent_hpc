@@ -8,7 +8,8 @@
 
 set -euo pipefail
 
-CONFIG_PATH="${1:?Usage: ultimate_run.sbatch <config.yaml>}"
+CONFIG_PATH="${1:?Usage: ultimate_run.sbatch <config.yaml> [production_approval.json]}"
+PRODUCTION_APPROVAL="${2:-}"
 PROJECT_ROOT="${ULTIMATE_ROOT:-/shared/shen/2026/ultimate}"
 ENV_PREFIX="${ULTIMATE_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-core}"
 CONDA_SH="${CONDA_SH:-/share/home/nshen/miniconda3/etc/profile.d/conda.sh}"
@@ -18,4 +19,9 @@ mkdir -p "$PROJECT_ROOT/logs"
 source "$CONDA_SH"
 conda activate "$ENV_PREFIX"
 cd "$PROJECT_ROOT"
-PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" python -m ultimate.cli run --config "$CONFIG_PATH"
+if [[ -n "$PRODUCTION_APPROVAL" ]]; then
+  PRODUCTION_APPROVAL="$(readlink -f "$PRODUCTION_APPROVAL")"
+  PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" python -m ultimate.cli run --config "$CONFIG_PATH" --production-approval "$PRODUCTION_APPROVAL"
+else
+  PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" python -m ultimate.cli run --config "$CONFIG_PATH"
+fi
