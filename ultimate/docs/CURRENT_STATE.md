@@ -14,9 +14,9 @@
 ## 已通过状态
 
 - 22 个模块标准外壳均为 `ready`。
-- 严格 guard 后 production audit 当前为 `ready_basic=20`，`partial:validation_manifest_not_ready=2`。
-- `genotype_demux` 已用 vireo/cellSNP 公开示例矩阵完成 validated_backend；`perturb_seq`、`hto_demux` 当前仍只有 synthetic/demo validation，按交付护栏不得作为 validated_backend 证据。
-- validation guard 当前无 non-ready 项；validation-index 当前汇总 32 个验证 run。
+- 严格 guard 后 production audit 当前为 `ready_basic=21`，`partial:validation_manifest_not_ready=1`。
+- `genotype_demux` 已用 vireo/cellSNP 公开示例矩阵完成 validated_backend；`hto_demux` 已用 Seurat 12-HTO 公开示例矩阵完成 validated_backend；`perturb_seq` 当前仍只有 synthetic/demo validation，按交付护栏不得作为 validated_backend 证据。
+- validation guard 当前无 non-ready 项；validation-index 当前汇总 33 个验证 run。
 - final acceptance 当前通过 13 项，1 项 partial，原因是 synthetic/demo validation 不再抬升为正式验证证据。
 - `tumor_sc` 已完成 NSCLC raw-count Slurm 专项验证，`analysis_level=validated_backend`，`delivery_allowed=false`。
 - `slurm_tumor_sc_maynard_raw_counts` 基于 Maynard raw h5ad 抽样 3000 细胞，输出 16 个表、4 张图、1 个 h5ad 对象，并纳入 validation index 和 production audit。

@@ -24,6 +24,14 @@ export PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 "$PYTHON" "$PROJECT_ROOT/01_tools/validate_hto_demux_demo.py" \
   --output-dir "$PROJECT_ROOT/validations/slurm_hto_demux_demo"
 
+HTO_PUBLIC_TABLE="${ULTIMATE_HTO_DEMUX_PUBLIC_TABLE:-$PROJECT_ROOT/public_data/hto_demux/seurat_hto12/hto12_hto_mtx_5000.tsv}"
+if [[ -s "$HTO_PUBLIC_TABLE" ]]; then
+  "$PYTHON" "$PROJECT_ROOT/01_tools/validate_hto_demux_demo.py" \
+    --input-table "$HTO_PUBLIC_TABLE" \
+    --source-url "https://satijalab.org/seurat/articles/hashing_vignette.html" \
+    --output-dir "$PROJECT_ROOT/validations/slurm_hto_demux_seurat_public"
+fi
+
 "$PYTHON" "$PROJECT_ROOT/01_tools/validate_genotype_demux_demo.py" \
   --output-dir "$PROJECT_ROOT/validations/slurm_genotype_demux_demo"
 
