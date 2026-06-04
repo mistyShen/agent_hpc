@@ -145,6 +145,7 @@ def _write_approval_template(path: Path, *, config_path: Path, output_dir: Path)
 
 def _write_command_plan(path: Path, *, root: Path, job_config: Path, approval_path: Path, run_mode: str) -> Path:
     approval_arg = f" {approval_path}" if run_mode == "production" else ""
+    log_dir = job_config.parents[1] / "logs"
     lines = [
         "# Ultimate job command plan",
         "",
@@ -159,6 +160,8 @@ def _write_command_plan(path: Path, *, root: Path, job_config: Path, approval_pa
         "```bash",
         f"hpc-sbatch {root / 'slurm' / 'ultimate_run.sbatch'} {job_config}{approval_arg}",
         "```",
+        "",
+        f"运行日志会镜像到：`{log_dir}`。",
         "",
         "## Rebuild delivery/repro package",
         "",
@@ -176,7 +179,12 @@ def _write_submit_script(path: Path, *, root: Path, job_config: Path, approval_p
     content = f"""#!/usr/bin/env bash
 set -euo pipefail
 
-hpc-sbatch "{root / 'slurm' / 'ultimate_run.sbatch'}" "{job_config}"{approval_arg}
+JOB_DIR="{job_config.parents[1]}"
+LOG_DIR="$JOB_DIR/logs"
+mkdir -p "$LOG_DIR"
+SUBMIT_LOG="$LOG_DIR/slurm_submit_$(date -u +%Y%m%dT%H%M%SZ).log"
+echo "hpc-sbatch {root / 'slurm' / 'ultimate_run.sbatch'} {job_config}{approval_arg}" | tee "$SUBMIT_LOG"
+hpc-sbatch "{root / 'slurm' / 'ultimate_run.sbatch'}" "{job_config}"{approval_arg} | tee -a "$SUBMIT_LOG"
 """
     path.write_text(content, encoding="utf-8")
     path.chmod(path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP)

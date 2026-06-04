@@ -29,6 +29,10 @@ def test_prepare_job_creates_shared_layout_and_command_plan(tmp_path: Path) -> N
     assert "hpc-sbatch" in command_plan
     assert "ultimate_run.sbatch" in command_plan
     assert "production_approval.json" in command_plan
+    assert str(job_dir / "logs") in command_plan
+    submit_script = (job_dir / "config" / "submit.sh").read_text(encoding="utf-8")
+    assert "slurm_submit_" in submit_script
+    assert 'LOG_DIR="$JOB_DIR/logs"' in submit_script
 
     config = load_config(job_dir / "config" / "project.yaml").raw
     assert config["project"]["job_id"] == "ORDER_001"
