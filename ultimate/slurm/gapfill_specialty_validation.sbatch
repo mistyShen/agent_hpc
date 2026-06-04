@@ -21,6 +21,18 @@ export PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 "$PYTHON" "$PROJECT_ROOT/01_tools/validate_perturb_seq_demo.py" \
   --output-dir "$PROJECT_ROOT/validations/slurm_perturb_seq_demo"
 
+PERTURB_PUBLIC_H5AD="${ULTIMATE_PERTURB_SEQ_PUBLIC_H5AD:-$PROJECT_ROOT/public_data/perturb_seq/adamson_2016_pilot/adamson_2016_pilot.h5ad}"
+if [[ -s "$PERTURB_PUBLIC_H5AD" ]]; then
+  PERTURB_PYTHON="${ULTIMATE_SCRNA_ENV:-$PROJECT_ROOT/.conda/envs/ultimate-scrna}/bin/python"
+  if [[ ! -x "$PERTURB_PYTHON" ]]; then
+    PERTURB_PYTHON="$PYTHON"
+  fi
+  "$PERTURB_PYTHON" "$PROJECT_ROOT/01_tools/validate_perturb_seq_demo.py" \
+    --input-h5ad "$PERTURB_PUBLIC_H5AD" \
+    --source-url "https://exampledata.scverse.org/pertpy/adamson_2016_pilot.h5ad" \
+    --output-dir "$PROJECT_ROOT/validations/slurm_perturb_seq_adamson_public"
+fi
+
 "$PYTHON" "$PROJECT_ROOT/01_tools/validate_hto_demux_demo.py" \
   --output-dir "$PROJECT_ROOT/validations/slurm_hto_demux_demo"
 

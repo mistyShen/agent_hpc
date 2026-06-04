@@ -46,7 +46,7 @@ VALIDATION_HINTS = {
     "mtdna": ("slurm_mtdna_0518", "Existing 0518 mtDNA validation"),
     "cite_seq": ("cite_seq_10x_pbmc_cli", "10x PBMC CITE-seq public validation"),
     "spatial": ("slurm_spatial_squidpy_visium", "Squidpy Visium public validation"),
-    "perturb_seq": ("slurm_perturb_seq_demo", "Perturb-seq guide assignment and perturbation demo validation"),
+    "perturb_seq": ("slurm_perturb_seq_adamson_public", "Adamson public Perturb-seq h5ad validation"),
     "hto_demux": ("slurm_hto_demux_seurat_public", "Seurat public HTO count demultiplex matrix validation"),
     "genotype_demux": ("slurm_genotype_demux_vireo_public", "Vireo/cellSNP public genotype demultiplex matrix validation"),
     "tumor_sc": ("slurm_tumor_sc_maynard_raw_counts", "NSCLC tumor single-cell raw-count specialty validation"),
@@ -184,9 +184,9 @@ VALIDATION_RUN_REQUIREMENTS = {
         "min_reports": 2,
     },
     "slurm_perturb_seq": {
-        "label_cn": "Perturb-seq/CRISPR 筛选 Slurm 验证",
-        "run_dir": "validations/slurm_perturb_seq_demo",
-        "min_tables": 4,
+        "label_cn": "Adamson Perturb-seq/CRISPR 筛选公开 h5ad 验证",
+        "run_dir": "validations/slurm_perturb_seq_adamson_public",
+        "min_tables": 6,
         "min_figures": 3,
         "min_objects": 1,
         "min_reports": 2,
@@ -431,7 +431,7 @@ def _next_action(module: str, status: str, validation_status: str) -> str:
     if module in {"scdna", "scepi", "cite_seq"}:
         return "Download or collect public demo data for this modality and run raw-to-object validation."
     if module in {"perturb_seq", "hto_demux", "genotype_demux"}:
-        return "Keep synthetic validation current and replace with project/public modality data when available."
+        return "Keep public matrix/object validation current and add formal model backends when needed."
     if module in {"functional_state", "tumor_sc", "method_tools"}:
         return "Promote matrix/object-level analysis from smoke backend to formal scanpy/Seurat workflow."
     return "Run public or existing production validation and record run_manifest.json."
