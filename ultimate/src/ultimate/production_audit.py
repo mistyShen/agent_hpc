@@ -12,6 +12,7 @@ from ultimate.analysis_levels import require_real_evidence
 from ultimate.bulk import BULK_MODULES
 from ultimate.constants import MODULE_ORDER, MODULE_SPECS, SUPPORTED_ORGANISMS
 from ultimate.module_maturity import build_module_maturity_rows
+from ultimate.module_standardization import build_module_standardization_rows
 from ultimate.modules.common import tool_coverage_rows
 from ultimate.plot_style import available_styles
 from ultimate.raw_qc import RAW_CONTRACTS
@@ -48,6 +49,7 @@ VALIDATION_HINTS = {
     "perturb_seq": ("slurm_perturb_seq_demo", "Perturb-seq guide assignment and perturbation demo validation"),
     "hto_demux": ("slurm_hto_demux_demo", "HTO/Cell Hashing demultiplex demo validation"),
     "genotype_demux": ("slurm_genotype_demux_demo", "Genotype demultiplex demo validation"),
+    "tumor_sc": ("slurm_tumor_sc_maynard_raw_counts", "NSCLC tumor single-cell raw-count specialty validation"),
     "method_tools": ("slurm_method_tools_nsclc", "NSCLC scRNA method-tools baseline validation"),
 }
 
@@ -58,15 +60,6 @@ DERIVED_VALIDATION_HINTS = {
         "required_artifacts": (
             "results/tables/signature_scores_by_cell_type.tsv",
             "results/figures/signature_score_heatmap.png",
-        ),
-    },
-    "tumor_sc": {
-        "validation_dir": "slurm_scrna_nsclc_lambrechts",
-        "validation_label": "NSCLC tumor single-cell CNV/signature validation",
-        "required_artifacts": (
-            "results/tables/tumor_cnv_proxy.tsv",
-            "results/figures/tumor_cnv_proxy_by_chromosome.png",
-            "results/tables/cell_type_proportions.tsv",
         ),
     },
     "scepi": {
@@ -87,6 +80,17 @@ OPTIONAL_LICENSED = {
     "Space Ranger": "10x Visium 原厂计数；平台提供 Space Ranger 输出读取和 squidpy/Seurat 开源分析。",
     "CIBERSORT": "授权免疫浸润脚本；平台默认提供开源 signature/ssGSEA 替代。",
 }
+
+REQUIRED_GUARD_FIELDS = (
+    "analysis_level",
+    "is_demo",
+    "is_stub",
+    "delivery_allowed",
+    "validation_evidence_allowed",
+    "non_delivery_reason",
+)
+
+VALID_ANALYSIS_LEVELS = {"demo_result", "smoke_backend", "validated_backend", "production_backend"}
 
 VALIDATION_RUN_REQUIREMENTS = {
     "scrna_mvp_h5ad": {
@@ -171,6 +175,14 @@ VALIDATION_RUN_REQUIREMENTS = {
         "min_objects": 1,
         "min_reports": 2,
     },
+    "slurm_tumor_sc": {
+        "label_cn": "NSCLC 肿瘤单细胞 raw-count 专项 Slurm 验证",
+        "run_dir": "validations/slurm_tumor_sc_maynard_raw_counts",
+        "min_tables": 8,
+        "min_figures": 3,
+        "min_objects": 1,
+        "min_reports": 2,
+    },
     "slurm_perturb_seq": {
         "label_cn": "Perturb-seq/CRISPR 筛选 Slurm 验证",
         "run_dir": "validations/slurm_perturb_seq_demo",
@@ -245,6 +257,10 @@ def run_production_audit(root: Path, output_dir: Path | None = None) -> dict[str
     maturity_path = output_dir / "module_maturity_table.tsv"
     pd.DataFrame(maturity_rows).to_csv(maturity_path, sep="\t", index=False)
 
+    standardization_rows = build_module_standardization_rows()
+    standardization_path = output_dir / "module_standardization_matrix.tsv"
+    pd.DataFrame(standardization_rows).to_csv(standardization_path, sep="\t", index=False)
+
     coverage_rows = [row for module in MODULE_ORDER for row in tool_coverage_rows(module)]
     coverage_path = output_dir / "tool_coverage_by_module.tsv"
     pd.DataFrame(coverage_rows).to_csv(coverage_path, sep="\t", index=False)
@@ -269,8 +285,10 @@ def run_production_audit(root: Path, output_dir: Path | None = None) -> dict[str
         "validation_evidence_matrix": str(validation_path),
         "final_acceptance_checklist": str(final_path),
         "module_maturity_table": str(maturity_path),
+        "module_standardization_matrix": str(standardization_path),
         "tool_coverage_by_module": str(coverage_path),
         "final_acceptance_summary": _final_summary(final_rows),
+        "module_standardization_summary": _standardization_summary(standardization_rows),
         "next_steps": str(next_steps_path),
         "licensed_optional": OPTIONAL_LICENSED,
     }
@@ -309,6 +327,14 @@ def _capability_row(root: Path, module: str) -> dict[str, Any]:
     }
 
 
+def _standardization_summary(rows: list[dict[str, Any]]) -> dict[str, int]:
+    summary = {"ready": 0, "partial": 0}
+    for row in rows:
+        status = str(row.get("overall_status") or "partial")
+        summary[status if status in summary else "partial"] += 1
+    return summary
+
+
 def _validation_evidence(root: Path, module: str) -> dict[str, str]:
     if module in BULK_MODULES:
         return {"validation": "not_required", "validation_label": "", "evidence_manifest": "", "evidence_artifacts": ""}
@@ -317,7 +343,7 @@ def _validation_evidence(root: Path, module: str) -> dict[str, str]:
         validation_dir, validation_label = VALIDATION_HINTS[module]
         run_dir = root / "validations" / validation_dir
         manifest = run_dir / "run_manifest.json"
-        if _ready_manifest(manifest):
+        if _ready_validation_manifest(manifest):
             return {
                 "validation": "available",
                 "validation_label": validation_label,
@@ -337,7 +363,7 @@ def _validation_evidence(root: Path, module: str) -> dict[str, str]:
         manifest = run_dir / "run_manifest.json"
         artifacts = tuple(str(value) for value in hint["required_artifacts"])
         artifact_paths = [run_dir / artifact for artifact in artifacts]
-        if _ready_manifest(manifest) and all(path.exists() and path.stat().st_size > 0 for path in artifact_paths):
+        if _ready_validation_manifest(manifest) and all(path.exists() and path.stat().st_size > 0 for path in artifact_paths):
             return {
                 "validation": "available",
                 "validation_label": str(hint["validation_label"]),
@@ -362,6 +388,21 @@ def _ready_manifest(path: Path) -> bool:
     except (OSError, json.JSONDecodeError):
         return False
     return str(manifest.get("status", "")).lower() == "ready"
+
+
+def _ready_validation_manifest(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    if str(manifest.get("status", "")).lower() != "ready":
+        return False
+    guard_status, _, _ = _manifest_guard_status(manifest)
+    if guard_status != "ready":
+        return False
+    return bool(manifest.get("validation_evidence_allowed") is True)
 
 
 def _backend_label(module: str, validation_status: str) -> str:
@@ -511,6 +552,9 @@ def _validation_evidence_row(root: Path, key: str, requirement: dict[str, Any]) 
         missing.append(f"modules<{requirement.get('min_modules')}")
     if raw_qc_count < int(requirement.get("min_raw_qc_manifests", 0)):
         missing.append(f"raw_qc_manifests<{requirement.get('min_raw_qc_manifests')}")
+    guard_status, guard_missing, guard_invalid = _manifest_guard_status(manifest or {})
+    if guard_status != "ready":
+        missing.append(f"guard_status={guard_status}")
     real_evidence_note = ""
     if requirement.get("require_real_evidence"):
         real_ready, real_evidence_note = require_real_evidence(manifest or {})
@@ -533,9 +577,42 @@ def _validation_evidence_row(root: Path, key: str, requirement: dict[str, Any]) 
         "ready_module_count": ready_module_count,
         "analysis_level": str((manifest or {}).get("analysis_level", "")),
         "delivery_allowed": str((manifest or {}).get("delivery_allowed", "")),
+        "validation_evidence_allowed": str((manifest or {}).get("validation_evidence_allowed", "")),
+        "guard_status": guard_status,
+        "guard_missing_fields": ",".join(guard_missing),
+        "guard_invalid_fields": ",".join(guard_invalid),
         "real_evidence_note": real_evidence_note,
         "missing_or_gap": ";".join(missing),
     }
+
+
+def _manifest_guard_status(manifest: dict[str, Any]) -> tuple[str, list[str], list[str]]:
+    missing = [field for field in REQUIRED_GUARD_FIELDS if field not in manifest]
+    invalid = _invalid_guard_fields(manifest)
+    if missing:
+        return "missing_guard_fields", missing, invalid
+    if invalid:
+        return "invalid_guard_fields", missing, invalid
+    return "ready", missing, invalid
+
+
+def _invalid_guard_fields(manifest: dict[str, Any]) -> list[str]:
+    invalid: list[str] = []
+    if manifest.get("analysis_level") not in VALID_ANALYSIS_LEVELS:
+        invalid.append("analysis_level")
+    for field in ("is_demo", "is_stub", "delivery_allowed", "validation_evidence_allowed"):
+        if not isinstance(manifest.get(field), bool):
+            invalid.append(field)
+    if manifest.get("delivery_allowed") is True and manifest.get("analysis_level") != "production_backend":
+        invalid.append("delivery_allowed_requires_production_backend")
+    if manifest.get("validation_evidence_allowed") is True and manifest.get("analysis_level") not in {
+        "validated_backend",
+        "production_backend",
+    }:
+        invalid.append("validation_evidence_requires_validated_or_production")
+    if manifest.get("delivery_allowed") is False and not manifest.get("non_delivery_reason"):
+        invalid.append("non_delivery_reason")
+    return invalid
 
 
 def _final_acceptance_rows(root: Path, capability_rows: list[dict[str, Any]], validation_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -597,6 +674,7 @@ def _final_acceptance_rows(root: Path, capability_rows: list[dict[str, Any]], va
                     "slurm_scdna",
                     "slurm_mtdna",
                     "slurm_method_tools",
+                    "slurm_tumor_sc",
                     "slurm_perturb_seq",
                     "slurm_hto_demux",
                     "slurm_genotype_demux",
@@ -609,6 +687,12 @@ def _final_acceptance_rows(root: Path, capability_rows: list[dict[str, Any]], va
             "bulk/表格类模块有 Slurm demo 验证",
             validation_status.get("bulk_all_demo") == "ready",
             f"bulk_all_demo={validation_status.get('bulk_all_demo', 'missing')}",
+        ),
+        _requirement_row(
+            "validation_manifest_guard_fields_ready",
+            "生产审计要求的验证 run_manifest 显式记录 analysis_level 和交付边界",
+            all(str(row.get("guard_status")) == "ready" for row in validation_rows),
+            ",".join(f"{row['validation_key']}={row.get('guard_status', 'missing')}" for row in validation_rows),
         ),
         _requirement_row(
             "raw_qc_contracts_all_modules",

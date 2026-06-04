@@ -16,6 +16,7 @@ from ultimate.production_audit import run_production_audit
 from ultimate.report import build_report
 from ultimate.reproducibility import export_reproducible_package
 from ultimate.singlecell_audit import run_singlecell_audit
+from ultimate.validation_index import build_validation_index
 
 
 @click.group()
@@ -104,6 +105,30 @@ def audit_singlecell_command(root: Path, output_dir: Path | None) -> None:
     click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
 
 
+@main.command("validation-index")
+@click.option(
+    "--root",
+    type=click.Path(path_type=Path, exists=True, file_okay=False),
+    default=Path("/shared/shen/2026/ultimate"),
+    show_default=True,
+)
+@click.option(
+    "--validations-dir",
+    type=click.Path(path_type=Path, exists=True, file_okay=False),
+    default=None,
+    help="Directory containing <run>/run_manifest.json files. Defaults to <root>/validations.",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Where validation index artifacts should be written. Defaults to <root>/reports/validation_index.",
+)
+def validation_index_command(root: Path, validations_dir: Path | None, output_dir: Path | None) -> None:
+    manifest = build_validation_index(root=root, validations_dir=validations_dir, output_dir=output_dir)
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+
+
 @main.command("audit-production")
 @click.option(
     "--root",
@@ -119,6 +144,49 @@ def audit_singlecell_command(root: Path, output_dir: Path | None) -> None:
 )
 def audit_production_command(root: Path, output_dir: Path | None) -> None:
     manifest = run_production_audit(root=root, output_dir=output_dir)
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+
+
+@main.command("audit-modules")
+@click.option(
+    "--root",
+    type=click.Path(path_type=Path, exists=True, file_okay=False),
+    default=None,
+    help="Project root to audit. Defaults to the installed ultimate package.",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(path_type=Path),
+    required=True,
+    help="Where module standardization artifacts should be written.",
+)
+def audit_modules_command(root: Path | None, output_dir: Path) -> None:
+    from datetime import datetime, timezone
+
+    import pandas as pd
+
+    from ultimate.module_standardization import build_module_standardization_rows
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    modules_root = root / "src" / "ultimate" / "modules" if root else None
+    rows = build_module_standardization_rows(modules_root=modules_root)
+    matrix_path = output_dir / "module_standardization_matrix.tsv"
+    pd.DataFrame(rows).to_csv(matrix_path, sep="\t", index=False)
+    summary = {
+        "ready": sum(1 for row in rows if row["overall_status"] == "ready"),
+        "partial": sum(1 for row in rows if row["overall_status"] != "ready"),
+    }
+    manifest = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "root": str(root.resolve()) if root else "",
+        "output_dir": str(output_dir.resolve()),
+        "module_count": len(rows),
+        "summary": summary,
+        "module_standardization_matrix": str(matrix_path.resolve()),
+    }
+    manifest_path = output_dir / "run_manifest.json"
+    manifest["manifest_path"] = str(manifest_path.resolve())
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
 
 

@@ -86,6 +86,7 @@ ultimate run --config example_projects/demo_all/config/project.yaml
 ultimate report --run-dir example_projects/demo_all/runs/demo_all
 ultimate styles --style soft_color --output-dir example_projects/style_review
 ultimate audit-production --root /shared/shen/2026/ultimate
+ultimate audit-modules --output-dir /shared/shen/2026/ultimate/audits/module_standardization_latest
 ultimate prepare-intake --root /shared/shen/2026/ultimate --output-dir /shared/shen/2026/ultimate/intake_packages/latest --refresh-audit
 ultimate audit-tools --root /shared/shen/2026/ultimate
 ultimate trial-tools --root /shared/shen/2026/ultimate --batch scrna_core --no-install
@@ -189,7 +190,11 @@ ultimate init-project --type all --output-dir projects/demo_all --demo-data
 hpc-sbatch /shared/shen/2026/ultimate/slurm/ultimate_run.sbatch projects/demo_all/config/project.yaml
 ```
 
-Heavy validation, package installation, and public-data preparation should be submitted through Slurm. Keep large downloads, conda package caches, and analysis outputs on the remote shared filesystem:
+Small smoke checks, audits, and environment repairs can run directly on the
+login node when they are short. Large raw-data analyses, fragments-level
+ATAC/Visium production validation, and long downloads should be submitted
+through Slurm. Keep large downloads, conda package caches, and analysis outputs
+on the remote shared filesystem:
 
 ```bash
 hpc-sbatch /shared/shen/2026/ultimate/slurm/singlecell_validation_suite.sbatch
@@ -197,9 +202,11 @@ hpc-sbatch /shared/shen/2026/ultimate/slurm/setup_singlecell_envs.sbatch genome_
 hpc-sbatch /shared/shen/2026/ultimate/slurm/tool_trial_batch.sbatch scrna_core
 hpc-sbatch /shared/shen/2026/ultimate/slurm/download_public_singlecell_data.sbatch
 hpc-sbatch /shared/shen/2026/ultimate/slurm/gapfill_specialty_validation.sbatch
+hpc-sbatch /shared/shen/2026/ultimate/slurm/tumor_sc_validation.sbatch
 hpc-sbatch /shared/shen/2026/ultimate/slurm/setup_bulk_envs.sbatch
 hpc-sbatch /shared/shen/2026/ultimate/slurm/prepare_bulk_public_data.sbatch
 hpc-sbatch /shared/shen/2026/ultimate/slurm/bulk_validation_suite.sbatch
+hpc-sbatch /shared/shen/2026/ultimate/slurm/validation_index.sbatch
 ```
 
 The default cache and output locations are under `/shared/shen/2026/ultimate/.conda/`, `/shared/shen/2026/ultimate/public_data/`, `/shared/shen/2026/ultimate/validations/`, and `/shared/shen/2026/ultimate/audits/`.
@@ -214,6 +221,49 @@ Every run writes:
 - `run_manifest.json`
 
 Missing optional tools are reported in `preflight_manifest.json`, `run_manifest.json`, and the Chinese report instead of failing silently.
+
+## Current Single-Cell Completion Snapshot
+
+The single-cell line is now smoke-validated across the core public/available
+modalities. Refresh the capability matrix and the run index with:
+
+```bash
+ultimate audit-singlecell --root /shared/shen/2026/ultimate \
+  --output-dir /shared/shen/2026/ultimate/audits/singlecell_latest
+ultimate validation-index --root /shared/shen/2026/ultimate \
+  --output-dir /shared/shen/2026/ultimate/reports/validation_index
+ultimate audit-modules --root /shared/shen/2026/ultimate \
+  --output-dir /shared/shen/2026/ultimate/audits/module_standardization_latest
+ROOT=/shared/shen/2026/ultimate
+$ROOT/.conda/envs/ultimate-core/bin/python $ROOT/01_tools/check_validation_manifests.py \
+  --root $ROOT \
+  --validations-dir $ROOT/validations \
+  --output-tsv $ROOT/audits/validation_guard_latest/validation_guard_check.tsv
+```
+
+Interpretation policy:
+
+- `ready`: current dependency/data checks for that audit row pass. Use
+  `validation-index` and `audit-production` before treating a module as
+  validated evidence.
+- `module_standardization_matrix.tsv`: checks every module's shared shell
+  (`contract/preflight/demo/validate/run/report/handoff/limitations/tests`),
+  demo manifest guard fields, handoff template, limitations, and required
+  output roots. This is a code/readiness audit only, not a scientific result.
+- `validation_guard_check.tsv`: checks validation `run_manifest.json` files for
+  explicit `analysis_level`, demo/stub flags, delivery permission, evidence
+  permission, and non-delivery reason. It records Slurm metadata when present,
+  but short command-line checks are not rejected solely for missing Slurm ids.
+  Use `--normalize` only after choosing a backup directory.
+- `partial:licensed_optional_missing`: open pipeline is usable; upstream vendor
+  tools such as Cell Ranger, Cell Ranger ATAC/ARC, or Space Ranger require a
+  user-provided licensed path.
+- `partial:data_required` or `partial:dependency_required`: quote and run only
+  after the listed data or dependency gap is resolved.
+
+Matrix-level smoke validations are not a promise of best parameters for every
+large project. Fragments-level scATAC, full raw FASTQ, and complete Visium
+production workflows should be submitted as dedicated Slurm jobs.
 
 ## Tool Audit And Lean Trials
 

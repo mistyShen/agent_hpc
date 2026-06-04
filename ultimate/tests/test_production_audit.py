@@ -20,8 +20,10 @@ def test_production_audit_writes_readiness_artifacts(tmp_path: Path) -> None:
     assert Path(manifest["validation_evidence_matrix"]).exists()
     assert Path(manifest["final_acceptance_checklist"]).exists()
     assert Path(manifest["module_maturity_table"]).exists()
+    assert Path(manifest["module_standardization_matrix"]).exists()
     assert Path(manifest["tool_coverage_by_module"]).exists()
     assert "final_acceptance_summary" in manifest
+    assert manifest["module_standardization_summary"]["ready"] == len(MODULE_ORDER)
     assert Path(manifest["next_steps"]).exists()
     assert sum(manifest["summary"].values()) == len(MODULE_ORDER)
 
@@ -33,6 +35,19 @@ def test_cli_styles_generates_review(tmp_path: Path) -> None:
     assert result.exit_code == 0, result.output
     assert (out_dir / "style_review_manifest.json").exists()
     assert (out_dir / "qc_bar_review.png").exists()
+
+
+def test_cli_audit_modules_generates_standardization_matrix(tmp_path: Path) -> None:
+    runner = CliRunner()
+    out_dir = tmp_path / "module_audit"
+    result = runner.invoke(main, ["audit-modules", "--root", "ultimate", "--output-dir", str(out_dir)])
+    assert result.exit_code == 0, result.output
+    assert (out_dir / "run_manifest.json").exists()
+    matrix = out_dir / "module_standardization_matrix.tsv"
+    assert matrix.exists()
+    text = matrix.read_text(encoding="utf-8")
+    assert "demo_manifest_status" in text
+    assert "overall_status" in text
 
 
 def test_production_audit_rejects_demo_scrna_mvp_as_real_evidence(tmp_path: Path) -> None:
@@ -66,3 +81,17 @@ def test_production_audit_rejects_demo_scrna_mvp_as_real_evidence(tmp_path: Path
     evidence = Path(manifest["validation_evidence_matrix"]).read_text(encoding="utf-8")
     assert "scrna_mvp_10x_mtx" in evidence
     assert "analysis_level=demo_result" in evidence
+    assert "guard_status=missing_guard_fields" in evidence
+
+
+def test_production_capability_requires_guarded_validation_evidence(tmp_path: Path) -> None:
+    root = tmp_path / "ultimate"
+    run_dir = root / "validations" / "slurm_tumor_sc_maynard_raw_counts"
+    run_dir.mkdir(parents=True)
+    (run_dir / "run_manifest.json").write_text('{"status": "ready"}', encoding="utf-8")
+
+    manifest = run_production_audit(root=root, output_dir=tmp_path / "audit")
+
+    matrix = Path(manifest["capability_matrix"]).read_text(encoding="utf-8")
+    tumor_row = next(line for line in matrix.splitlines() if line.startswith("tumor_sc\t"))
+    assert "partial:validation_manifest_not_ready" in tumor_row
