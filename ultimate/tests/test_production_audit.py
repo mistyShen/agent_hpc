@@ -40,7 +40,8 @@ def test_cli_styles_generates_review(tmp_path: Path) -> None:
 def test_cli_audit_modules_generates_standardization_matrix(tmp_path: Path) -> None:
     runner = CliRunner()
     out_dir = tmp_path / "module_audit"
-    result = runner.invoke(main, ["audit-modules", "--root", "ultimate", "--output-dir", str(out_dir)])
+    repo_root = Path(__file__).resolve().parents[1]
+    result = runner.invoke(main, ["audit-modules", "--root", str(repo_root), "--output-dir", str(out_dir)])
     assert result.exit_code == 0, result.output
     assert (out_dir / "run_manifest.json").exists()
     matrix = out_dir / "module_standardization_matrix.tsv"

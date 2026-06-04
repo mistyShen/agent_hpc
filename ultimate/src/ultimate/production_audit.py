@@ -48,7 +48,7 @@ VALIDATION_HINTS = {
     "spatial": ("slurm_spatial_squidpy_visium", "Squidpy Visium public validation"),
     "perturb_seq": ("slurm_perturb_seq_demo", "Perturb-seq guide assignment and perturbation demo validation"),
     "hto_demux": ("slurm_hto_demux_demo", "HTO/Cell Hashing demultiplex demo validation"),
-    "genotype_demux": ("slurm_genotype_demux_demo", "Genotype demultiplex demo validation"),
+    "genotype_demux": ("slurm_genotype_demux_vireo_public", "Vireo/cellSNP public genotype demultiplex matrix validation"),
     "tumor_sc": ("slurm_tumor_sc_maynard_raw_counts", "NSCLC tumor single-cell raw-count specialty validation"),
     "method_tools": ("slurm_method_tools_nsclc", "NSCLC scRNA method-tools baseline validation"),
 }
@@ -200,8 +200,8 @@ VALIDATION_RUN_REQUIREMENTS = {
         "min_reports": 2,
     },
     "slurm_genotype_demux": {
-        "label_cn": "Genotype demultiplex 拆样 Slurm 验证",
-        "run_dir": "validations/slurm_genotype_demux_demo",
+        "label_cn": "Genotype demultiplex vireo/cellSNP 公开矩阵验证",
+        "run_dir": "validations/slurm_genotype_demux_vireo_public",
         "min_tables": 4,
         "min_figures": 3,
         "min_objects": 1,
