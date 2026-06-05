@@ -374,8 +374,8 @@ BACKEND_REGISTRY: tuple[BackendSpec, ...] = (
         "10x PBMC VDJ public data",
         ("clonotype 相同不等于抗原相同；clone-state association 依赖外部 scRNA metadata。",),
         production_allowed=True,
-        backend_status="planned_fully_automatic",
-        skip_reason="Public validation script exists; unified scirpy backend runner not complete.",
+        backend_status="fully_automatic_mvp",
+        skip_reason="Public Slurm validation is still required before promoting to fully_automatic_validated_entrypoint.",
         resource_profile="medium_vdj",
     ),
     _backend(

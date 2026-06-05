@@ -30,6 +30,7 @@ from ultimate.modules.common import (
     write_tool_coverage_table,
 )
 from ultimate.plot_style import apply_clinical_journal_style, continuous_cmap, save_figure
+from ultimate.vdj_backend import has_vdj_backend_config, run_vdj_backend
 
 
 def run_module(
@@ -41,6 +42,8 @@ def run_module(
 ) -> dict[str, Any]:
     if is_bulk_module(module_name):
         return run_bulk_module(module_name=module_name, config=config, output_dir=output_dir, samples=samples)
+    if module_name == "vdj" and has_vdj_backend_config(config):
+        return run_vdj_backend(config=config, output_dir=output_dir, samples=samples)
 
     module_dir = output_dir
     figures_dir = module_dir / "results" / "figures" / module_name
