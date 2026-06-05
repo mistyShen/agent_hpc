@@ -25,6 +25,7 @@ from ultimate.method_tools_backend import has_method_tools_backend_config, run_m
 from ultimate.mtdna_backend import has_mtdna_backend_config, run_mtdna_backend
 from ultimate.multiome_backend import has_multiome_backend_config, run_multiome_backend
 from ultimate.perturb_seq_backend import has_perturb_seq_backend_config, run_perturb_seq_backend
+from ultimate.scdna_backend import has_scdna_backend_config, run_scdna_backend
 from ultimate.modules.common import (
     handoff_plan,
     known_limitations,
@@ -67,6 +68,8 @@ def run_module(
         return run_perturb_seq_backend(config=config, output_dir=output_dir, samples=samples)
     if module_name == "genotype_demux" and has_genotype_demux_backend_config(config):
         return run_genotype_demux_backend(config=config, output_dir=output_dir, samples=samples)
+    if module_name == "scdna" and has_scdna_backend_config(config):
+        return run_scdna_backend(config=config, output_dir=output_dir, samples=samples)
     if module_name == "mtdna" and has_mtdna_backend_config(config):
         return run_mtdna_backend(config=config, output_dir=output_dir, samples=samples)
     if module_name == "method_tools" and has_method_tools_backend_config(config):
