@@ -342,9 +342,9 @@ VALIDATION_RUN_COMMANDS = {
         "compute_policy": "slurm_required_for_internal_validation",
     },
     "slurm_scatac": {
-        "slurm_script": "slurm/singlecell_validation_suite.sbatch",
+        "slurm_script": "slurm/scatac_backend_validation.sbatch",
         "recommended_entrypoint": "hpc-sbatch",
-        "recommended_command": "hpc-sbatch {root}/slurm/singlecell_validation_suite.sbatch",
+        "recommended_command": "hpc-sbatch {root}/slurm/scatac_backend_validation.sbatch",
         "prerequisite_command": "hpc-sbatch {root}/slurm/download_public_singlecell_data.sbatch",
         "module_or_scope": "scatac,scepi",
         "compute_policy": "slurm_required_for_public_validation",
@@ -1472,6 +1472,7 @@ def _slurm_adapter_files_present(root: Path) -> bool:
     required = (
         root / "slurm" / "singlecell_validation_suite.sbatch",
         root / "slurm" / "scrna_mvp_validation.sbatch",
+        root / "slurm" / "scatac_backend_validation.sbatch",
         root / "slurm" / "multiome_backend_validation.sbatch",
         root / "slurm" / "spatial_backend_validation.sbatch",
         root / "slurm" / "cite_seq_backend_validation.sbatch",
