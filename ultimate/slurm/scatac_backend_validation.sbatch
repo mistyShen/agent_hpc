@@ -65,7 +65,7 @@ manifest = {
     "validation_evidence_allowed": False,
     "non_delivery_reason": f"validation_not_completed:{reason}",
     "backend_id": "scatac.matrix.signac_or_snapatac2_mvp",
-    "backend_status": "fully_automatic_mvp",
+    "backend_status": "fully_automatic_validated_entrypoint",
     "backend_skip_reason": reason,
     "slurm_job_id": os.environ.get("SLURM_JOB_ID", ""),
     "slurm_job_name": os.environ.get("SLURM_JOB_NAME", ""),

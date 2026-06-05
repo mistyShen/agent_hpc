@@ -164,7 +164,7 @@ def run_cite_seq_backend(*, config: dict[str, Any], output_dir: Path, samples: p
         "backend_slurm_job_id": backend_plan["backend_slurm_job_id"],
         "formal_backend": {
             "python_entrypoint": "ultimate.cite_seq_backend.run_cite_seq_backend",
-            "status": "fully_automatic_mvp" if not status.startswith("partial") else "partial_inputs_missing",
+            "status": "fully_automatic_validated_entrypoint" if not status.startswith("partial") else "partial_inputs_missing",
         },
         "skip_reasons": missing_inputs,
     }
@@ -362,7 +362,7 @@ def _base_fields(analysis_fields: dict[str, Any], input_artifact: str, source_da
         "input_modality": "rna_adt_matrix",
         "analysis_level": analysis_fields.get("analysis_level"),
         "result_scope": "cite_seq_clr_mvp",
-        "method_status": "fully_automatic_mvp",
+        "method_status": "fully_automatic_validated_entrypoint",
         "delivery_allowed": analysis_fields.get("delivery_allowed"),
     }
 
