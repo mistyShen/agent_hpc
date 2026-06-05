@@ -69,6 +69,7 @@ def test_v3_tabular_public_backends_are_evidence_gated_entrypoints() -> None:
         "scrna.communication.liana": "slurm/scrna_mvp_validation.sbatch",
         "scrna.tumor.copykat": "slurm/tumor_sc_copykat_small_validation.sbatch",
         "functional_state.default.signature_scoring": "slurm/bulk_validation_suite.sbatch",
+        "tumor_sc.default.summary_handoff": "slurm/tumor_sc_backend_validation.sbatch",
         "method_tools.default.delivery_manifest_mvp": "slurm/method_tools_validation.sbatch",
         "hto_demux.default.matrix_assignment_mvp": "slurm/hto_demux_backend_validation.sbatch",
         "perturb_seq.default.guide_assignment_mvp": "slurm/perturb_seq_backend_validation.sbatch",
