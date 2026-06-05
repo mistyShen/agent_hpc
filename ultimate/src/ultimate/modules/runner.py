@@ -19,6 +19,7 @@ from ultimate.backend_registry import build_backend_plan, enrich_backend_plan_fo
 from ultimate.constants import MODULE_SPECS
 from ultimate.bulk import is_bulk_module, run_bulk_module
 from ultimate.cite_seq_backend import has_cite_seq_backend_config, run_cite_seq_backend
+from ultimate.multiome_backend import has_multiome_backend_config, run_multiome_backend
 from ultimate.modules.common import (
     handoff_plan,
     known_limitations,
@@ -46,6 +47,8 @@ def run_module(
         return run_bulk_module(module_name=module_name, config=config, output_dir=output_dir, samples=samples)
     if module_name == "cite_seq" and has_cite_seq_backend_config(config):
         return run_cite_seq_backend(config=config, output_dir=output_dir, samples=samples)
+    if module_name == "multiome" and has_multiome_backend_config(config):
+        return run_multiome_backend(config=config, output_dir=output_dir, samples=samples)
     if module_name == "spatial" and has_spatial_backend_config(config):
         return run_spatial_backend(config=config, output_dir=output_dir, samples=samples)
     if module_name == "vdj" and has_vdj_backend_config(config):
