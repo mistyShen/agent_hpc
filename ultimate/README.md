@@ -275,7 +275,8 @@ $PY $ROOT/01_tools/storage_audit.py --root $ROOT \
 $PY $ROOT/01_tools/write_v2_status_report.py --root $ROOT \
   --output-dir $ROOT/audits/production_latest \
   --storage-summary $ROOT/audits/storage_latest/storage_audit_summary.json \
-  --pytest-status passed
+  --pytest-status passed \
+  --pytest-note "full test suite passed"
 ```
 
 Production-style rehearsal jobs live under `jobs/<job_id>/` and should be
