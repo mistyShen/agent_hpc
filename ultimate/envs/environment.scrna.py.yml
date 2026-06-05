@@ -22,7 +22,7 @@ dependencies:
   - scrublet
   - celltypist
   - cellxgene-census
-  - decoupler
+  - decoupler>=2.1.6
   - gseapy
   - harmonypy
   - bbknn

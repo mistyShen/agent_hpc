@@ -11,7 +11,7 @@ dependencies:
   - muon
   - scvi-tools
   - celltypist
-  - decoupler
+  - decoupler>=2.1.6
   - scvelo
   - cellrank
   - scikit-learn

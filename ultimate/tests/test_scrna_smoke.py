@@ -173,7 +173,12 @@ def _assert_mvp_outputs(manifest: dict) -> None:
     assert "backend_execution_status" in manifest
     assert Path(manifest["backend_execution_manifest"]).exists()
     backend_ids = {row["backend_id"] for row in manifest["backend_status"]}
-    assert {"scrna.qc.scrublet", "scrna.annotation.celltypist", "scrna.pseudobulk.deseq2_edger"}.issubset(backend_ids)
+    assert {
+        "scrna.qc.scrublet",
+        "scrna.annotation.celltypist",
+        "scrna.functional.decoupler_gseapy",
+        "scrna.pseudobulk.deseq2_edger",
+    }.issubset(backend_ids)
     assert Path(manifest["raw_qc_manifest"]).exists()
     for relative in [
         "results/tables/qc_metrics.tsv",
@@ -192,6 +197,10 @@ def _assert_mvp_outputs(manifest: dict) -> None:
         "results/tables/celltypist_annotation.tsv",
         "results/tables/annotation_confidence.tsv",
         "results/tables/annotation_warning.tsv",
+        "results/tables/signature_scores.tsv",
+        "results/tables/pathway_activity.tsv",
+        "results/tables/tf_activity.tsv",
+        "results/tables/functional_backend_status.tsv",
         "results/tables/pseudobulk_de_backend_status.tsv",
         "results/tables/pseudobulk_de_results.tsv",
         "results/tables/pseudobulk_deseq2_edgeR_handoff.R",

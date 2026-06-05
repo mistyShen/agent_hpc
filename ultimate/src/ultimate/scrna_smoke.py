@@ -26,6 +26,13 @@ SIGNATURES: dict[str, list[str]] = {
     "Stemness": ["SOX2", "PROM1", "ALDH1A1", "EPCAM", "KRT19"],
 }
 
+TF_SIGNATURES: dict[str, list[str]] = {
+    "HIF1A_hypoxia_targets": ["VEGFA", "CA9", "SLC2A1", "LDHA"],
+    "NFKB_inflammation_targets": ["IL6", "CXCL8", "CXCL10", "TNF", "NFKBIA"],
+    "MYC_proliferation_targets": ["MKI67", "TOP2A", "PCNA", "TYMS", "MCM5"],
+    "EMT_regulon_like_targets": ["VIM", "ZEB1", "ZEB2", "SNAI1", "FN1"],
+}
+
 
 @dataclass(frozen=True)
 class DemoInputs:
@@ -168,6 +175,14 @@ def run_scrna_validation(
 
     sc.tl.rank_genes_groups(adata, groupby="cluster", method="wilcoxon", pts=True)
     _write_tables(sc, adata, tables, level.analysis_level)
+    functional_status, functional_artifacts = _run_functional_backend(
+        adata=adata,
+        tables=tables,
+        figures=figures,
+        analysis_level=level.analysis_level,
+    )
+    backend_rows.append(functional_status)
+    backend_artifacts.update(functional_artifacts)
     pseudobulk_paths = _write_pseudobulk(counts_adata, adata.obs, tables, level.analysis_level)
     pseudobulk_status, pseudobulk_backend_artifacts = _run_pseudobulk_de_backend(
         tables=tables,
@@ -561,6 +576,105 @@ def _run_celltypist_backend(*, adata, tables: Path, analysis_level: str, model_p
         return _backend_row(backend_id, "failed", analysis_level, reason), _celltypist_artifacts(annotation_path, confidence_path, warning_path)
 
 
+def _run_functional_backend(*, adata, tables: Path, figures: Path, analysis_level: str) -> tuple[dict[str, Any], dict[str, str]]:
+    backend_id = "scrna.functional.decoupler_gseapy"
+    signature_path = tables / "signature_scores.tsv"
+    pathway_path = tables / "pathway_activity.tsv"
+    tf_path = tables / "tf_activity.tsv"
+    status_path = tables / "functional_backend_status.tsv"
+    figure_path = figures / "signature_heatmap.png"
+    artifacts = {
+        "signature_scores": str(signature_path),
+        "pathway_activity": str(pathway_path),
+        "tf_activity": str(tf_path),
+        "functional_backend_status": str(status_path),
+        "signature_heatmap": str(figure_path),
+    }
+    missing = [package for package in ("decoupler", "gseapy") if importlib.util.find_spec(package) is None]
+    if missing:
+        reason = "dependency_missing:" + ",".join(missing)
+        for path in (signature_path, pathway_path, tf_path):
+            _write_skip_table(path, backend_id, analysis_level, reason)
+        _write_functional_status(status_path, backend_id, analysis_level, "skipped", reason)
+        return _backend_row(backend_id, "skipped", analysis_level, reason), artifacts
+    try:
+        import decoupler as dc
+        import gseapy as gp
+        import importlib.metadata as md
+
+        cluster_expr = _cluster_expression_matrix(adata)
+        signature_sets = _present_gene_sets(cluster_expr.columns, SIGNATURES, min_genes=2)
+        tf_sets = _present_gene_sets(cluster_expr.columns, TF_SIGNATURES, min_genes=2)
+        if not signature_sets:
+            reason = "insufficient_gene_overlap:signature_sets"
+            for path in (signature_path, pathway_path, tf_path):
+                _write_skip_table(path, backend_id, analysis_level, reason)
+            _write_functional_status(status_path, backend_id, analysis_level, "skipped", reason)
+            return _backend_row(backend_id, "skipped", analysis_level, reason), artifacts
+
+        _write_signature_scores_table(tables, signature_path, analysis_level, backend_id)
+        pathway_rows = []
+        ssgsea = gp.ssgsea(
+            data=cluster_expr.T,
+            gene_sets=signature_sets,
+            min_size=2,
+            max_size=max(50, int(cluster_expr.shape[1])),
+            outdir=None,
+            no_plot=True,
+            threads=1,
+            seed=123,
+            verbose=False,
+        )
+        gseapy_scores = ssgsea.res2d.copy()
+        gseapy_scores["backend_id"] = backend_id
+        gseapy_scores["method"] = "gseapy_ssgsea"
+        gseapy_scores["analysis_level"] = analysis_level
+        pathway_rows.append(gseapy_scores)
+        decoupler_net = _gene_set_network(signature_sets)
+        decoupler_scores = dc.mt.aucell(cluster_expr, decoupler_net, tmin=2, raw=False, verbose=False)
+        pathway_rows.append(
+            _activity_result_to_long(
+                decoupler_scores,
+                backend_id=backend_id,
+                method="decoupler_aucell",
+                value_name="activity_score",
+                analysis_level=analysis_level,
+            )
+        )
+        pd.concat(pathway_rows, ignore_index=True, sort=False).to_csv(pathway_path, sep="\t", index=False)
+
+        if tf_sets:
+            tf_scores = dc.mt.ulm(cluster_expr, _gene_set_network(tf_sets), tmin=2, raw=False, verbose=False)
+            tf_activity = _activity_result_to_long(
+                tf_scores,
+                backend_id=backend_id,
+                method="decoupler_ulm_curated_tf_like_signatures",
+                value_name="tf_activity_score",
+                analysis_level=analysis_level,
+            )
+            tf_activity["warning"] = "TF activity uses curated expression-derived target signatures; it is not experimental TF binding evidence."
+            tf_activity.to_csv(tf_path, sep="\t", index=False)
+        else:
+            _write_skip_table(tf_path, backend_id, analysis_level, "insufficient_gene_overlap:tf_signature_sets")
+
+        _write_functional_status(
+            status_path,
+            backend_id,
+            analysis_level,
+            "ready",
+            "",
+            decoupler_version=md.version("decoupler"),
+            gseapy_version=md.version("gseapy"),
+        )
+        return _backend_row(backend_id, "ready", analysis_level, ""), artifacts
+    except Exception as exc:
+        reason = f"backend_failed:{type(exc).__name__}:{exc}"
+        for path in (signature_path, pathway_path, tf_path):
+            _write_skip_table(path, backend_id, analysis_level, reason)
+        _write_functional_status(status_path, backend_id, analysis_level, "failed", reason)
+        return _backend_row(backend_id, "failed", analysis_level, reason), artifacts
+
+
 def _run_pseudobulk_de_backend(*, tables: Path, analysis_level: str) -> tuple[dict[str, Any], dict[str, str]]:
     backend_id = "scrna.pseudobulk.deseq2_edger"
     status_path = tables / "pseudobulk_de_backend_status.tsv"
@@ -755,6 +869,98 @@ def _write_pseudobulk_status(path: Path, backend_id: str, analysis_level: str, s
                 "reason": reason,
                 "analysis_level": analysis_level,
                 "warning": "pseudobulk DESeq2/edgeR must use raw counts and sufficient biological replicates",
+            }
+        ]
+    ).to_csv(path, sep="\t", index=False)
+
+
+def _cluster_expression_matrix(adata) -> pd.DataFrame:
+    from scipy import sparse
+
+    source = adata.raw.to_adata() if adata.raw is not None else adata
+    matrix = source.X
+    values = matrix.toarray() if sparse.issparse(matrix) else np.asarray(matrix)
+    frame = pd.DataFrame(values, index=source.obs_names.astype(str), columns=source.var_names.astype(str))
+    clusters = adata.obs.loc[source.obs_names, "cluster"].astype(str)
+    return frame.groupby(clusters, observed=False).mean()
+
+
+def _present_gene_sets(features: pd.Index | list[str], gene_sets: dict[str, list[str]], *, min_genes: int) -> dict[str, list[str]]:
+    available = set(pd.Index(features).astype(str))
+    result: dict[str, list[str]] = {}
+    for name, genes in gene_sets.items():
+        present = [gene for gene in genes if gene in available]
+        if len(present) >= min_genes:
+            result[name] = present
+    return result
+
+
+def _gene_set_network(gene_sets: dict[str, list[str]]) -> pd.DataFrame:
+    rows = []
+    for source, genes in gene_sets.items():
+        for target in genes:
+            rows.append({"source": source, "target": target, "weight": 1.0})
+    return pd.DataFrame(rows)
+
+
+def _activity_result_to_long(
+    result,
+    *,
+    backend_id: str,
+    method: str,
+    value_name: str,
+    analysis_level: str,
+) -> pd.DataFrame:
+    scores = result[0] if isinstance(result, tuple) else result
+    frame = pd.DataFrame(scores)
+    frame.index.name = "cluster"
+    long = frame.reset_index().melt(id_vars="cluster", var_name="term", value_name=value_name)
+    long["backend_id"] = backend_id
+    long["method"] = method
+    long["analysis_level"] = analysis_level
+    long["warning"] = "Expression-derived activity score; not a direct functional assay or mechanism proof."
+    return long
+
+
+def _write_signature_scores_table(tables: Path, output_path: Path, analysis_level: str, backend_id: str) -> None:
+    source_path = tables / "signature_scores_by_cluster.tsv"
+    if not source_path.exists():
+        _write_skip_table(output_path, backend_id, analysis_level, "missing:signature_scores_by_cluster.tsv")
+        return
+    scores = pd.read_csv(source_path, sep="\t")
+    score_cols = [column for column in scores.columns if column.endswith("_score")]
+    if not score_cols:
+        _write_skip_table(output_path, backend_id, analysis_level, "missing:signature_score_columns")
+        return
+    long = scores.melt(id_vars=["cluster"], value_vars=score_cols, var_name="signature", value_name="score")
+    long["signature"] = long["signature"].str.replace("_score", "", regex=False)
+    long["backend_id"] = backend_id
+    long["method"] = "scanpy_score_genes_cluster_mean"
+    long["analysis_level"] = analysis_level
+    long["warning"] = "Signature score is expression-derived and should not be interpreted as functional flux or clinical advice."
+    long.to_csv(output_path, sep="\t", index=False)
+
+
+def _write_functional_status(
+    path: Path,
+    backend_id: str,
+    analysis_level: str,
+    status: str,
+    reason: str,
+    *,
+    decoupler_version: str = "",
+    gseapy_version: str = "",
+) -> None:
+    pd.DataFrame(
+        [
+            {
+                "backend_id": backend_id,
+                "status": status,
+                "reason": reason,
+                "decoupler_version": decoupler_version,
+                "gseapy_version": gseapy_version,
+                "analysis_level": analysis_level,
+                "warning": "Signature/pathway/TF activity scores are expression-derived; they are not direct functional assays or mechanism proof.",
             }
         ]
     ).to_csv(path, sep="\t", index=False)
