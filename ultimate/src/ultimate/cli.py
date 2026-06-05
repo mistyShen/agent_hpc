@@ -382,6 +382,7 @@ def create_scrna_demo_inputs_command(output_dir: Path, n_cells: int, n_genes: in
 @click.option("--public-dataset", is_flag=True, help="Mark a real public dataset validation run; never use with generated demo inputs.")
 @click.option("--dataset-label", default=None, help="Optional dataset label recorded in the manifest.")
 @click.option("--production-approval", type=click.Path(path_type=Path, exists=True, dir_okay=False), default=None, help="Approved JSON gate file required for production_backend.")
+@click.option("--celltypist-model", type=click.Path(path_type=Path, exists=True, dir_okay=False), default=None, help="Optional local CellTypist model. If omitted, CellTypist is skipped without downloading.")
 def validate_scrna_command(
     input_path: Path,
     input_type: str,
@@ -393,6 +394,7 @@ def validate_scrna_command(
     public_dataset: bool,
     dataset_label: str | None,
     production_approval: Path | None,
+    celltypist_model: Path | None,
 ) -> None:
     """Run the scRNA MVP validation path on h5ad, 10x H5, or 10x MTX input."""
     from ultimate.scrna_smoke import run_scrna_validation
@@ -415,6 +417,7 @@ def validate_scrna_command(
             public_dataset=public_dataset,
             dataset_label=dataset_label,
             production_approval=approval,
+            celltypist_model=celltypist_model,
         )
     except ValueError as exc:
         raise click.ClickException(str(exc)) from exc
