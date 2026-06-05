@@ -40,8 +40,6 @@
 - 默认每一步都能被人工复查。
 - 默认输出结果后检查文件是否存在、是否非空、日志是否报错。
 - 默认所有重大修改前先说明会改什么。
-- 自动化任务开工前必须检查仓库根目录 `.codex_automation.lock`；如果存在且未超过 3 小时，必须跳过本轮并报告已有工作在进行；如果超过 3 小时，视为陈旧锁，停止修改并请求人工确认。
-- 自动化任务只有在成功获取锁后才允许修改文件；任务结束必须释放自己创建的锁，不得释放他人或未知来源的锁。
 - Ultimate 平台默认总占用不超过 500G；环境、公共验证数据、缓存、容器和参考资源都计入这个预算。超过预算前必须先审计体积并清理或降级为可选资源。
 - 生产级验证优先使用轻量公开数据或已有内部验证数据，不默认下载重型 atlas、大型参考库或大规模容器缓存。
 - 容器、conda/mamba 环境、参考基因组、索引、公共数据和验证数据优先复用已有共享资源；不得为每个模块或每个项目重复下载、重复构建同类资源。
@@ -50,6 +48,62 @@
 ## Ultimate Bioinfo Workbench 全局原则
 
 Ultimate 的目标不是单一 scRNA pipeline，而是生产级个人多组学生信分析交付平台。所有模块必须共享统一外壳。
+
+### Ultimate 的实际定位
+
+Ultimate 不是全自动接单、自动报价或自动替用户承诺生物学结论的系统。它的定位是给 Codex 使用的个人多组学生信分析 workbench：用户负责客户沟通、需求判断、报价、解释边界和最终拍板；Codex 负责在用户给出数据路径、样本表、物种、分组、分析模块和需求说明后，使用 Ultimate 进行预检、运行、出图、报告、manifest 和可复现代码交付。
+
+Ultimate 的设计目标是让 Codex “跑起来时有趁手工具”，而不是让平台替代人工判断。所有模块应优先提供稳定 CLI、配置模板、样本表模板、Slurm wrapper、报告模板、统一出图、manifest、复现包和清晰失败原因。
+
+### 半自动接单判断入口
+
+平台需要提供半自动技术判断入口，例如：
+
+```bash
+ultimate triage --request config/analysis_request.yaml --output-dir triage/<job_id>
+```
+
+`triage` 用于帮助用户做接单前技术判断，但不自动开跑、不自动报价、不自动标记 production。它应输出：
+
+- 数据类型和输入完整性判断。
+- 推荐模块和推荐 preset。
+- 是否可直接开跑：`ready_to_run`、`needs_metadata`、`needs_dependency`、`needs_license`、`needs_manual_review`。
+- 必要的风险提示和解释边界。
+- 建议的 `project.yaml`、samplesheet 草稿和 Slurm 命令草稿。
+- 中文 `triage_report.md/html`。
+
+`triage` 禁止事项：
+
+- 禁止自动报价。
+- 禁止自动启动重计算。
+- 禁止把项目自动标成 `production_backend`。
+- 禁止凭文件名强行推断客户真实需求。
+- 禁止把推断性分析写成确定机制结论。
+- 禁止移动、覆盖或改写客户 raw data。
+
+推荐 triage 输出状态：
+
+```text
+ready_to_run
+needs_metadata
+needs_dependency
+needs_license
+needs_manual_review
+not_supported
+```
+
+推荐 analysis preset：
+
+```text
+basic
+standard
+tumor
+trajectory
+communication
+velocity
+publication
+handoff_required
+```
 
 - 所有服务器项目路径必须位于 `/shared/shen/2026/ultimate` 或其子目录。
 - 不允许重计算任务跑在 login node。
