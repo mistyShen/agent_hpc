@@ -255,6 +255,27 @@ def audit_tools_command(root: Path, output_dir: Path | None) -> None:
     click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
 
 
+@main.command("audit-backends")
+@click.option(
+    "--root",
+    type=click.Path(path_type=Path),
+    default=Path("/shared/shen/2026/ultimate"),
+    show_default=True,
+    help="Ultimate project root on shared storage.",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Where backend audit artifacts should be written. Defaults to <root>/audits/backends.",
+)
+def audit_backends_command(root: Path, output_dir: Path | None) -> None:
+    from ultimate.backend_registry import run_audit_backends
+
+    manifest = run_audit_backends(root=root, output_dir=output_dir)
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+
+
 @main.command("trial-tools")
 @click.option(
     "--root",
