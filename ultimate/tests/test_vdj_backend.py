@@ -118,7 +118,7 @@ def test_vdj_backend_generates_mvp_outputs(tmp_path: Path) -> None:
     assert vdj["module"] == "vdj"
     assert vdj["status"] == "complete_vdj_10x_backend"
     assert vdj["backend_id"] == "vdj.default.scirpy_mvp"
-    assert vdj["backend_status"] == "fully_automatic_mvp"
+    assert vdj["backend_status"] == "fully_automatic_validated_entrypoint"
     assert vdj["analysis_level"] == "smoke_backend"
     assert vdj["delivery_allowed"] is False
     assert vdj["backend"]["primary"] == "vdj_10x_contig_clonotype"

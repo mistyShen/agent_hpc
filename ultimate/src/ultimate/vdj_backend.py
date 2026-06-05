@@ -362,6 +362,9 @@ def _vdj_qc(
                 "n_contigs": int(contigs.shape[0]),
                 "n_cell_contigs": int(cells.shape[0]),
                 "n_productive_contigs": int(productive.shape[0]),
+                "productive_contig_count": int(productive.shape[0]),
+                "paired_chain_count": int((group.get("n_chains", pd.Series(dtype=int)).fillna(0).astype(int) >= 2).sum()) if "n_chains" in group.columns else 0,
+                "vdj_input_status": "cellranger_vdj_tables_ready",
                 "n_cells": int(group["barcode"].nunique()) if "barcode" in group.columns else 0,
                 "n_clonotypes": int(group["clonotype_id"].nunique()) if "clonotype_id" in group.columns else 0,
                 "paired_chain_status": "summary_only",
@@ -395,6 +398,7 @@ def _clonotype_summary(
             row.update(
                 {
                     "clonotype_id": clone_id,
+                    "chain": _clonotype_chain_label(clone_id, cell_meta),
                     "cell_count": int(float(item.get(freq_col, 0) or 0)) if freq_col else int((cell_meta.get("clonotype_id") == clone_id).sum()),
                     "sample_count": int(cell_meta.loc[cell_meta.get("clonotype_id") == clone_id, "sample_id"].nunique()) if "sample_id" in cell_meta.columns else 0,
                     "cdr3_aa": str(item.get(cdr3_col, "")) if cdr3_col else "",
@@ -444,9 +448,12 @@ def _clone_sharing(cell_meta: pd.DataFrame, analysis_fields: dict[str, Any], inp
                 row.update(
                     {
                         "sample_id": left,
+                        "sample_id_a": left,
                         "sample_id_2": right,
+                        "sample_id_b": right,
                         "shared_clonotype_count": int(len(shared)),
                         "jaccard_index": float(len(shared) / len(union)) if union else 0.0,
+                        "sharing_metric": float(len(shared) / len(union)) if union else 0.0,
                         "interpretation_warning": "clone sharing 不等于抗原特异性相同。",
                     }
                 )
@@ -492,6 +499,7 @@ def _cdr3_length(productive: pd.DataFrame, cell_meta: pd.DataFrame, analysis_fie
                     "chain": str(item.get("chain", "")),
                     "cdr3_aa": cdr3,
                     "cdr3_length_aa": int(len(cdr3)),
+                    "cell_count": 1,
                 }
             )
             rows.append(row)
@@ -530,6 +538,20 @@ def _expansion_class(size: int) -> str:
     if size <= 10:
         return "expanded"
     return "large"
+
+
+def _clonotype_chain_label(clone_id: str, cell_meta: pd.DataFrame) -> str:
+    if cell_meta.empty or "clonotype_id" not in cell_meta.columns or "n_chains" not in cell_meta.columns:
+        return "not_recorded"
+    subset = cell_meta[cell_meta["clonotype_id"].astype(str) == str(clone_id)]
+    if subset.empty:
+        return "not_recorded"
+    max_chains = int(subset["n_chains"].fillna(0).astype(int).max())
+    if max_chains >= 2:
+        return "paired_chain_summary"
+    if max_chains == 1:
+        return "single_chain_summary"
+    return "not_recorded"
 
 
 def _empty_clone_row(analysis_fields: dict[str, Any], input_artifact: str, source_dataset: str) -> dict[str, Any]:
@@ -613,7 +635,21 @@ def _write_vdj_object(*, objects_dir: Path, cell_meta: pd.DataFrame, clonotypes:
 
 def _write_skip_outputs(*, tables_dir: Path, figures_dir: Path, objects_dir: Path, samples: pd.DataFrame, analysis_fields: dict[str, Any]) -> dict[str, dict[str, str]]:
     base = _base_rows(analysis_fields, "missing_vdj_input", "vdj")
-    row = {**base, "status": "skipped_missing_input", "clonotype_id": "none", "clone_size": 0, "antigen_specificity_status": "not_inferred"}
+    row = {
+        **base,
+        "status": "skipped_missing_input",
+        "clonotype_id": "none",
+        "clone_size": 0,
+        "productive_contig_count": 0,
+        "paired_chain_count": 0,
+        "vdj_input_status": "missing_input",
+        "chain": "not_recorded",
+        "sample_id_a": "none",
+        "sample_id_b": "none",
+        "sharing_metric": 0.0,
+        "cell_count": 0,
+        "antigen_specificity_status": "not_inferred",
+    }
     table_paths = {}
     for filename in (
         "vdj_qc.tsv",

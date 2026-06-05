@@ -28,6 +28,8 @@ def test_build_validation_index_reads_run_manifests(tmp_path: Path) -> None:
         "figures": ["a.png", "b.png"],
         "tables": ["a.tsv"],
         "objects": {"h5ad": "obj.h5ad"},
+        "backend_id": "vdj.default.scirpy_mvp",
+        "backend_status": "fully_automatic_mvp",
     }
     (run / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
@@ -42,6 +44,8 @@ def test_build_validation_index_reads_run_manifests(tmp_path: Path) -> None:
     assert "validated_backend" in text
     assert "123" in text
     assert "delivery_gate_status" in text
+    assert "backend_ids" in text
+    assert "vdj.default.scirpy_mvp" in text
 
 
 def test_cli_validation_index(tmp_path: Path) -> None:
@@ -217,6 +221,62 @@ def test_validation_index_reads_nested_slurm_job_id(tmp_path: Path) -> None:
     assert rows[0]["slurm_job_id"] == "999"
     assert rows[0]["has_slurm_evidence"] == "true"
     assert rows[0]["order_readiness_status"] == "ready_for_validation_evidence"
+
+
+def test_validation_index_checks_module_level_artifacts(tmp_path: Path) -> None:
+    root = tmp_path / "ultimate"
+    run = root / "validations" / "slurm_vdj_10x_pbmc_unified"
+    (run / "results" / "tables" / "vdj").mkdir(parents=True)
+    (run / "results" / "figures" / "vdj").mkdir(parents=True)
+    (run / "objects" / "vdj").mkdir(parents=True)
+    (run / "reports").mkdir(parents=True)
+    (run / "logs").mkdir(parents=True)
+    table = run / "results" / "tables" / "vdj" / "clonotype_summary.tsv"
+    figure = run / "results" / "figures" / "vdj" / "clone_size_distribution.png"
+    obj = run / "objects" / "vdj" / "vdj_mvp.h5ad"
+    table.write_text("clonotype_id\nc1\n", encoding="utf-8")
+    figure.write_text("png", encoding="utf-8")
+    obj.write_text("object", encoding="utf-8")
+    (run / "reports" / "report.html").write_text("<html></html>", encoding="utf-8")
+    (run / "reports" / "methods.md").write_text("methods", encoding="utf-8")
+    (run / "logs" / "run.log").write_text("ok", encoding="utf-8")
+    (run / "run_manifest.json").write_text(
+        json.dumps(
+            {
+                "status": "ready",
+                "analysis_level": "validated_backend",
+                "is_demo": False,
+                "is_stub": False,
+                "delivery_allowed": False,
+                "validation_evidence_allowed": True,
+                "non_delivery_reason": "validation_evidence_only_not_customer_delivery",
+                "slurm_job_id": "9381151",
+                "modules": [
+                    {
+                        "module": "vdj",
+                        "status": "complete_vdj_10x_backend",
+                        "backend_id": "vdj.default.scirpy_mvp",
+                        "backend_status": "fully_automatic_validated_entrypoint",
+                        "artifacts": {
+                            "tables": {"clonotype_summary": str(table)},
+                            "figures": {"clone_size_distribution": str(figure)},
+                            "objects": {"mvp_object": str(obj)},
+                        },
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = build_validation_index(root=root, output_dir=tmp_path / "index")
+    rows = json.loads(Path(result["validation_index_json"]).read_text(encoding="utf-8"))
+    row = next(item for item in rows if item["run_name"] == "slurm_vdj_10x_pbmc_unified")
+
+    assert row["artifact_status"] == "ready"
+    assert row["order_readiness_status"] == "ready_for_validation_evidence"
+    assert row["backend_ids"] == "vdj.default.scirpy_mvp"
+    assert row["backend_statuses"] == "fully_automatic_validated_entrypoint"
 
 
 def test_validation_index_includes_prepared_jobs_and_delivery_scope_priority(tmp_path: Path) -> None:
