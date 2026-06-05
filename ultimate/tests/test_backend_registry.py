@@ -56,6 +56,7 @@ def test_v3_tabular_public_backends_are_evidence_gated_entrypoints() -> None:
     by_id = {backend.backend_id: backend for backend in BACKEND_REGISTRY}
     expected = {
         "rnaseq.matrix.python_mvp": "slurm/bulk_validation_suite.sbatch",
+        "rnaseq.de.deseq2_edger": "slurm/bulk_validation_suite.sbatch",
         "publicdb.cached_tables.python_mvp": "slurm/bulk_validation_suite.sbatch",
         "clinical_assoc.default.sample_level_stats": "slurm/bulk_validation_suite.sbatch",
         "wgcna.default.ready_matrix": "slurm/bulk_validation_suite.sbatch",

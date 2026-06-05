@@ -116,14 +116,15 @@ BACKEND_REGISTRY: tuple[BackendSpec, ...] = (
         "DESeq2 + edgeR",
         ("raw_count_matrix",),
         "ultimate-rnaseq",
-        "slurm/ultimate_run.sbatch",
-        ("de_results.tsv", "volcano.png", "top_gene_heatmap.png", "methods.md"),
-        "airway public count matrix",
+        "slurm/bulk_validation_suite.sbatch",
+        ("de_results.tsv", "deseq2_edgeR_de_results.tsv", "de_backend_status.tsv", "de_backend_manifest.json", "deseq2_edgeR_volcano.png", "rnaseq_de_backend.rds"),
+        "airway public count matrix with Slurm DESeq2/edgeR validation",
         ("不能用 TPM/FPKM 直接跑 DESeq2；没有生物学重复时只能导出 design-ready。",),
         production_allowed=True,
-        backend_status="planned_fully_automatic",
-        skip_reason="R DE backend not yet wired into ultimate run.",
+        backend_status="fully_automatic_validated_entrypoint",
+        skip_reason="",
         resource_profile="medium_r",
+        interpretation_warning="DESeq2/edgeR 结果依赖 raw counts、重复数和设计矩阵审核，不写成机制证明。",
     ),
     _backend(
         "rnaseq.upstream.nfcore_rnaseq",
@@ -852,6 +853,8 @@ def _requested_matches(module_name: str, specs: list[BackendSpec], requested: di
             continue
         value_str = str(value)
         candidates = [
+            by_id.get(str(key)),
+            by_id.get(f"{module_name}.{key}"),
             by_id.get(value_str),
             by_id.get(f"{module_name}.{key}.{value_str}"),
             by_suffix.get(value_str),
