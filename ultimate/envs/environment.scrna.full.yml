@@ -31,4 +31,5 @@ dependencies:
   - bioconductor-org.hs.eg.db
   - bioconductor-org.mm.eg.db
   - pip:
+      - liana>=1.7.3
       - cellphonedb

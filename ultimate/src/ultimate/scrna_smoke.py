@@ -198,6 +198,15 @@ def run_scrna_validation(
     )
     backend_rows.append(celltypist_status)
     backend_artifacts.update(celltypist_artifacts)
+    liana_status, liana_artifacts = _run_liana_backend(
+        adata=adata,
+        tables=tables,
+        figures=figures,
+        analysis_level=level.analysis_level,
+        random_seed=random_seed,
+    )
+    backend_rows.append(liana_status)
+    backend_artifacts.update(liana_artifacts)
     backend_execution_manifest = _write_backend_execution_manifest(
         tables=tables,
         backend_rows=backend_rows,
@@ -549,7 +558,13 @@ def _run_celltypist_backend(*, adata, tables: Path, analysis_level: str, model_p
         import celltypist
 
         result = celltypist.annotate(adata, model=str(model_path), majority_voting=True)
-        predictions = result.predicted_labels.copy()
+        predictions_indexed = result.predicted_labels.copy()
+        label_column = "majority_voting" if "majority_voting" in predictions_indexed.columns else "predicted_labels"
+        if label_column in predictions_indexed.columns:
+            labels = predictions_indexed[label_column].astype(str).reindex(adata.obs_names).fillna("unassigned")
+            adata.obs["celltypist_label"] = pd.Categorical(labels.to_numpy())
+            adata.obs["celltypist_label_source"] = f"celltypist:{model_path.name}"
+        predictions = predictions_indexed.copy()
         predictions.index.name = "barcode"
         predictions = predictions.reset_index()
         predictions["annotation_status"] = "celltypist_model_prediction"
@@ -672,6 +687,84 @@ def _run_functional_backend(*, adata, tables: Path, figures: Path, analysis_leve
         for path in (signature_path, pathway_path, tf_path):
             _write_skip_table(path, backend_id, analysis_level, reason)
         _write_functional_status(status_path, backend_id, analysis_level, "failed", reason)
+        return _backend_row(backend_id, "failed", analysis_level, reason), artifacts
+
+
+def _run_liana_backend(
+    *,
+    adata,
+    tables: Path,
+    figures: Path,
+    analysis_level: str,
+    random_seed: int,
+) -> tuple[dict[str, Any], dict[str, str]]:
+    backend_id = "scrna.communication.liana"
+    interactions_path = tables / "liana_interactions.tsv"
+    network_path = tables / "communication_network.tsv"
+    status_path = tables / "communication_backend_status.tsv"
+    figure_path = figures / "communication_dotplot.png"
+    artifacts = {
+        "liana_interactions": str(interactions_path),
+        "communication_network": str(network_path),
+        "communication_backend_status": str(status_path),
+        "communication_dotplot": str(figure_path),
+    }
+    if importlib.util.find_spec("liana") is None:
+        reason = "dependency_missing:liana"
+        _write_liana_skip_outputs(interactions_path, network_path, status_path, figure_path, backend_id, analysis_level, reason)
+        return _backend_row(backend_id, "skipped", analysis_level, reason), artifacts
+    groupby, reason = _communication_groupby(adata)
+    if reason:
+        _write_liana_skip_outputs(interactions_path, network_path, status_path, figure_path, backend_id, analysis_level, reason)
+        return _backend_row(backend_id, "skipped", analysis_level, reason), artifacts
+    try:
+        import importlib.metadata as md
+        import liana as li
+
+        work = adata.copy()
+        li.mt.rank_aggregate(
+            work,
+            groupby=groupby,
+            resource_name="consensus",
+            expr_prop=0.2,
+            min_cells=10,
+            n_perms=20,
+            n_jobs=1,
+            seed=random_seed,
+            use_raw=True,
+            key_added="liana_res",
+            inplace=True,
+            verbose=False,
+        )
+        interactions = pd.DataFrame(work.uns.get("liana_res", pd.DataFrame())).copy()
+        if interactions.empty:
+            reason = "empty_result:liana_res"
+            _write_liana_skip_outputs(interactions_path, network_path, status_path, figure_path, backend_id, analysis_level, reason)
+            return _backend_row(backend_id, "skipped", analysis_level, reason), artifacts
+        interactions["backend_id"] = backend_id
+        interactions["method"] = "liana_rank_aggregate_consensus"
+        interactions["groupby"] = groupby
+        interactions["analysis_level"] = analysis_level
+        interactions["warning"] = "Ligand-receptor communication is an expression-derived statistical inference, not direct mechanism proof."
+        interactions.to_csv(interactions_path, sep="\t", index=False)
+        network = _liana_network_summary(interactions, backend_id, groupby, analysis_level)
+        network.to_csv(network_path, sep="\t", index=False)
+        _write_liana_dotplot(interactions, figure_path)
+        _write_liana_status(
+            status_path,
+            backend_id,
+            analysis_level,
+            "ready",
+            "",
+            groupby=groupby,
+            liana_version=md.version("liana"),
+            n_interactions=int(interactions.shape[0]),
+            n_cell_groups=int(work.obs[groupby].astype(str).nunique()),
+        )
+        return _backend_row(backend_id, "ready", analysis_level, ""), artifacts
+    except Exception as exc:
+        reason = f"backend_failed:{type(exc).__name__}:{exc}"
+        _write_liana_skip_outputs(interactions_path, network_path, status_path, figure_path, backend_id, analysis_level, reason)
         return _backend_row(backend_id, "failed", analysis_level, reason), artifacts
 
 
@@ -966,6 +1059,138 @@ def _write_functional_status(
     ).to_csv(path, sep="\t", index=False)
 
 
+def _communication_groupby(adata) -> tuple[str, str]:
+    candidates = ("cell_type", "manual_cell_type", "celltypist_label", "majority_voting")
+    for column in candidates:
+        if column not in adata.obs:
+            continue
+        labels = adata.obs[column].astype(str)
+        labels = labels[~labels.isin({"", "nan", "None", "unassigned", "unknown"})]
+        if labels.nunique() < 2:
+            continue
+        counts = labels.value_counts()
+        if int((counts >= 10).sum()) < 2:
+            return "", f"insufficient_cells_per_group:{column}:need_two_groups_with_min_10_cells"
+        return column, ""
+    return "", "annotation_required:reviewed_cell_type_or_celltypist_label"
+
+
+def _write_liana_skip_outputs(
+    interactions_path: Path,
+    network_path: Path,
+    status_path: Path,
+    figure_path: Path,
+    backend_id: str,
+    analysis_level: str,
+    reason: str,
+) -> None:
+    _write_skip_table(interactions_path, backend_id, analysis_level, reason)
+    _write_skip_table(network_path, backend_id, analysis_level, reason)
+    _write_liana_status(status_path, backend_id, analysis_level, "skipped", reason)
+    _write_status_figure(
+        figure_path,
+        title="LIANA skipped",
+        message=reason,
+    )
+
+
+def _liana_network_summary(interactions: pd.DataFrame, backend_id: str, groupby: str, analysis_level: str) -> pd.DataFrame:
+    frame = interactions.copy()
+    for column in ("lrscore", "magnitude_rank", "specificity_rank"):
+        if column in frame:
+            frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    agg: dict[str, tuple[str, str]] = {
+        "n_interactions": ("ligand_complex", "count"),
+    }
+    if "lrscore" in frame:
+        agg["mean_lrscore"] = ("lrscore", "mean")
+        agg["max_lrscore"] = ("lrscore", "max")
+    if "magnitude_rank" in frame:
+        agg["mean_magnitude_rank"] = ("magnitude_rank", "mean")
+    if "specificity_rank" in frame:
+        agg["mean_specificity_rank"] = ("specificity_rank", "mean")
+    network = frame.groupby(["source", "target"], observed=False).agg(**agg).reset_index()
+    network["backend_id"] = backend_id
+    network["method"] = "liana_rank_aggregate_consensus"
+    network["groupby"] = groupby
+    network["analysis_level"] = analysis_level
+    network["warning"] = "Aggregated ligand-receptor candidates; not direct cell-cell contact or causal evidence."
+    sort_cols = [column for column in ("mean_magnitude_rank", "mean_specificity_rank", "mean_lrscore") if column in network]
+    if sort_cols:
+        ascending = [True if "rank" in column else False for column in sort_cols]
+        network = network.sort_values(sort_cols, ascending=ascending)
+    return network
+
+
+def _write_liana_status(
+    path: Path,
+    backend_id: str,
+    analysis_level: str,
+    status: str,
+    reason: str,
+    *,
+    groupby: str = "",
+    liana_version: str = "",
+    n_interactions: int = 0,
+    n_cell_groups: int = 0,
+) -> None:
+    pd.DataFrame(
+        [
+            {
+                "backend_id": backend_id,
+                "status": status,
+                "reason": reason,
+                "groupby": groupby,
+                "liana_version": liana_version,
+                "n_interactions": n_interactions,
+                "n_cell_groups": n_cell_groups,
+                "analysis_level": analysis_level,
+                "warning": "LIANA ligand-receptor results are expression-derived statistical candidates and require biological review.",
+            }
+        ]
+    ).to_csv(path, sep="\t", index=False)
+
+
+def _write_liana_dotplot(interactions: pd.DataFrame, path: Path) -> None:
+    import matplotlib.pyplot as plt
+
+    apply_clinical_journal_style()
+    frame = interactions.copy()
+    if "magnitude_rank" in frame:
+        frame["magnitude_rank"] = pd.to_numeric(frame["magnitude_rank"], errors="coerce")
+        frame = frame.sort_values("magnitude_rank", ascending=True)
+    elif "lrscore" in frame:
+        frame["lrscore"] = pd.to_numeric(frame["lrscore"], errors="coerce")
+        frame = frame.sort_values("lrscore", ascending=False)
+    top = frame.head(25).copy()
+    top["pair"] = top["source"].astype(str) + " -> " + top["target"].astype(str)
+    top["interaction"] = top["ligand_complex"].astype(str) + " - " + top["receptor_complex"].astype(str)
+    size_values = pd.to_numeric(top.get("lrscore", pd.Series([1.0] * len(top))), errors="coerce").fillna(0.5).to_numpy()
+    color_values = pd.to_numeric(top.get("magnitude_rank", pd.Series(np.arange(len(top)))), errors="coerce").fillna(0.0).to_numpy()
+    fig, ax = plt.subplots(figsize=(8.5, max(4.2, 0.26 * max(1, len(top)))))
+    ax.scatter(size_values, np.arange(len(top)), s=np.clip(size_values, 0.05, None) * 90, c=color_values, cmap="viridis_r", alpha=0.82)
+    ax.set_yticks(np.arange(len(top)))
+    ax.set_yticklabels(top["interaction"], fontsize=7)
+    ax.set_xlabel("LIANA LR score")
+    ax.set_ylabel("")
+    ax.set_title("Top ligand-receptor candidates")
+    ax.invert_yaxis()
+    fig.tight_layout()
+    save_figure(path)
+
+
+def _write_status_figure(path: Path, *, title: str, message: str) -> None:
+    import matplotlib.pyplot as plt
+
+    apply_clinical_journal_style()
+    fig, ax = plt.subplots(figsize=(6.0, 2.8))
+    ax.axis("off")
+    ax.text(0.02, 0.72, title, fontsize=13, fontweight="bold", ha="left", va="center")
+    ax.text(0.02, 0.42, message[:180], fontsize=9, ha="left", va="center", wrap=True)
+    fig.tight_layout()
+    save_figure(path)
+
+
 def _write_pseudobulk_r_handoff(path: Path, counts_path: Path, design_path: Path) -> None:
     path.write_text(
         "\n".join(
@@ -1192,7 +1417,8 @@ def _write_report(manifest: dict[str, Any], md_path: Path, html_path: Path) -> N
         "## 已验证步骤",
         "- 输入读取、QC、过滤、归一化、高变基因、PCA、UMAP、聚类、marker gene、条件差异、细胞组成、基础 signature 富集、pseudobulk design-ready matrix、h5ad 导出、图表和 manifest。",
         "- cell type annotation 当前是 cluster placeholder，不能当作真实细胞类型结论。",
-        "- Scrublet、CellTypist、pseudobulk DESeq2/edgeR 等 backend 会在具备依赖和输入条件时执行；缺依赖、缺模型或设计不足会写入 backend_execution_manifest，而不是伪装成完成。",
+        "- Scrublet、CellTypist、LIANA、pseudobulk DESeq2/edgeR 等 backend 会在具备依赖和输入条件时执行；缺依赖、缺模型、缺人工/参考注释或设计不足会写入 backend_execution_manifest，而不是伪装成完成。",
+        "- LIANA 细胞通讯结果是基于表达量的配体-受体候选互作推断，不是直接细胞接触或机制证明。",
         "- pseudobulk DE 当前写出真实 R handoff 和设计检查；只有 Rscript 与 DESeq2/edgeR、重复数和 contrasts 齐全后才可升级为正式 DE 结果。",
         "",
         "## 复现命令",

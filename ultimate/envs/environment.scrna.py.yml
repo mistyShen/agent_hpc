@@ -28,3 +28,5 @@ dependencies:
   - bbknn
   - scanorama
   - muon
+  - pip:
+      - liana>=1.7.3

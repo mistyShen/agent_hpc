@@ -177,6 +177,7 @@ def _assert_mvp_outputs(manifest: dict) -> None:
         "scrna.qc.scrublet",
         "scrna.annotation.celltypist",
         "scrna.functional.decoupler_gseapy",
+        "scrna.communication.liana",
         "scrna.pseudobulk.deseq2_edger",
     }.issubset(backend_ids)
     assert Path(manifest["raw_qc_manifest"]).exists()
@@ -201,12 +202,16 @@ def _assert_mvp_outputs(manifest: dict) -> None:
         "results/tables/pathway_activity.tsv",
         "results/tables/tf_activity.tsv",
         "results/tables/functional_backend_status.tsv",
+        "results/tables/liana_interactions.tsv",
+        "results/tables/communication_network.tsv",
+        "results/tables/communication_backend_status.tsv",
         "results/tables/pseudobulk_de_backend_status.tsv",
         "results/tables/pseudobulk_de_results.tsv",
         "results/tables/pseudobulk_deseq2_edgeR_handoff.R",
         "results/figures/qc_violin.png",
         "results/figures/pca_condition.png",
         "results/figures/umap_cluster_condition.png",
+        "results/figures/communication_dotplot.png",
         "reports/report.md",
         "reports/report.html",
         "run_manifest.json",
@@ -219,6 +224,7 @@ def _assert_mvp_outputs(manifest: dict) -> None:
     assert "delivery_allowed" in report
     assert "backend 执行摘要" in report
     assert "cluster placeholder" in report
+    assert "LIANA" in report
     manifest_from_disk = json.loads((run_dir / "run_manifest.json").read_text(encoding="utf-8"))
     assert manifest_from_disk["analysis_level"] == manifest["analysis_level"]
     annotation = Path(run_dir / "results/tables/cell_type_annotation_placeholder.tsv").read_text(encoding="utf-8")

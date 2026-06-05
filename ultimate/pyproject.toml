@@ -31,6 +31,7 @@ scrna = [
   "gseapy>=1.1",
   "h5py>=3.10",
   "leidenalg>=0.10",
+  "liana>=1.7.3",
   "matplotlib>=3.8",
   "numpy>=1.26",
   "pandas>=2.2",
