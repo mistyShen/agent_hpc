@@ -193,7 +193,7 @@ BACKEND_REGISTRY: tuple[BackendSpec, ...] = (
         "PBMC3k public validation",
         ("doublet 阈值是模型/数据依赖参数，必须进入 methods 和 manifest。",),
         production_allowed=True,
-        backend_status="fully_automatic_mvp",
+        backend_status="fully_automatic_validated_entrypoint",
         skip_reason="",
     ),
     _backend(

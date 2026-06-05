@@ -61,6 +61,7 @@ def test_v3_tabular_public_backends_are_evidence_gated_entrypoints() -> None:
         "single_gene.default.gene_report_mvp": "slurm/bulk_validation_suite.sbatch",
         "methylation.default.beta_matrix_python_mvp": "slurm/bulk_validation_suite.sbatch",
         "proteomics.default.abundance_python_mvp": "slurm/proteomics_backend_validation.sbatch",
+        "scrna.qc.scrublet": "slurm/scrna_mvp_validation.sbatch",
     }
 
     for backend_id, slurm_profile in expected.items():
