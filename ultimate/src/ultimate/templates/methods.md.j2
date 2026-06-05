@@ -11,6 +11,23 @@
 - Preflight 状态：`{{ preflight.status }}`
 - 出图风格：`{{ manifest.figure_style.style_cn | default("临床期刊版") }}`（白底、柔彩主色、低饱和连续色条）；审阅图清单：`{{ manifest.style_review.figure_manifest }}`
 
+## 交付门控
+
+{% set gate = delivery_gate or manifest.get("delivery_gate") or {} %}
+- 门控状态：`{{ gate.get("status", "not_recorded") }}`
+- 运行状态：`{{ gate.get("run_status", manifest.get("status", "not_recorded")) }}`
+- 正式交付许可：`{{ gate.get("delivery_allowed", false) }}`
+- 验证证据许可：`{{ gate.get("validation_evidence_allowed", false) }}`
+- 生产审批：`{{ gate.get("approval_status", "not_recorded") }}`
+- delivery_scope：`{{ gate.get("delivery_scope", (manifest.get("production_approval") or {}).get("delivery_scope", manifest.get("delivery_scope", "not_recorded"))) }}`
+- 生产模块：`{{ (gate.get("production_modules") or []) | join(", ") or "none" }}`
+- 可交付模块：`{{ (gate.get("deliverable_modules") or []) | join(", ") or "none" }}`
+- 验证证据模块：`{{ (gate.get("validation_evidence_modules") or []) | join(", ") or "none" }}`
+- 阻断原因：`{{ (gate.get("blockers") or []) | join("; ") or gate.get("non_delivery_reason", "none") }}`
+- 不可交付模块：`{% for item in gate.get("blocked_modules") or [] %}{{ item.get("module", "unknown") }}={{ item.get("analysis_level", "not_recorded") }}{% if not loop.last %}; {% endif %}{% endfor %}{{ "" if gate.get("blocked_modules") else "none" }}`
+
+若正式交付许可不是 `True`，本次结果只能作为 demo、smoke、验证证据或内部检查，不能作为客户正式结论。
+
 ## 复现信息
 
 {% set repro = manifest.get("reproducible_package") or {} %}
@@ -30,21 +47,35 @@
 
 - 状态：`{{ module.status }}`
 - analysis_level：`{{ module.get("analysis_level", "not_recorded") }}`
-- 交付许可：`{{ module.get("delivery_allowed", false) }}`；原因：`{{ module.get("non_delivery_reason", "") or "none" }}`
+- 交付许可：`{{ module.get("delivery_allowed", false) }}`；验证证据许可：`{{ module.get("validation_evidence_allowed", false) }}`；原因：`{{ module.get("non_delivery_reason", "") or "none" }}`
 {% set raw_qc = module.get("raw_qc") or {} %}
 {% set artifacts = module.get("artifacts") or {"tables": {}, "figures": {}, "objects": {}} %}
+{% set qc_manifest_path = (artifacts.get("tables") or {}).get("module_qc_manifest") %}
+{% set qc_manifest = module_qc_manifests.get(qc_manifest_path, {}) if qc_manifest_path else {} %}
+{% set mvp_spec = qc_manifest.get("mvp_output_spec") or {} %}
 - Raw QC 状态：`{{ raw_qc.get("status", "not_recorded") }}`
 - Raw QC manifest：`{{ raw_qc.get("manifest_path", "not_recorded") }}`
 - 特征数：{{ module.get("n_features", "NA") }}
 - 样本数：{{ module.get("n_samples", "NA") }}
 - 已知限制：`{{ (module.get("limitations") or []) | join("; ") }}`
 - Handoff/可选后端：`{{ ((module.get("handoff") or {}).get("handoff_tools") or []) | join(", ") or "none" }}`
+- handoff_status：`{{ (module.get("handoff") or {}).get("handoff_status", "not_recorded") }}`
+- handoff_statuses：`{{ ((module.get("handoff") or {}).get("handoff_statuses") or []) | join(", ") or "none" }}`
 {% set tool_summary = (module.get("handoff") or {}).get("tool_decision_summary") or {} %}
+{% set v2_tool_summary = (module.get("handoff") or {}).get("v2_disposition_summary") or {} %}
 - 默认后端：`{{ (tool_summary.get("keep_default") or []) | join(", ") or "none" }}`
 - 可选后端：`{{ (tool_summary.get("keep_optional") or []) | join(", ") or "none" }}`
 - 授权路径检测：`{{ (tool_summary.get("licensed_path_only") or []) | join(", ") or "none" }}`
-- 统计结果：`{{ (artifacts.get("tables") or {}).get("differential_results", (artifacts.get("tables") or {}).get("top_features", "not_recorded")) }}`
-- 图表目录：`{{ (artifacts.get("figures") or {}).get("pca", (artifacts.get("figures") or {}).get("heatmap", "not_recorded")) }}`
+- v2 default_backend：`{{ (v2_tool_summary.get("default_backend") or []) | join(", ") or "none" }}`
+- v2 optional_backend：`{{ (v2_tool_summary.get("optional_backend") or []) | join(", ") or "none" }}`
+- v2 handoff_adapter：`{{ (v2_tool_summary.get("handoff_adapter") or []) | join(", ") or "none" }}`
+- v2 licensed_path_detection：`{{ (v2_tool_summary.get("licensed_path_detection") or []) | join(", ") or "none" }}`
+- v2 reference_only：`{{ (v2_tool_summary.get("reference_only") or []) | join(", ") or "none" }}`
+- v2 rejected_cleaned：`{{ (v2_tool_summary.get("rejected_cleaned") or []) | join(", ") or "none" }}`
+- MVP 表格：`{{ (mvp_spec.get("tables") or []) | join(", ") or "not_recorded" }}`
+- MVP 图表：`{{ (mvp_spec.get("figures") or []) | join(", ") or "not_recorded" }}`
+- MVP 对象/交接文件：`{{ mvp_spec.get("object", "not_recorded") }}`
+- 模块 QC manifest：`{{ qc_manifest_path or "not_recorded" }}`
 - R 后端入口：`{{ (module.get("formal_backend") or {}).get("r_entrypoint", "python/backend") }}`
 
 {% endfor %}

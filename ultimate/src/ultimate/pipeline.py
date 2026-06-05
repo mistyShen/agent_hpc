@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import platform
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import Any
 
 from ultimate.approval_gate import load_production_approval
 from ultimate.config import dump_yaml, enabled_modules, load_analysis_request, load_config, load_samples, output_dir
+from ultimate.manifest_schema import build_delivery_gate
 from ultimate.modules import run_module
 from ultimate.plot_style import generate_style_review, set_active_style_from_config
 from ultimate.preflight import run_preflight
@@ -26,6 +28,8 @@ def run_pipeline_from_config(config_path: Path, *, production_approval_path: Pat
 
 def run_pipeline(config: dict[str, Any], *, config_path: Path | None = None, production_approval_path: Path | None = None) -> dict[str, Any]:
     out_dir = output_dir(config)
+    run_id = str(config.get("_run_id") or _run_id(config))
+    config["_run_id"] = run_id
     production_approval = _load_pipeline_approval(config, config_path=config_path, output_dir=out_dir, approval_path=production_approval_path)
     for directory in ("results/figures", "results/tables", "objects", "reports", "logs", "raw_qc"):
         (out_dir / directory).mkdir(parents=True, exist_ok=True)
@@ -39,6 +43,16 @@ def run_pipeline(config: dict[str, Any], *, config_path: Path | None = None, pro
     style_review = generate_style_review(out_dir / "reports" / "style_review")
     module_manifests = []
     for module_name in enabled_modules(config):
+        _write_module_log(
+            out_dir,
+            module_name,
+            {
+                "event": "module_started",
+                "module": module_name,
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "config": config.get("_config_path", "<config.yaml>"),
+            },
+        )
         raw_manifest = run_raw_qc(
             module_name=module_name,
             config=config,
@@ -54,17 +68,43 @@ def run_pipeline(config: dict[str, Any], *, config_path: Path | None = None, pro
         )
         module_manifest["raw_qc"] = raw_manifest
         module_manifests.append(module_manifest)
+        _write_module_log(
+            out_dir,
+            module_name,
+            {
+                "event": "module_completed",
+                "module": module_name,
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "status": module_manifest.get("status"),
+                "analysis_level": module_manifest.get("analysis_level"),
+                "delivery_allowed": module_manifest.get("delivery_allowed"),
+                "validation_evidence_allowed": module_manifest.get("validation_evidence_allowed"),
+                "manifest_path": module_manifest.get("manifest_path"),
+                "skip_reasons": module_manifest.get("skip_reasons", []),
+            },
+        )
     run_summary = _summarize_run(module_manifests)
+    approval_summary = _approval_summary(production_approval)
+    delivery_gate = build_delivery_gate(
+        modules=module_manifests,
+        production_approval=approval_summary,
+        run_status=run_summary["status"],
+    )
+    run_level_fields = _aggregate_run_level_fields(module_manifests, delivery_gate)
+    slurm_context = _slurm_context()
     manifest = {
-        "run_id": _run_id(config),
+        "run_id": run_id,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": run_summary["status"],
+        **run_level_fields,
         "project": config.get("project", {}),
         "analysis_request": analysis_request,
         "output_dir": str(out_dir),
         "config_snapshot": str(config_snapshot),
         "reproducible_command": f"ultimate run --config {config.get('_config_path', '<config.yaml>')}",
-        "slurm": _slurm_context(),
+        "slurm_job_id": slurm_context.get("slurm_job_id", ""),
+        "slurm_job_name": slurm_context.get("slurm_job_name", ""),
+        "slurm": slurm_context,
         "python": {
             "version": sys.version.split()[0],
             "executable": sys.executable,
@@ -73,7 +113,8 @@ def run_pipeline(config: dict[str, Any], *, config_path: Path | None = None, pro
         "preflight": preflight,
         "figure_style": active_style,
         "style_review": style_review,
-        "production_approval": _approval_summary(production_approval),
+        "production_approval": approval_summary,
+        "delivery_gate": delivery_gate,
         "modules": module_manifests,
         "module_status": run_summary["module_status"],
         "summary": run_summary,
@@ -84,12 +125,23 @@ def run_pipeline(config: dict[str, Any], *, config_path: Path | None = None, pro
             "reports": str(out_dir / "reports"),
             "logs": str(out_dir / "logs"),
         },
+        "logs": {
+            "directory": str(out_dir / "logs"),
+            "module_logs": {module.get("module"): str(out_dir / "logs" / f"{module.get('module')}.log") for module in module_manifests},
+        },
     }
     manifest_path = out_dir / "run_manifest.json"
     manifest["run_manifest_path"] = str(manifest_path)
-    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
-    report_manifest = build_report(out_dir)
-    manifest["report"] = report_manifest
+    manifest["logs"]["run_context"] = str(_write_run_context_log(out_dir, manifest))
+    return finalize_run_outputs(out_dir, manifest_path, manifest)
+
+
+def finalize_run_outputs(out_dir: Path, manifest_path: Path, manifest: dict[str, Any]) -> dict[str, Any]:
+    """Write manifest, reproducibility package, and reports with a stable order."""
+    out_dir = out_dir.resolve()
+    manifest_path = manifest_path.resolve()
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     repro_manifest = export_reproducible_package(out_dir)
     manifest["reproducible_package"] = repro_manifest
@@ -97,8 +149,64 @@ def run_pipeline(config: dict[str, Any], *, config_path: Path | None = None, pro
     report_manifest = build_report(out_dir)
     manifest["report"] = report_manifest
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
-    export_reproducible_package(out_dir)
+    report_manifest = build_report(out_dir)
+    manifest["report"] = report_manifest
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    repro_manifest = export_reproducible_package(out_dir)
+    manifest["reproducible_package"] = repro_manifest
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    _mirror_final_run_manifest(out_dir, manifest_path)
     return manifest
+
+
+def _mirror_final_run_manifest(out_dir: Path, manifest_path: Path) -> None:
+    parts = out_dir.resolve().parts
+    if "jobs" not in parts or "runs" not in parts:
+        return
+    try:
+        jobs_index = parts.index("jobs")
+        runs_index = parts.index("runs")
+    except ValueError:
+        return
+    if runs_index <= jobs_index + 1:
+        return
+    job_dir = Path(*parts[: jobs_index + 2])
+    target = job_dir / "deliverables" / "latest_run_manifest.json"
+    if target.parent.exists():
+        shutil.copy2(manifest_path, target)
+
+
+def _write_module_log(run_dir: Path, module_name: str, payload: dict[str, Any]) -> Path:
+    path = run_dir / "logs" / f"{module_name}.log"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
+    return path
+
+
+def _write_run_context_log(run_dir: Path, manifest: dict[str, Any]) -> Path:
+    path = run_dir / "logs" / "run_context.json"
+    payload = {
+        "run_id": manifest.get("run_id"),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "status": manifest.get("status"),
+        "delivery_gate": manifest.get("delivery_gate", {}),
+        "analysis_level_summary": [
+            {
+                "module": module.get("module"),
+                "status": module.get("status"),
+                "analysis_level": module.get("analysis_level"),
+                "delivery_allowed": module.get("delivery_allowed"),
+                "validation_evidence_allowed": module.get("validation_evidence_allowed"),
+            }
+            for module in manifest.get("modules", [])
+            if isinstance(module, dict)
+        ],
+        "slurm": manifest.get("slurm", {}),
+        "reproducible_command": manifest.get("reproducible_command"),
+    }
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    return path
 
 
 def _load_pipeline_approval(
@@ -144,6 +252,9 @@ def _approval_summary(approval: dict[str, Any] | None) -> dict[str, Any]:
         "approved_by": str(approval.get("approved_by", "")),
         "approved_at": str(approval.get("approved_at", "")),
         "project_id": str(approval.get("project_id", "")),
+        "input_path": str(approval.get("input_path", "")),
+        "output_dir": str(approval.get("output_dir", "")),
+        "delivery_scope": str(approval.get("delivery_scope", "")),
         "reason": str(approval.get("reason", "")),
         "approval_path": str(approval.get("_approval_path", "")),
     }
@@ -192,4 +303,35 @@ def _summarize_run(module_manifests: list[dict[str, Any]]) -> dict[str, Any]:
         "partial_modules": partial_modules,
         "module_status": module_status,
         "module_skip_reasons": module_skip_reasons,
+    }
+
+
+def _aggregate_run_level_fields(module_manifests: list[dict[str, Any]], delivery_gate: dict[str, Any]) -> dict[str, Any]:
+    levels = {str(module.get("analysis_level") or "") for module in module_manifests if isinstance(module, dict)}
+    if "production_backend" in levels:
+        analysis_level = "production_backend"
+    elif "validated_backend" in levels:
+        analysis_level = "validated_backend"
+    elif levels and levels <= {"demo_result"}:
+        analysis_level = "demo_result"
+    else:
+        analysis_level = "smoke_backend"
+    is_demo = any(module.get("is_demo") is True for module in module_manifests if isinstance(module, dict))
+    is_stub = any(module.get("is_stub") is True for module in module_manifests if isinstance(module, dict))
+    delivery_allowed = bool(delivery_gate.get("delivery_allowed") is True)
+    validation_evidence_allowed = bool(delivery_gate.get("validation_evidence_allowed") is True and not is_demo and not is_stub)
+    reasons = [
+        str(module.get("non_delivery_reason"))
+        for module in module_manifests
+        if isinstance(module, dict) and module.get("non_delivery_reason")
+    ]
+    gate_reason = str(delivery_gate.get("non_delivery_reason") or "")
+    non_delivery_reason = "" if delivery_allowed else (gate_reason or ";".join(sorted(set(reasons))) or "not_marked_for_delivery")
+    return {
+        "analysis_level": analysis_level,
+        "is_demo": is_demo,
+        "is_stub": is_stub,
+        "delivery_allowed": delivery_allowed,
+        "validation_evidence_allowed": validation_evidence_allowed,
+        "non_delivery_reason": non_delivery_reason,
     }

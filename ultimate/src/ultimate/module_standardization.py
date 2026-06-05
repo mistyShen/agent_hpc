@@ -10,6 +10,7 @@ from ultimate.manifest_schema import (
     STANDARD_ARTIFACT_ROOTS,
     validate_module_manifest_fields,
 )
+from ultimate.modules.common import HANDOFF_STATUSES
 
 
 REQUIRED_MODULE_FILES = (
@@ -69,9 +70,14 @@ def _module_standardization_row(modules_root: Path, module_name: str) -> dict[st
     if missing_files:
         gaps.append("missing_files=" + ",".join(missing_files))
 
-    tests_status = "ready" if (module_dir / "tests").is_dir() and (module_dir / "tests" / "__init__.py").is_file() else "missing"
+    test_files = sorted((module_dir / "tests").glob("test_*.py")) if (module_dir / "tests").is_dir() else []
+    tests_status = (
+        "ready"
+        if (module_dir / "tests").is_dir() and (module_dir / "tests" / "__init__.py").is_file() and test_files
+        else "missing"
+    )
     if tests_status != "ready":
-        gaps.append("tests_package_missing")
+        gaps.append("tests_package_or_test_file_missing")
 
     package: Any | None = None
     entrypoint_import_status = "ready"
@@ -198,8 +204,13 @@ def _handoff_status(package: Any | None, gaps: list[str], module_name: str) -> s
     if payload.get("module") != module_name:
         gaps.append("handoff_module_name_mismatch")
         return "error"
-    if payload.get("handoff_status") != "template_ready":
+    status = str(payload.get("handoff_status") or "")
+    statuses = payload.get("handoff_statuses") or []
+    if status not in HANDOFF_STATUSES:
         gaps.append(f"handoff_status={payload.get('handoff_status')}")
+        return "partial"
+    if not isinstance(statuses, list) or "template_only" not in statuses:
+        gaps.append("handoff_statuses_missing_template_only")
         return "partial"
     return "ready"
 

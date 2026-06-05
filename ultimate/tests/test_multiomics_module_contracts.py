@@ -37,6 +37,7 @@ def test_every_module_has_outline_skeleton_files() -> None:
         for filename in REQUIRED_MODULE_FILES:
             assert (module_dir / filename).exists(), f"{module_name}/{filename}"
         assert (module_dir / "tests").is_dir(), module_name
+        assert (module_dir / "tests" / "test_contract.py").exists(), module_name
 
 
 def test_every_module_contract_and_guard_fields_are_exposed() -> None:
@@ -63,12 +64,15 @@ def test_every_module_contract_and_guard_fields_are_exposed() -> None:
         assert manifest["delivery_allowed"] is False
         assert manifest["validation_evidence_allowed"] is False
         assert manifest["limitations"]
-        assert manifest["handoff"]["handoff_status"] == "template_ready"
+        assert "template_only" in manifest["handoff"]["handoff_statuses"]
+        assert manifest["handoff"]["legacy_handoff_status"] == "template_ready"
 
         report = report_contract(module_name)
         assert report["status"] == "ready"
         handoff = handoff_plan(module_name)
-        assert handoff["handoff_status"] == "template_ready"
+        assert "template_only" in handoff["handoff_statuses"]
+        assert handoff["legacy_handoff_status"] == "template_ready"
+        assert "default_backend" in handoff["v2_disposition_summary"]
 
 
 def test_module_entrypoint_files_import() -> None:
@@ -89,10 +93,28 @@ def test_module_maturity_table_has_required_columns(tmp_path: Path) -> None:
     assert all(row["analysis_level"] != "validated_backend" for row in rows)
 
 
+def test_module_maturity_does_not_upgrade_without_real_validation_evidence(tmp_path: Path) -> None:
+    rows = build_module_maturity_rows(
+        tmp_path,
+        capability_rows=[
+            {
+                "module": "rnaseq",
+                "validation": "available",
+                "production_status": "ready_basic",
+                "basic_backend": "ready:python_bulk_backend",
+                "evidence_manifest": "",
+            }
+        ],
+    )
+    rnaseq = next(row for row in rows if row["module_name"] == "rnaseq")
+    assert rnaseq["maturity_level"] == "2_demo_smoke_passed"
+
+
 def test_module_standardization_matrix_is_ready() -> None:
     rows = build_module_standardization_rows()
     assert len(rows) == len(MODULE_ORDER)
     assert set(rows[0]) == set(STANDARDIZATION_COLUMNS)
     assert all(row["overall_status"] == "ready" for row in rows)
+    assert all(row["tests_status"] == "ready" for row in rows)
     assert all(row["demo_manifest_status"] == "ready" for row in rows)
     assert all(row["handoff_status"] == "ready" for row in rows)
