@@ -307,6 +307,9 @@ def _derived_rows_from_manifest(*, row: dict[str, str], path: Path) -> list[dict
     derived["module_names"] = ""
     derived["module_count"] = "1"
     derived["ready_module_count"] = "1"
+    derived["backend_ids"] = "functional_state.default.signature_scoring"
+    derived["backend_statuses"] = "fully_automatic_validated_entrypoint"
+    derived["backend_slurm_job_ids"] = row.get("slurm_job_id", "")
     derived["artifact_status"] = "ready"
     base_gaps = [item for item in str(row.get("missing_or_gap", "")).split(";") if item and item != "ready"]
     if not row.get("slurm_job_id"):

@@ -58,6 +58,7 @@ VALIDATION_HINTS = {
     "publicdb": ("slurm_tabular_airway_public", "airway public database-style cached table validation"),
     "wgcna": ("slurm_tabular_airway_public", "airway public WGCNA-ready matrix QC and handoff validation"),
     "single_gene": ("slurm_tabular_airway_public", "airway public single-gene report validation"),
+    "functional_state": ("slurm_tabular_airway_public", "airway public signature/function-state scoring validation"),
     "proteomics": ("slurm_proteomics_lfq_analyst_public", "LFQ-Analyst public MaxQuant proteinGroups validation"),
     "tumor_sc": ("slurm_tumor_sc_maynard_raw_counts", "NSCLC tumor single-cell raw-count specialty validation"),
     "method_tools": ("slurm_method_tools_nsclc", "NSCLC scRNA method-tools baseline validation"),
