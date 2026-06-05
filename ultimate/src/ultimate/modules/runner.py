@@ -19,6 +19,7 @@ from ultimate.backend_registry import build_backend_plan, enrich_backend_plan_fo
 from ultimate.constants import MODULE_SPECS
 from ultimate.bulk import is_bulk_module, run_bulk_module
 from ultimate.cite_seq_backend import has_cite_seq_backend_config, run_cite_seq_backend
+from ultimate.hto_demux_backend import has_hto_demux_backend_config, run_hto_demux_backend
 from ultimate.method_tools_backend import has_method_tools_backend_config, run_method_tools_backend
 from ultimate.multiome_backend import has_multiome_backend_config, run_multiome_backend
 from ultimate.modules.common import (
@@ -57,6 +58,8 @@ def run_module(
         return run_spatial_backend(config=config, output_dir=output_dir, samples=samples)
     if module_name == "vdj" and has_vdj_backend_config(config):
         return run_vdj_backend(config=config, output_dir=output_dir, samples=samples)
+    if module_name == "hto_demux" and has_hto_demux_backend_config(config):
+        return run_hto_demux_backend(config=config, output_dir=output_dir, samples=samples)
     if module_name == "method_tools" and has_method_tools_backend_config(config):
         return run_method_tools_backend(config=config, output_dir=output_dir, samples=samples)
 

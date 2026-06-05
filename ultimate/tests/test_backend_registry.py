@@ -70,6 +70,7 @@ def test_v3_tabular_public_backends_are_evidence_gated_entrypoints() -> None:
         "scrna.tumor.copykat": "slurm/tumor_sc_copykat_small_validation.sbatch",
         "functional_state.default.signature_scoring": "slurm/bulk_validation_suite.sbatch",
         "method_tools.default.delivery_manifest_mvp": "slurm/method_tools_validation.sbatch",
+        "hto_demux.default.matrix_assignment_mvp": "slurm/hto_demux_backend_validation.sbatch",
     }
 
     for backend_id, slurm_profile in expected.items():
