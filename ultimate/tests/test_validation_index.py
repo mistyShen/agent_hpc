@@ -97,7 +97,7 @@ def test_validation_index_includes_nested_validation_roots(tmp_path: Path) -> No
 def test_validation_index_infers_module_from_standard_validation_run_names(tmp_path: Path) -> None:
     root = tmp_path / "ultimate"
     runs = {
-        root / "validations" / "slurm_cite_seq_10x_pbmc": "cite_seq",
+        root / "validations" / "slurm_cite_seq_10x_pbmc_unified": "cite_seq",
         root / "validations" / "slurm_tumor_sc_maynard_raw_counts": "tumor_sc",
         root / "validation_runs" / "scrna_mvp_validation" / "h5ad": "scrna",
         root / "validations" / "bulk_demo_python" / "project" / "runs" / "project": "rnaseq,scrna,scatac,multiome,vdj,scdna,mtdna,scepi,cite_seq,spatial,perturb_seq,hto_demux,genotype_demux,functional_state,tumor_sc,clinical_assoc,method_tools,methylation,proteomics,publicdb,wgcna,single_gene",
@@ -125,7 +125,7 @@ def test_validation_index_infers_module_from_standard_validation_run_names(tmp_p
         line.split("\t")[0]: line.split("\t")[2]
         for line in Path(result["validation_index_tsv"]).read_text(encoding="utf-8").splitlines()[1:]
     }
-    assert rows["slurm_cite_seq_10x_pbmc"] == "cite_seq"
+    assert rows["slurm_cite_seq_10x_pbmc_unified"] == "cite_seq"
     assert rows["slurm_tumor_sc_maynard_raw_counts"] == "tumor_sc"
     assert rows["h5ad"] == "scrna"
     assert rows["project"].startswith("rnaseq,scrna,scatac")
