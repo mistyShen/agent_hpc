@@ -125,6 +125,35 @@ def test_validate_scrna_cli_rejects_missing_input_path(tmp_path: Path) -> None:
     assert "does not exist" in result.output
 
 
+def test_scrna_mvp_slurm_uses_explicit_celltypist_reference_cache() -> None:
+    script = (Path(__file__).parents[1] / "slurm" / "scrna_mvp_validation.sbatch").read_text(encoding="utf-8")
+
+    assert "CELLTYPIST_FOLDER" in script
+    assert "references/celltypist" in script
+    assert "Immune_All_Low.pkl" in script
+    assert "--celltypist-model" in script
+    assert "export CELLTYPIST_FOLDER" in script
+
+
+def test_scrna_backend_rows_record_slurm_context(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _require_scrna_runtime()
+    monkeypatch.setenv("SLURM_JOB_ID", "pytest-123")
+    monkeypatch.setenv("SLURM_JOB_NAME", "pytest_scrna")
+    demo = create_demo_inputs(tmp_path / "demo_slurm_context", n_cells=32, n_genes=50, seed=15)
+
+    manifest = run_scrna_validation(
+        input_path=Path(demo["h5ad"]),
+        input_type="h5ad",
+        output_dir=tmp_path / "run_slurm_context",
+        samplesheet=Path(demo["samplesheet"]),
+        max_cells=32,
+    )
+
+    for row in manifest["backend_status"]:
+        assert row["backend_slurm_job_id"] == "pytest-123"
+        assert row["backend_slurm_job_name"] == "pytest_scrna"
+
+
 def _require_scrna_runtime() -> None:
     pytest.importorskip("scanpy")
     pytest.importorskip("anndata")

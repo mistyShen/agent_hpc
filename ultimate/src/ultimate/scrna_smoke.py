@@ -821,6 +821,8 @@ def _backend_row(backend_id: str, status: str, analysis_level: str, reason: str)
     return {
         "backend_id": backend_id,
         "status": status,
+        "backend_slurm_job_id": os.environ.get("SLURM_JOB_ID", ""),
+        "backend_slurm_job_name": os.environ.get("SLURM_JOB_NAME", ""),
         "analysis_level": analysis_level,
         "delivery_allowed": False,
         "validation_evidence_allowed": analysis_level == "validated_backend" and status in {"ready", "design_ready_r_backend_available"},

@@ -62,6 +62,7 @@ def test_v3_tabular_public_backends_are_evidence_gated_entrypoints() -> None:
         "methylation.default.beta_matrix_python_mvp": "slurm/bulk_validation_suite.sbatch",
         "proteomics.default.abundance_python_mvp": "slurm/proteomics_backend_validation.sbatch",
         "scrna.qc.scrublet": "slurm/scrna_mvp_validation.sbatch",
+        "scrna.annotation.celltypist": "slurm/scrna_mvp_validation.sbatch",
         "functional_state.default.signature_scoring": "slurm/bulk_validation_suite.sbatch",
     }
 
