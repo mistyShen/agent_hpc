@@ -81,6 +81,7 @@ def test_v3_tabular_public_backends_are_evidence_gated_entrypoints() -> None:
         "genotype_demux.default.result_import_mvp": "slurm/genotype_demux_backend_validation.sbatch",
         "mtdna.default.lineage_ready_mvp": "slurm/mtdna_backend_validation.sbatch",
         "scdna.default.matrix_ready_handoff": "slurm/scdna_backend_validation.sbatch",
+        "cite_seq.optional.dsb": "slurm/cite_seq_dsb_validation.sbatch",
     }
 
     for backend_id, slurm_profile in expected.items():
