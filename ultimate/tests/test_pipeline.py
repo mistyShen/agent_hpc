@@ -8,7 +8,7 @@ from ultimate.config import dump_yaml, load_config
 from ultimate.constants import MODULE_ORDER
 from ultimate.job import prepare_job
 from ultimate.modules.common import GLOBAL_MVP_TABLE_COLUMNS, MODULE_MVP_FIGURES, MODULE_MVP_OBJECTS, MODULE_MVP_TABLES
-from ultimate.pipeline import _write_module_log, finalize_run_outputs, run_pipeline_from_config
+from ultimate.pipeline import _write_advanced_backend_execution, _write_module_log, finalize_run_outputs, run_pipeline_from_config
 from ultimate.preflight import run_preflight
 
 
@@ -62,6 +62,8 @@ def test_pipeline_generates_required_artifacts(tmp_path: Path) -> None:
     html_report = (run_dir / "reports" / "report.html").read_text(encoding="utf-8")
     assert "复现信息" in methods_report
     assert "交付门控" in methods_report
+    assert "Advanced Backend Execution" in methods_report
+    assert "Advanced Backend Execution" in html_report
     assert "交付门控" in html_report
     assert "analysis_level" in methods_report
     assert "analysis_level" in html_report
@@ -69,6 +71,10 @@ def test_pipeline_generates_required_artifacts(tmp_path: Path) -> None:
         assert token in methods_report
         assert token in html_report
     assert len(run_manifest["modules"]) == len(MODULE_ORDER)
+    advanced = run_manifest["advanced_backend_execution"]
+    assert advanced["backend_count"] >= len(MODULE_ORDER)
+    assert Path(advanced["table"]).exists()
+    assert Path(advanced["manifest_path"]).exists()
     for module in run_manifest["modules"]:
         assert module["analysis_level"] in {"demo_result", "smoke_backend", "validated_backend", "production_backend"}
         assert module["delivery_allowed"] is False
@@ -157,6 +163,47 @@ def test_finalize_run_outputs_does_not_repeat_final_repro_export(tmp_path: Path,
     assert written["report"]["call_index"] == 2
     assert result["reproducible_package"] == written["reproducible_package"]
     assert result["report"] == written["report"]
+
+
+def test_advanced_backend_execution_prefers_actual_backend_rows(tmp_path: Path) -> None:
+    manifest = _write_advanced_backend_execution(
+        tmp_path,
+        [
+            {
+                "module": "scrna",
+                "analysis_level": "validated_backend",
+                "delivery_allowed": False,
+                "validation_evidence_allowed": True,
+                "backend_execution_rows": [
+                    {
+                        "backend_id": "scrna.communication.cellchat_optional",
+                        "status": "skipped",
+                        "analysis_level": "validated_backend",
+                        "delivery_allowed": False,
+                        "validation_evidence_allowed": False,
+                        "reason": "dependency_missing:Rscript",
+                        "backend_slurm_job_id": "123",
+                    }
+                ],
+                "backend_plan": {
+                    "active_backends": [
+                        {
+                            "backend_id": "scrna.communication.cellchat_optional",
+                            "backend_role": "optional_backend",
+                            "backend_status": "fully_automatic_mvp",
+                            "skip_reason": "registry_only",
+                        }
+                    ]
+                },
+            }
+        ],
+    )
+
+    rows = manifest["rows"]
+    assert len(rows) == 1
+    assert rows[0]["execution_status"] == "skipped"
+    assert rows[0]["validation_evidence_allowed"] == "false"
+    assert rows[0]["skip_reason"] == "dependency_missing:Rscript"
 
 
 def test_all_modules_emit_declared_mvp_artifacts(tmp_path: Path) -> None:
