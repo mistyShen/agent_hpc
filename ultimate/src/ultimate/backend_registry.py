@@ -273,6 +273,25 @@ BACKEND_REGISTRY: tuple[BackendSpec, ...] = (
         interpretation_warning="CellChat 结果是候选配体-受体通讯推断，不能写成确定细胞互作机制。",
     ),
     _backend(
+        "scrna.communication.nichenet_optional",
+        "scrna",
+        "optional_backend",
+        "communication",
+        "NicheNet ligand-target hypothesis backend",
+        "NicheNet-compatible ligand-target resources",
+        ("h5ad_with_reviewed_labels", "de_condition_table", "ligand_target_resource"),
+        "ultimate-scrna-r",
+        "slurm/scrna_nichenet_validation.sbatch",
+        ("nichenet_ligand_activity.tsv", "nichenet_ligand_target_links.tsv", "nichenet_backend_status.tsv", "nichenet_backend_manifest.json", "nichenet_activity.png"),
+        "PBMC/NSCLC small validation when reviewed labels and ligand-target resources are available",
+        ("NicheNet 是 ligand-target 机制假设生成，不是机制证明；需要 reviewed sender/receiver labels 和 ligand-target resource。",),
+        production_allowed=True,
+        backend_status="fully_automatic_validated_entrypoint",
+        skip_reason="",
+        resource_profile="medium_r_optional_resource",
+        interpretation_warning="NicheNet 结果只能作为 ligand-target 机制假设，不写成确定机制。",
+    ),
+    _backend(
         "scrna.tumor.copykat",
         "scrna",
         "optional_backend",
@@ -359,8 +378,8 @@ BACKEND_REGISTRY: tuple[BackendSpec, ...] = (
         "10x PBMC scATAC public peak matrix with lightweight motif/gene mapping fixture",
         ("motif deviation 和 gene activity 是可及性推断；缺 motifs/fragments/annotation 时必须跳过或只写 handoff。",),
         production_allowed=True,
-        backend_status="fully_automatic_mvp",
-        skip_reason="Runs automatically for peak matrix plus motif/gene mapping; formal chromVAR/Signac R execution remains dependency-gated.",
+        backend_status="fully_automatic_validated_entrypoint",
+        skip_reason="",
         resource_profile="large_chromatin",
         interpretation_warning="motif enrichment/gene activity 是染色质可及性推断，不等于 TF 活性实验证明或基因表达。",
     ),
@@ -954,6 +973,7 @@ PRESET_BACKEND_DEFAULTS: dict[tuple[str, str], tuple[str, ...]] = {
         "scrna.functional.decoupler_gseapy",
         "scrna.communication.liana",
         "scrna.communication.cellchat_optional",
+        "scrna.communication.nichenet_optional",
     ),
     ("scrna", "trajectory"): (
         "scrna.qc.scrublet",
@@ -997,6 +1017,8 @@ def _backend_aliases(specs: list[BackendSpec]) -> dict[str, BackendSpec]:
         }
         if spec.backend_id == "scrna.communication.cellchat_optional":
             tokens.update({"cellchat", "communication.cellchat"})
+        elif spec.backend_id == "scrna.communication.nichenet_optional":
+            tokens.update({"nichenet", "nichenetr", "communication.nichenet"})
         elif spec.backend_id == "scrna.communication.liana":
             tokens.update({"liana", "communication.liana"})
         elif spec.backend_id == "scrna.annotation.celltypist":
