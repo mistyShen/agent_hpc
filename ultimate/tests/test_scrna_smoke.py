@@ -241,6 +241,7 @@ def _assert_mvp_outputs(manifest: dict) -> None:
         "scrna.annotation.celltypist",
         "scrna.functional.decoupler_gseapy",
         "scrna.communication.liana",
+        "scrna.communication.cellchat_optional",
         "scrna.pseudobulk.deseq2_edger",
     }.issubset(backend_ids)
     assert Path(manifest["raw_qc_manifest"]).exists()
@@ -268,6 +269,10 @@ def _assert_mvp_outputs(manifest: dict) -> None:
         "results/tables/liana_interactions.tsv",
         "results/tables/communication_network.tsv",
         "results/tables/communication_backend_status.tsv",
+        "results/tables/cellchat_interactions.tsv",
+        "results/tables/cellchat_pathway_summary.tsv",
+        "results/tables/cellchat_backend_status.tsv",
+        "results/tables/cellchat_backend_manifest.json",
         "results/tables/pseudobulk_de_backend_status.tsv",
         "results/tables/pseudobulk_de_results.tsv",
         "results/tables/pseudobulk_deseq2_edgeR_handoff.R",
@@ -275,6 +280,7 @@ def _assert_mvp_outputs(manifest: dict) -> None:
         "results/figures/pca_condition.png",
         "results/figures/umap_cluster_condition.png",
         "results/figures/communication_dotplot.png",
+        "results/figures/cellchat_network.png",
         "reports/report.md",
         "reports/report.html",
         "run_manifest.json",
