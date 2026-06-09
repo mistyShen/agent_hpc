@@ -37,7 +37,11 @@ def run_delivery_check(run_dir: Path) -> dict[str, Any]:
     software_versions = resolved_run_dir / "reproducible_code" / "software_versions.tsv"
     input_checksums = resolved_run_dir / "reproducible_code" / "input_checksums.tsv"
     rerun_script = resolved_run_dir / "reproducible_code" / "rerun.sh"
+    repro_manifest = resolved_run_dir / "reproducible_code" / "repro_manifest.json"
+    repro_readme = resolved_run_dir / "reproducible_code" / "README.md"
     advanced_manifest = resolved_run_dir / "results" / "tables" / "advanced_backend_execution_manifest.json"
+    figure_manifest = resolved_run_dir / "results" / "tables" / "figure_manifest.tsv"
+    layout_qc = resolved_run_dir / "results" / "tables" / "layout_qc.tsv"
 
     for check_id, path, note in (
         ("report_html", report_html, "reports/report.html must exist and be non-empty"),
@@ -46,7 +50,11 @@ def run_delivery_check(run_dir: Path) -> dict[str, Any]:
         ("software_versions", software_versions, "software_versions.tsv must exist and be non-empty"),
         ("input_checksums", input_checksums, "input_checksums.tsv must exist and be non-empty"),
         ("rerun_script", rerun_script, "rerun.sh must exist and be non-empty"),
+        ("repro_manifest", repro_manifest, "repro_manifest.json must exist and be non-empty"),
+        ("repro_readme", repro_readme, "reproducible README.md must exist and be non-empty"),
         ("advanced_backend_manifest", advanced_manifest, "advanced backend execution manifest must exist and be non-empty"),
+        ("figure_manifest", figure_manifest, "figure_manifest.tsv must exist and be non-empty"),
+        ("layout_qc", layout_qc, "layout_qc.tsv must exist and be non-empty"),
     ):
         _check(rows, check_id, _nonempty(path), path, note)
 
@@ -54,6 +62,12 @@ def run_delivery_check(run_dir: Path) -> dict[str, Any]:
         _check_delivery_index(rows, delivery_index)
     if _nonempty(advanced_manifest):
         _check_advanced_backend_manifest(rows, advanced_manifest, manifest)
+    if _nonempty(repro_manifest):
+        _check_repro_manifest(rows, repro_manifest)
+    if _nonempty(figure_manifest):
+        _check_figure_manifest(rows, figure_manifest)
+    if _nonempty(layout_qc):
+        _check_layout_qc(rows, layout_qc)
     if _nonempty(report_html) and _nonempty(methods_md):
         _check_report_warnings(rows, report_html, methods_md)
 
@@ -147,15 +161,58 @@ def _check_advanced_backend_manifest(rows: list[dict[str, Any]], path: Path, man
         for module in (manifest.get("modules") if isinstance(manifest.get("modules"), list) else [])
         if isinstance(module, dict)
     }
-    if module_names & {"scrna", "scatac"}:
-        _check(rows, "advanced_backend_rows_present", bool(rows_payload), path, "scrna/scatac delivery must include backend execution rows")
-        unresolved = [
-            row
-            for row in rows_payload
-            if str(row.get("execution_status") or "") == "registered_active"
-            and str(row.get("backend_registry_status") or "").startswith("fully_automatic")
-        ]
-        _check(rows, "advanced_backend_no_unresolved_active_rows", not unresolved, path, "fully automatic active backend rows must be executed or explicitly skipped")
+    _check(rows, "advanced_backend_rows_present", bool(rows_payload), path, "production delivery must include backend execution rows")
+    unresolved = [
+        row
+        for row in rows_payload
+        if str(row.get("execution_status") or "") == "registered_active"
+        and str(row.get("backend_registry_status") or "").startswith("fully_automatic")
+    ]
+    _check(rows, "advanced_backend_no_unresolved_active_rows", not unresolved, path, "fully automatic active backend rows must be executed or explicitly skipped")
+    unexplained_skips = [
+        row
+        for row in rows_payload
+        if str(row.get("execution_status") or "") in {"skipped", "partial", "blocked"}
+        and not str(row.get("skip_reason") or "").strip()
+    ]
+    _check(rows, "advanced_backend_skips_explained", not unexplained_skips, path, "skipped/partial backend rows must include skip_reason")
+    automatic_rows = [
+        row
+        for row in rows_payload
+        if str(row.get("backend_registry_status") or "").startswith("fully_automatic")
+        or str(row.get("execution_status") or "") in {"ready", "skipped"}
+    ]
+    missing_warnings = [
+        row
+        for row in automatic_rows
+        if not str(row.get("interpretation_warning") or "").strip()
+        and str(row.get("execution_status") or "") == "ready"
+    ]
+    _check(rows, "advanced_backend_warnings_present", not missing_warnings, path, "ready backend rows must include interpretation warnings")
+
+
+def _check_figure_manifest(rows: list[dict[str, Any]], path: Path) -> None:
+    indexed = _read_tsv(path)
+    _check(rows, "figure_manifest_rows_present", bool(indexed), path, "figure manifest must include at least one figure")
+    bad_paths = [row for row in indexed if not _nonempty(Path(str(row.get("path") or "")))]
+    _check(rows, "figure_manifest_paths_nonempty", not bad_paths, path, "all figure manifest paths must exist and be non-empty")
+
+
+def _check_layout_qc(rows: list[dict[str, Any]], path: Path) -> None:
+    indexed = _read_tsv(path)
+    _check(rows, "layout_qc_rows_present", bool(indexed), path, "layout QC must include at least one figure")
+    failed = [row for row in indexed if str(row.get("layout_status") or "") == "layout_failed"]
+    warnings = [row for row in indexed if str(row.get("layout_status") or "") == "layout_warning"]
+    _check(rows, "layout_qc_no_failed", not failed, path, "layout QC must not contain layout_failed rows")
+    _check(rows, "layout_qc_no_warnings", not warnings, path, "layout QC must not contain layout_warning rows for delivery")
+
+
+def _check_repro_manifest(rows: list[dict[str, Any]], path: Path) -> None:
+    payload = _read_json(path)
+    _check(rows, "repro_manifest_valid", bool(payload), path, "repro manifest must be valid JSON")
+    for key in ("rerun_script", "software_versions", "input_checksums", "delivery_index"):
+        target = Path(str(payload.get(key) or ""))
+        _check(rows, f"repro_manifest_{key}", _nonempty(target), path, f"repro manifest {key} must point to a non-empty file")
 
 
 def _check_report_warnings(rows: list[dict[str, Any]], report_html: Path, methods_md: Path) -> None:

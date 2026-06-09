@@ -89,6 +89,15 @@ def _write_delivery_ready_job(tmp_path: Path) -> tuple[Path, Path]:
         run_dir / "reproducible_code" / "rerun.sh": "#!/usr/bin/env bash\n",
         run_dir / "reproducible_code" / "software_versions.tsv": "kind\tname\tversion\npython\tultimate\ttest\n",
         run_dir / "reproducible_code" / "input_checksums.tsv": "key\tpath\texists\nconfig\tproject.yaml\ttrue\n",
+        run_dir / "reproducible_code" / "README.md": "# Reproducible package\n",
+        run_dir / "results" / "tables" / "figure_manifest.tsv": (
+            "figure_id\tmodule\tkind\tpath\tstyle_id\ttitle\tstatus\tlayout_status\tlayout_warning\n"
+            f"umap\tscrna\tumap\t{run_dir / 'results' / 'figures' / 'umap.png'}\ttest\tUMAP\tready\tlayout_pass\t\n"
+        ),
+        run_dir / "results" / "tables" / "layout_qc.tsv": (
+            "figure_id\tpath\tlayout_status\tlayout_warning\n"
+            f"umap\t{run_dir / 'results' / 'figures' / 'umap.png'}\tlayout_pass\t\n"
+        ),
         run_dir / "results" / "tables" / "advanced_backend_execution_manifest.json": json.dumps(
             {
                 "status": "ready",
@@ -99,6 +108,7 @@ def _write_delivery_ready_job(tmp_path: Path) -> tuple[Path, Path]:
                         "backend_id": "scrna.communication.cellchat_optional",
                         "backend_registry_status": "fully_automatic_validated_entrypoint",
                         "execution_status": "ready",
+                        "interpretation_warning": "candidate communication inference, not mechanism proof",
                     }
                 ],
             }
@@ -118,6 +128,13 @@ def _write_delivery_ready_job(tmp_path: Path) -> tuple[Path, Path]:
         f"{category}\t{path}\t{path.stat().st_size}\tscrna\t{path.stem}\trun" for category, path in delivery_rows
     )
     (run_dir / "delivery_index.tsv").write_text(delivery_index + "\n", encoding="utf-8")
+    repro_manifest = {
+        "rerun_script": str(run_dir / "reproducible_code" / "rerun.sh"),
+        "software_versions": str(run_dir / "reproducible_code" / "software_versions.tsv"),
+        "input_checksums": str(run_dir / "reproducible_code" / "input_checksums.tsv"),
+        "delivery_index": str(run_dir / "delivery_index.tsv"),
+    }
+    (run_dir / "reproducible_code" / "repro_manifest.json").write_text(json.dumps(repro_manifest, indent=2), encoding="utf-8")
 
     manifest = {
         "status": "ready",
@@ -165,3 +182,30 @@ def _write_delivery_ready_job(tmp_path: Path) -> tuple[Path, Path]:
         encoding="utf-8",
     )
     return job_dir, run_dir
+
+
+def test_delivery_check_blocks_layout_warning(tmp_path: Path) -> None:
+    _, run_dir = _write_delivery_ready_job(tmp_path)
+    (run_dir / "results" / "tables" / "layout_qc.tsv").write_text(
+        "figure_id\tpath\tlayout_status\tlayout_warning\n"
+        f"umap\t{run_dir / 'results' / 'figures' / 'umap.png'}\tlayout_warning\tsmall_canvas\n",
+        encoding="utf-8",
+    )
+
+    manifest = run_delivery_check(run_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "layout_qc_no_warnings" in manifest["blockers"]
+
+
+def test_delivery_check_blocks_missing_backend_warning(tmp_path: Path) -> None:
+    _, run_dir = _write_delivery_ready_job(tmp_path)
+    advanced_path = run_dir / "results" / "tables" / "advanced_backend_execution_manifest.json"
+    payload = json.loads(advanced_path.read_text(encoding="utf-8"))
+    payload["rows"][0]["interpretation_warning"] = ""
+    advanced_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    manifest = run_delivery_check(run_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "advanced_backend_warnings_present" in manifest["blockers"]

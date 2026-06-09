@@ -316,6 +316,55 @@ bash /shared/shen/2026/ultimate/scripts/check_dev_entrypoint.sh --mode local
 Use `--mode remote` only for short shared-root checks through `hpc-run`; full
 validation and rehearsal execution still belong on Slurm.
 
+### V3.8 Multiomics Publication Rehearsal
+
+V3.8 connects the reviewed figure style rules, publication-grade backend rows,
+delivery QA and audit views into one production-style rehearsal suite. It does
+not make validation evidence customer-deliverable: only
+`production_backend + delivery_scope=internal_rehearsal + production_approval`
+plus a passing `delivery-check` is considered order-ready evidence.
+
+Submit the V3.8 suite with:
+
+```bash
+hpc-sbatch /shared/shen/2026/ultimate/slurm/v3_8_multiomics_publication_rehearsal.sbatch
+```
+
+The suite writes one job tree per rehearsal under
+`/shared/shen/2026/ultimate/jobs/<job_id>/` and covers:
+
+- `rnaseq publication`
+- `scrna publication`
+- `proteomics publication`
+- `methylation publication`
+- `scatac publication`
+- `multiome publication`
+- `spatial publication`
+
+Every run is expected to include `run_manifest.json`, `reports/report.html`,
+`reports/methods.md`, `delivery_index.tsv`,
+`reports/delivery_check.json`, `reproducible_code/rerun.sh`,
+`reproducible_code/software_versions.tsv`,
+`reproducible_code/input_checksums.tsv`,
+`results/tables/figure_manifest.tsv`, and `results/tables/layout_qc.tsv`.
+The delivery QA gate also checks backend execution rows, Slurm job id,
+production approval, method-boundary warnings, non-empty figures/tables and the
+reproducible package manifest.
+
+After the suite, it refreshes:
+
+```text
+reports/validation_index_v38/
+audits/production_v38_latest/
+audits/backends_v38_latest/
+reports/v3_8_order_ready_report.md
+```
+
+`reports/v3_8_order_ready_report.md` is the quick answer to which publication
+presets are ready for internal rehearsal and which remain blocked or need
+manual review. The suite uses synthetic/lightweight rehearsal inputs generated
+inside each job directory and never overwrites raw data.
+
 ## SCEPI Matrix Backend
 
 The SCEPI module is a matrix-level single-cell epigenomics MVP, not a full
