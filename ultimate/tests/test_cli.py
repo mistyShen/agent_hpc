@@ -85,6 +85,17 @@ def test_cli_styles_supports_review_presets(tmp_path: Path) -> None:
     assert payload["options_preset"] == "publication"
     assert Path(payload["contact_sheet"]).exists()
 
+    result = runner.invoke(main, ["styles", "--list"])
+    assert result.exit_code == 0, result.output
+    assert "morandi_clinical" in json.loads(result.output)
+
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(main, ["styles", "--style", "morandi_clinical", "--minimal"])
+        assert result.exit_code == 0, result.output
+        payload = json.loads(result.output)
+        assert payload["options_preset"] == "minimal"
+        assert Path("style_reviews/v3_6/morandi_clinical/style_review_contact_sheet.png").exists()
+
 
 def test_cli_run_requires_approval_for_production_backend(tmp_path: Path) -> None:
     runner = CliRunner()

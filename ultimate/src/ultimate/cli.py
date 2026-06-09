@@ -378,17 +378,19 @@ def prepare_intake_command(root: Path, output_dir: Path | None, refresh_audit: b
 @main.command("styles")
 @click.option("--style", "style_key", default="soft_color", show_default=True, help="Style key to render.")
 @click.option("--all", "render_all", is_flag=True, help="Render review figures for every registered style.")
-@click.option("--output-dir", type=click.Path(path_type=Path), default=None, help="Optional review output directory.")
+@click.option("--output-dir", type=click.Path(path_type=Path), default=None, help="Optional review output directory. Defaults to style_reviews/v3_6/<style>.")
 @click.option("--minimal", "minimal", is_flag=True, help="Render sparse review figures with legends/captions/grids off.")
 @click.option("--publication", "publication", is_flag=True, help="Render full publication-style review figures. This is the default.")
-def styles_command(style_key: str, render_all: bool, output_dir: Path | None, minimal: bool, publication: bool) -> None:
+@click.option("--list", "list_styles", is_flag=True, help="List registered style tokens without rendering review figures.")
+def styles_command(style_key: str, render_all: bool, output_dir: Path | None, minimal: bool, publication: bool, list_styles: bool) -> None:
     styles = available_styles()
     options_preset = "minimal" if minimal else "publication"
-    if output_dir is None:
+    if list_styles:
         click.echo(json.dumps(styles, indent=2, ensure_ascii=False))
         return
     if render_all:
         manifests = {}
+        output_dir = output_dir or Path("style_reviews") / "v3_6"
         output_dir.mkdir(parents=True, exist_ok=True)
         for key in styles:
             tokens = set_active_style(key)
@@ -401,6 +403,7 @@ def styles_command(style_key: str, render_all: bool, output_dir: Path | None, mi
             )
         )
         return
+    output_dir = output_dir or Path("style_reviews") / "v3_6" / style_key
     tokens = set_active_style(style_key)
     manifest = generate_style_review(output_dir, style=tokens, options_preset=options_preset)
     click.echo(json.dumps({"selected": style_key, "available": list(styles), "options_preset": options_preset, **manifest}, indent=2, ensure_ascii=False))
