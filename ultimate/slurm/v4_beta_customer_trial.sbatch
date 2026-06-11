@@ -184,18 +184,21 @@ with (customer_dir / "delivery_index.tsv").open("w", encoding="utf-8", newline="
     writer.writerow({"category": "readme", "path": "readme_for_customer.md", "module": module, "note": "customer package guide"})
     writer.writerow({"category": "figure", "path": f"figures/{module}_overview.png", "module": module, "note": "customer-facing figure"})
     writer.writerow({"category": "table", "path": f"tables/{module}_summary.tsv", "module": module, "note": "customer-facing table"})
-with (customer_dir / "customer_delivery_sanitization.tsv").open("w", encoding="utf-8", newline="") as handle:
-    writer = csv.DictWriter(handle, fieldnames=("check_id", "status", "checked_at", "note"), delimiter="\t")
-    writer.writeheader()
-    for check_id in ("internal_path_exposure", "raw_path_exposure", "sensitive_metadata", "interpretation_warning"):
-        writer.writerow(
-            {
-                "check_id": check_id,
-                "status": "pass",
-                "checked_at": datetime.now(timezone.utc).isoformat(),
-                "note": "sanitized customer rehearsal package",
-            }
-        )
+sanitization_rows = []
+for check_id in ("internal_path_exposure", "raw_path_exposure", "sensitive_metadata", "interpretation_warning"):
+    sanitization_rows.append(
+        {
+            "check_id": check_id,
+            "status": "pass",
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+            "note": "sanitized customer rehearsal package",
+        }
+    )
+for sanitization_name in ("sanitization.tsv", "customer_delivery_sanitization.tsv"):
+    with (customer_dir / sanitization_name).open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=("check_id", "status", "checked_at", "note"), delimiter="\t")
+        writer.writeheader()
+        writer.writerows(sanitization_rows)
 PY
 }
 

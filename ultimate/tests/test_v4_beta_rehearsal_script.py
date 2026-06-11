@@ -25,6 +25,7 @@ def test_v4_beta_customer_trial_requires_rich_customer_package_and_delivery_chec
     text = _script_text()
 
     assert "readme_for_customer.md" in text
+    assert "sanitization.tsv" in text
     assert 'customer_dir / "figures"' in text
     assert 'customer_dir / "tables"' in text
     assert "delivery-check --run-dir" in text

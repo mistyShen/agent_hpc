@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -337,6 +338,7 @@ def _write_customer_package(
         "interpretation_warning\tpass\tcustomer report includes boundary warning\t\n",
         encoding="utf-8",
     )
+    shutil.copyfile(customer_dir / "customer_delivery_sanitization.tsv", customer_dir / "sanitization.tsv")
     (customer_dir / "figures" / "umap.png").write_text("png", encoding="utf-8")
     (customer_dir / "tables" / "markers.tsv").write_text(
         "gene\tscore\nA\t1\n" + extra_table_text,

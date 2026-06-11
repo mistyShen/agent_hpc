@@ -14,6 +14,7 @@ CUSTOMER_PACKAGE_FILES = (
     "report.html",
     "methods.md",
     "delivery_index.tsv",
+    "sanitization.tsv",
     "customer_delivery_sanitization.tsv",
     "readme_for_customer.md",
 )
@@ -323,7 +324,10 @@ def _check_customer_delivery_package(rows: list[dict[str, Any]], run_dir: Path, 
         customer_dir,
         "customer-facing package must include an interpretation warning or boundary statement",
     )
-    sanitization_path = customer_dir / "customer_delivery_sanitization.tsv"
+    sanitization_path = customer_dir / "sanitization.tsv"
+    legacy_sanitization_path = customer_dir / "customer_delivery_sanitization.tsv"
+    if not sanitization_path.exists() and legacy_sanitization_path.exists():
+        sanitization_path = legacy_sanitization_path
     if _nonempty(sanitization_path):
         scan_rows = _read_tsv(sanitization_path)
         _check(rows, "customer_sanitization_rows_present", bool(scan_rows), sanitization_path, "customer sanitization table must include checks")
