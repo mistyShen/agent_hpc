@@ -10,6 +10,22 @@ from typing import Any
 
 VALID_DELIVERY_SCOPES = {"internal_rehearsal", "customer_delivery"}
 REQUIRED_CATEGORIES = ("figure", "table", "object", "report", "reproducible_code")
+CUSTOMER_PACKAGE_FILES = (
+    "report.html",
+    "methods.md",
+    "delivery_index.tsv",
+    "customer_delivery_sanitization.tsv",
+)
+CUSTOMER_FORBIDDEN_TOKENS = (
+    "/shared/",
+    "/Users/",
+    "raw_links",
+    "production_approval",
+    "SLURM_JOB_ID",
+    "slurm_job_id",
+    ".conda",
+    "/jobs/",
+)
 
 
 def run_delivery_check(run_dir: Path) -> dict[str, Any]:
@@ -70,6 +86,8 @@ def run_delivery_check(run_dir: Path) -> dict[str, Any]:
         _check_layout_qc(rows, layout_qc)
     if _nonempty(report_html) and _nonempty(methods_md):
         _check_report_warnings(rows, report_html, methods_md)
+    if manifest and _delivery_scope(manifest) == "customer_delivery":
+        _check_customer_delivery_package(rows, resolved_run_dir, job_dir)
 
     status = "ready" if all(row["status"] == "pass" for row in rows) else "blocked"
     blockers = [row["check_id"] for row in rows if row["status"] != "pass"]
@@ -221,6 +239,48 @@ def _check_report_warnings(rows: list[dict[str, Any]], report_html: Path, method
     _check(rows, "report_has_delivery_gate", "delivery_allowed" in text or "交付许可" in text, report_html, "report/methods must show delivery permission")
     warning_tokens = ("warn", "警示", "不得", "不能", "not direct", "not causal", "不是")
     _check(rows, "report_has_interpretation_warning", any(token in text for token in warning_tokens), report_html, "report/methods must include interpretation or delivery warnings")
+
+
+def _delivery_scope(manifest: dict[str, Any]) -> str:
+    approval = manifest.get("production_approval") if isinstance(manifest.get("production_approval"), dict) else {}
+    gate = manifest.get("delivery_gate") if isinstance(manifest.get("delivery_gate"), dict) else {}
+    return str(gate.get("delivery_scope") or approval.get("delivery_scope") or manifest.get("delivery_scope") or "")
+
+
+def _check_customer_delivery_package(rows: list[dict[str, Any]], run_dir: Path, job_dir: Path | None) -> None:
+    """Require a sanitized customer-facing package for true customer delivery.
+
+    Internal run manifests and reproducibility packages intentionally retain
+    paths and Slurm evidence. Customer delivery therefore needs a separate
+    sanitized surface that can be checked without weakening internal provenance.
+    """
+    customer_dir = (job_dir / "deliverables" / "customer") if job_dir else (run_dir / "deliverables" / "customer")
+    _check(rows, "customer_package_dir", customer_dir.exists(), customer_dir, "customer_delivery requires deliverables/customer")
+    package_paths = [customer_dir / name for name in CUSTOMER_PACKAGE_FILES]
+    for path in package_paths:
+        _check(rows, f"customer_package_{path.name}", _nonempty(path), path, f"customer package must include non-empty {path.name}")
+    visible_paths = [path for path in package_paths if path.suffix.lower() in {".html", ".md", ".tsv", ".txt"} and path.exists()]
+    leaks = _customer_visible_leaks(visible_paths)
+    _check(rows, "customer_package_no_internal_path_leaks", not leaks, customer_dir, "customer-facing package must not expose server paths, raw_links, approval files, or Slurm internals")
+    sanitization_path = customer_dir / "customer_delivery_sanitization.tsv"
+    if _nonempty(sanitization_path):
+        scan_rows = _read_tsv(sanitization_path)
+        _check(rows, "customer_sanitization_rows_present", bool(scan_rows), sanitization_path, "customer sanitization table must include checks")
+        failed = [row for row in scan_rows if str(row.get("status") or "").lower() not in {"pass", "passed", "ready"}]
+        _check(rows, "customer_sanitization_all_pass", not failed, sanitization_path, "customer sanitization checks must all pass")
+        expected = {"internal_path_exposure", "raw_path_exposure", "sensitive_metadata", "interpretation_warning"}
+        present = {str(row.get("check_id") or "") for row in scan_rows}
+        _check(rows, "customer_sanitization_required_checks", expected.issubset(present), sanitization_path, "customer sanitization table must cover internal paths, raw paths, sensitive metadata, and warnings")
+
+
+def _customer_visible_leaks(paths: list[Path]) -> list[str]:
+    leaks: list[str] = []
+    for path in paths:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for token in CUSTOMER_FORBIDDEN_TOKENS:
+            if token in text:
+                leaks.append(f"{path}:{token}")
+    return leaks
 
 
 def _write_outputs(run_dir: Path, job_dir: Path | None, payload: dict[str, Any]) -> None:

@@ -365,6 +365,64 @@ presets are ready for internal rehearsal and which remain blocked or need
 manual review. The suite uses synthetic/lightweight rehearsal inputs generated
 inside each job directory and never overwrites raw data.
 
+### V4 Alpha Customer Delivery Loop
+
+V4 Alpha moves from internal rehearsal toward a controlled customer-delivery
+loop. It does not add new algorithms and it does not use real customer data by
+default. The purpose is to prove that customer-facing packages are separate
+from internal provenance and can pass stricter QA.
+
+Batch scaffolding is available for intake batches:
+
+```bash
+ultimate prepare-batch \
+  --batch config/batch_orders.yaml \
+  --root /shared/shen/2026/ultimate
+```
+
+`prepare-batch` only creates prepared job directories, command plans and a
+batch summary under `<root>/batches/<batch_id>/`. It does not submit Slurm,
+does not run analysis and writes `delivery_allowed=false` with
+`non_delivery_reason=batch_scaffold_not_analysis_run`.
+
+For true `delivery_scope=customer_delivery`, `delivery-check` additionally
+requires a sanitized customer package:
+
+```text
+jobs/<job_id>/deliverables/customer/report.html
+jobs/<job_id>/deliverables/customer/methods.md
+jobs/<job_id>/deliverables/customer/delivery_index.tsv
+jobs/<job_id>/deliverables/customer/customer_delivery_sanitization.tsv
+```
+
+The customer package must not expose `/shared`, home paths, raw data paths,
+`raw_links`, approval files, Slurm internals, or other internal provenance.
+Those internal records remain in the run manifest and reproducibility package;
+the customer-facing package is a separate sanitized surface.
+
+The V4 Alpha rehearsal suite is expected to write:
+
+```bash
+hpc-sbatch /shared/shen/2026/ultimate/slurm/v4_alpha_customer_delivery_rehearsal.sbatch
+```
+
+It covers controlled-data rehearsals for:
+
+- `rnaseq standard`
+- `scrna standard`
+- `proteomics standard`
+- `spatial standard`
+
+The suite uses `delivery_scope=customer_delivery` plus
+`delivery_mode=customer_delivery_rehearsal`, then writes:
+
+```text
+reports/v4_alpha_customer_delivery_report.md
+```
+
+and `validation-index` should classify controlled rehearsal jobs as
+`customer_delivery_rehearsal`, not as real customer delivery.
+
 ## SCEPI Matrix Backend
 
 The SCEPI module is a matrix-level single-cell epigenomics MVP, not a full

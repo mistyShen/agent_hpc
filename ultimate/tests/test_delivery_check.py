@@ -62,7 +62,7 @@ def test_cli_delivery_check_exits_nonzero_when_blocked(tmp_path: Path) -> None:
     assert "not_demo" in result.output
 
 
-def _write_delivery_ready_job(tmp_path: Path) -> tuple[Path, Path]:
+def _write_delivery_ready_job(tmp_path: Path, *, delivery_scope: str = "internal_rehearsal") -> tuple[Path, Path]:
     job_dir = tmp_path / "jobs" / "ORDER001"
     run_dir = job_dir / "runs" / "ORDER001"
     for directory in (
@@ -144,7 +144,7 @@ def _write_delivery_ready_job(tmp_path: Path) -> tuple[Path, Path]:
         "delivery_allowed": True,
         "validation_evidence_allowed": True,
         "non_delivery_reason": "",
-        "delivery_scope": "internal_rehearsal",
+        "delivery_scope": delivery_scope,
         "slurm_job_id": "12345",
         "slurm": {"slurm_job_id": "12345", "slurm_job_name": "pytest_rehearsal"},
         "production_approval": {
@@ -154,14 +154,14 @@ def _write_delivery_ready_job(tmp_path: Path) -> tuple[Path, Path]:
             "project_id": "ORDER001",
             "input_path": str(config_path),
             "output_dir": str(run_dir),
-            "delivery_scope": "internal_rehearsal",
+            "delivery_scope": delivery_scope,
             "reason": "pytest delivery check",
         },
         "delivery_gate": {
             "status": "ready",
             "delivery_allowed": True,
             "approval_status": "approved",
-            "delivery_scope": "internal_rehearsal",
+            "delivery_scope": delivery_scope,
             "blockers": [],
         },
         "modules": [
@@ -209,3 +209,57 @@ def test_delivery_check_blocks_missing_backend_warning(tmp_path: Path) -> None:
 
     assert manifest["status"] == "blocked"
     assert "advanced_backend_warnings_present" in manifest["blockers"]
+
+
+def test_delivery_check_blocks_customer_delivery_without_sanitized_package(tmp_path: Path) -> None:
+    _, run_dir = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+
+    manifest = run_delivery_check(run_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "customer_package_dir" in manifest["blockers"]
+
+
+def test_delivery_check_blocks_customer_package_internal_path_leak(tmp_path: Path) -> None:
+    job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+    _write_customer_package(job_dir, extra_report_text="/shared/shen/2026/ultimate/jobs/ORDER001")
+
+    manifest = run_delivery_check(job_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "customer_package_no_internal_path_leaks" in manifest["blockers"]
+
+
+def test_delivery_check_accepts_sanitized_customer_delivery_package(tmp_path: Path) -> None:
+    job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+    _write_customer_package(job_dir)
+
+    manifest = run_delivery_check(job_dir)
+
+    assert manifest["status"] == "ready"
+    assert manifest["delivery_allowed"] is True
+
+
+def _write_customer_package(job_dir: Path, *, extra_report_text: str = "") -> None:
+    customer_dir = job_dir / "deliverables" / "customer"
+    customer_dir.mkdir(parents=True, exist_ok=True)
+    (customer_dir / "report.html").write_text(
+        f"<html><body>Customer report. analysis_level production_backend. 警示：统计结果不是机制证明。{extra_report_text}</body></html>",
+        encoding="utf-8",
+    )
+    (customer_dir / "methods.md").write_text(
+        "# Customer methods\n\nanalysis_level: production_backend\n\n警示：推断结果需要人工解释。\n",
+        encoding="utf-8",
+    )
+    (customer_dir / "delivery_index.tsv").write_text(
+        "category\tfile\tnote\nreport\treport.html\tcustomer-facing sanitized report\n",
+        encoding="utf-8",
+    )
+    (customer_dir / "customer_delivery_sanitization.tsv").write_text(
+        "check_id\tstatus\tnote\tpath\n"
+        "internal_path_exposure\tpass\tno internal path in customer package\t\n"
+        "raw_path_exposure\tpass\tno raw path in customer package\t\n"
+        "sensitive_metadata\tpass\tno sensitive metadata fields detected\t\n"
+        "interpretation_warning\tpass\tcustomer report includes boundary warning\t\n",
+        encoding="utf-8",
+    )

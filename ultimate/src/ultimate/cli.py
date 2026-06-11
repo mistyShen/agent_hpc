@@ -6,6 +6,7 @@ from pathlib import Path
 import click
 
 from ultimate.approval_gate import load_production_approval
+from ultimate.batch import prepare_batch
 from ultimate.config import load_config
 from ultimate.constants import PROJECT_TYPES
 from ultimate.demo import init_project
@@ -67,6 +68,20 @@ def prepare_job_command(
             run_mode=run_mode,
         )
     except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+
+
+@main.command("prepare-batch")
+@click.option("--batch", "batch_path", type=click.Path(path_type=Path, exists=True, dir_okay=False), required=True)
+@click.option("--root", type=click.Path(path_type=Path), default=None, help="Override batch root. Defaults to the root declared in the batch file.")
+@click.option("--output-dir", type=click.Path(path_type=Path), default=None, help="Where batch scaffold artifacts should be written.")
+@click.option("--run-mode", type=click.Choice(["production", "interactive"]), default=None, help="Override run_mode for all jobs unless a job overrides it.")
+def prepare_batch_command(batch_path: Path, root: Path | None, output_dir: Path | None, run_mode: str | None) -> None:
+    """Scaffold multiple prepared jobs from a batch request without running analysis."""
+    try:
+        manifest = prepare_batch(batch_path=batch_path, root=root, output_dir=output_dir, run_mode=run_mode)
+    except (OSError, ValueError, TypeError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
 

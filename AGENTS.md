@@ -105,6 +105,31 @@ publication
 handoff_required
 ```
 
+
+### V4 客户交付闭环
+
+V4 的目标不是继续堆更多高级算法，而是把 V3.8 已验证的 internal rehearsal
+能力推进到受控 `customer_delivery` 闭环。V4 必须证明 Ultimate 能完成：
+
+- `customer_delivery` 受控演练通过，并与 `internal_rehearsal` 明确区分。
+- raw upstream 至少有可执行 Slurm evidence 或明确 blocked reason，不能只停留在
+  文档 handoff。
+- batch order scaffold 可用：一个批次请求能生成多个 job 目录、配置、样本表、
+  preflight 草稿、Slurm 命令草稿和批次汇总报告。
+- 客户版 delivery QA 能阻断内部路径泄露、raw path 泄露、敏感 metadata、缺少
+  warning、缺少复现包、缺少脱敏报告等问题。
+- 失败恢复报告能说明可复用内容、必须重跑内容、失败阶段和最小修复命令。
+
+V4 禁止事项：
+
+- 禁止把 `internal_rehearsal` 当作客户交付。
+- 禁止把 handoff 模板、adapter 或 blocked raw upstream 写成已执行分析。
+- 禁止在客户版报告、客户版 delivery index 或客户版 methods 中暴露 `/shared`、
+  home 目录、raw data 路径、approval 文件、Slurm 内部变量或未脱敏 metadata。
+- 禁止把受控小数据的 customer-delivery rehearsal 说成真实客户项目。
+- 禁止为了让 delivery-check 通过而删除内部 manifest/provenance；内部证据应保留，
+  客户版交付应使用单独脱敏 package。
+
 - 所有服务器项目路径必须位于 `/shared/shen/2026/ultimate` 或其子目录。
 - 不允许重计算任务跑在 login node。
 - 大任务必须通过 Slurm。
