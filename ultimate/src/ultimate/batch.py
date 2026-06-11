@@ -12,6 +12,7 @@ from ultimate.job import prepare_job
 
 
 BATCH_NON_DELIVERY_REASON = "batch_scaffold_not_analysis_run"
+ALLOWED_BATCH_STATUSES = ("ready_to_run", "needs_metadata", "needs_license", "raw_upstream_required", "blocked")
 BATCH_ROW_COLUMNS = (
     "batch_id",
     "job_id",
@@ -28,6 +29,10 @@ BATCH_ROW_COLUMNS = (
     "approval_status",
     "delivery_allowed",
     "non_delivery_reason",
+    "next_action",
+    "delivery_risk",
+    "production_approval_allowed",
+    "failure_recovery",
     "blockers",
 )
 
@@ -73,8 +78,9 @@ def prepare_batch(
         "root": str(batch_root),
         "output_dir": str(batch_output_dir),
         "jobs_total": len(rows),
-        "jobs_ready": sum(1 for row in rows if row["status"] == "ready"),
+        "jobs_ready": sum(1 for row in rows if row["status"] == "ready_to_run"),
         "jobs_blocked": sum(1 for row in rows if row["status"] == "blocked"),
+        "status_counts": {status: sum(1 for row in rows if row["status"] == status) for status in ALLOWED_BATCH_STATUSES},
         "delivery_allowed": False,
         "non_delivery_reason": BATCH_NON_DELIVERY_REASON,
         "analysis_level": "smoke_backend",
@@ -134,7 +140,7 @@ def _prepare_batch_job(
         row.update(
             {
                 "job_id": str(manifest["job_id"]),
-                "status": "ready",
+                "status": _batch_status(job=job, manifest=manifest),
                 "scaffold_status": "scaffolded",
                 "job_dir": str(manifest["job_dir"]),
                 "config_path": str(manifest["config_path"]),
@@ -147,6 +153,9 @@ def _prepare_batch_job(
                 "approval_status": _approval_status(Path(manifest["approval_template"])),
             }
         )
+        row.update(_status_fields(row["status"], blockers=""))
+        recovery = _write_failure_recovery(Path(manifest["job_dir"]), row)
+        row["failure_recovery"] = str(recovery)
         return row, manifest
     except Exception as exc:
         row.update(
@@ -156,6 +165,7 @@ def _prepare_batch_job(
                 "blockers": f"{type(exc).__name__}: {exc}",
             }
         )
+        row.update(_status_fields("blocked", blockers=row["blockers"]))
         return row, None
 
 
@@ -198,9 +208,120 @@ def _base_row(*, batch_id: str, job_id: str, run_mode: str) -> dict[str, str]:
             "run_mode": run_mode,
             "delivery_allowed": "false",
             "non_delivery_reason": BATCH_NON_DELIVERY_REASON,
+            "production_approval_allowed": "false",
         }
     )
     return row
+
+
+def _batch_status(*, job: dict[str, Any], manifest: dict[str, Any]) -> str:
+    explicit = str(job.get("status") or job.get("intake_status") or "").strip()
+    if explicit in ALLOWED_BATCH_STATUSES:
+        return explicit
+    if job.get("requires_license") is True or job.get("licensed_tool") or job.get("license_path"):
+        return "needs_license"
+    samplesheet_status = str((manifest.get("samplesheet_status") or {}).get("status") or "")
+    request_status = str((manifest.get("analysis_request_status") or {}).get("status") or "")
+    if samplesheet_status in {"not_configured", "missing_or_not_copied"} or request_status in {"not_configured", "missing_or_not_copied"}:
+        return "needs_metadata"
+    if _manifest_has_raw_upstream(manifest):
+        return "raw_upstream_required"
+    return "ready_to_run"
+
+
+def _manifest_has_raw_upstream(manifest: dict[str, Any]) -> bool:
+    raw_manifest = Path(str(manifest.get("raw_input_manifest") or ""))
+    if not raw_manifest.exists():
+        return False
+    with raw_manifest.open("r", encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle, delimiter="\t"):
+            path = str(row.get("path") or "").lower()
+            key = str(row.get("key") or "").lower()
+            if any(token in path for token in (".fastq", ".fq", ".bcl", "fragments.tsv")):
+                return True
+            if any(token in key for token in ("fastq", "bcl", "fragments")):
+                return True
+    return False
+
+
+def _status_fields(status: str, *, blockers: str) -> dict[str, str]:
+    if status == "ready_to_run":
+        return {
+            "next_action": "run_preflight_then_request_production_approval",
+            "delivery_risk": "low_after_approval",
+            "production_approval_allowed": "true",
+        }
+    if status == "needs_metadata":
+        return {
+            "next_action": "collect_samplesheet_analysis_request_and_design_metadata",
+            "delivery_risk": "metadata_incomplete",
+            "production_approval_allowed": "false",
+        }
+    if status == "needs_license":
+        return {
+            "next_action": "provide_or_validate_licensed_tool_path_before_running",
+            "delivery_risk": "license_required",
+            "production_approval_allowed": "false",
+        }
+    if status == "raw_upstream_required":
+        return {
+            "next_action": "run_raw_upstream_handoff_or_import_matrix_before_analysis",
+            "delivery_risk": "raw_upstream_not_yet_materialized",
+            "production_approval_allowed": "false",
+        }
+    return {
+        "next_action": "fix_blocker_then_prepare_batch_again",
+        "delivery_risk": blockers or "blocked",
+        "production_approval_allowed": "false",
+    }
+
+
+def _write_failure_recovery(job_dir: Path, row: dict[str, str]) -> Path:
+    path = job_dir / "failure_recovery.md"
+    reusable = [
+        "prepared job directory",
+        "copied config and samplesheet snapshots" if row.get("samplesheet") else "config snapshot",
+        "raw input path manifest",
+    ]
+    rerun_required = row["status"] in {"raw_upstream_required", "blocked"}
+    lines = [
+        "# Failure recovery",
+        "",
+        f"- job_id: `{row['job_id']}`",
+        f"- status: `{row['status']}`",
+        f"- failure_stage: `{_failure_stage(row['status'])}`",
+        f"- reusable_artifacts: `{', '.join(reusable)}`",
+        f"- rerun_required: `{str(rerun_required).lower()}`",
+        f"- slurm_required: `{str(row['status'] in {'raw_upstream_required', 'ready_to_run'}).lower()}`",
+        f"- next_action: `{row['next_action']}`",
+        f"- minimal_fix_command: `{_minimal_fix_command(row)}`",
+        "",
+        "This scaffold did not run analysis and does not allow delivery.",
+    ]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+def _failure_stage(status: str) -> str:
+    return {
+        "ready_to_run": "not_failed_ready_for_preflight",
+        "needs_metadata": "intake_metadata",
+        "needs_license": "dependency_license",
+        "raw_upstream_required": "raw_upstream",
+        "blocked": "prepare_batch",
+    }[status]
+
+
+def _minimal_fix_command(row: dict[str, str]) -> str:
+    if row["status"] == "ready_to_run":
+        return f"ultimate preflight --config {row['config_path']}"
+    if row["status"] == "raw_upstream_required":
+        return f"review raw handoff and regenerate matrix import config for {row['job_id']}"
+    if row["status"] == "needs_metadata":
+        return f"update samplesheet/request then rerun ultimate prepare-batch for {row['job_id']}"
+    if row["status"] == "needs_license":
+        return f"set licensed tool path then rerun ultimate prepare-batch for {row['job_id']}"
+    return f"fix blocker: {row['blockers']}"
 
 
 def _required_text(job: dict[str, Any], field: str) -> str:
@@ -253,7 +374,7 @@ def _write_summary_tsv(path: Path, rows: list[dict[str, str]]) -> Path:
 
 
 def _write_report(path: Path, *, batch_id: str, rows: list[dict[str, str]], root: Path) -> Path:
-    ready = sum(1 for row in rows if row["status"] == "ready")
+    ready = sum(1 for row in rows if row["status"] == "ready_to_run")
     blocked = sum(1 for row in rows if row["status"] == "blocked")
     lines = [
         "# Ultimate batch scaffold report",
@@ -261,7 +382,7 @@ def _write_report(path: Path, *, batch_id: str, rows: list[dict[str, str]], root
         f"- batch_id: `{batch_id}`",
         f"- root: `{root}`",
         f"- jobs_total: {len(rows)}",
-        f"- jobs_ready: {ready}",
+        f"- jobs_ready_to_run: {ready}",
         f"- jobs_blocked: {blocked}",
         "- delivery_allowed: false",
         f"- non_delivery_reason: `{BATCH_NON_DELIVERY_REASON}`",
@@ -269,12 +390,15 @@ def _write_report(path: Path, *, batch_id: str, rows: list[dict[str, str]], root
         "",
         "## Jobs",
         "",
-        "| job_id | status | scaffold | approval | blockers |",
-        "| --- | --- | --- | --- | --- |",
+        "| job_id | status | scaffold | approval | next_action | delivery_risk | production_approval_allowed | blockers |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for row in rows:
         blockers = row["blockers"].replace("|", "\\|")
-        lines.append(f"| {row['job_id']} | {row['status']} | {row['scaffold_status']} | {row['approval_status']} | {blockers} |")
+        lines.append(
+            f"| {row['job_id']} | {row['status']} | {row['scaffold_status']} | {row['approval_status']} | "
+            f"{row['next_action']} | {row['delivery_risk']} | {row['production_approval_allowed']} | {blockers} |"
+        )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return path
 

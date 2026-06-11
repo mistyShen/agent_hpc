@@ -423,6 +423,39 @@ reports/v4_alpha_customer_delivery_report.md
 and `validation-index` should classify controlled rehearsal jobs as
 `customer_delivery_rehearsal`, not as real customer delivery.
 
+### V4 Beta Customer Trial
+
+V4 Beta keeps the same customer-delivery boundary, but strengthens the last
+mile needed before real customer work:
+
+- customer packages must include sanitized `report.html`, `methods.md`,
+  `readme_for_customer.md`, `delivery_index.tsv`, `customer_delivery_sanitization.tsv`,
+  plus non-empty `figures/` and `tables/` directories;
+- `delivery-check` rejects customer-facing files that expose internal paths,
+  raw path hints, approval files, Slurm internals, environment paths or missing
+  interpretation warnings;
+- batch scaffolds record `ready_to_run`, `needs_metadata`, `needs_license`,
+  `raw_upstream_required` or `blocked`, and each prepared job gets
+  `failure_recovery.md`;
+- raw upstream evidence is still lightweight and explicit: V4 Beta validates
+  small controlled `rnaseq` FASTQ and `scrna` 10x MTX import paths on Slurm,
+  without claiming to replace nf-core or licensed 10x tools.
+
+The V4 Beta trial suite is expected to write:
+
+```bash
+hpc-sbatch /shared/shen/2026/ultimate/slurm/v4_beta_customer_trial.sbatch
+```
+
+It refreshes `validation-index`, `audit-production`, `audit-backends`, storage
+audit, and writes:
+
+```text
+reports/v4_beta_customer_trial_report.md
+```
+
+V4 Beta remains a controlled rehearsal, not real customer delivery.
+
 ## SCEPI Matrix Backend
 
 The SCEPI module is a matrix-level single-cell epigenomics MVP, not a full

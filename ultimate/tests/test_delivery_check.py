@@ -145,6 +145,7 @@ def _write_delivery_ready_job(tmp_path: Path, *, delivery_scope: str = "internal
         "validation_evidence_allowed": True,
         "non_delivery_reason": "",
         "delivery_scope": delivery_scope,
+        "delivery_mode": "customer_delivery_rehearsal" if delivery_scope == "customer_delivery" else "internal_rehearsal",
         "slurm_job_id": "12345",
         "slurm": {"slurm_job_id": "12345", "slurm_job_name": "pytest_rehearsal"},
         "production_approval": {
@@ -155,6 +156,7 @@ def _write_delivery_ready_job(tmp_path: Path, *, delivery_scope: str = "internal
             "input_path": str(config_path),
             "output_dir": str(run_dir),
             "delivery_scope": delivery_scope,
+            "delivery_mode": "customer_delivery_rehearsal" if delivery_scope == "customer_delivery" else "internal_rehearsal",
             "reason": "pytest delivery check",
         },
         "delivery_gate": {
@@ -162,6 +164,7 @@ def _write_delivery_ready_job(tmp_path: Path, *, delivery_scope: str = "internal
             "delivery_allowed": True,
             "approval_status": "approved",
             "delivery_scope": delivery_scope,
+            "delivery_mode": "customer_delivery_rehearsal" if delivery_scope == "customer_delivery" else "internal_rehearsal",
             "blockers": [],
         },
         "modules": [
@@ -220,6 +223,22 @@ def test_delivery_check_blocks_customer_delivery_without_sanitized_package(tmp_p
     assert "customer_package_dir" in manifest["blockers"]
 
 
+def test_delivery_check_blocks_customer_delivery_without_delivery_mode(tmp_path: Path) -> None:
+    job_dir, run_dir = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+    manifest_path = run_dir / "run_manifest.json"
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    payload.pop("delivery_mode", None)
+    payload["production_approval"].pop("delivery_mode", None)
+    payload["delivery_gate"].pop("delivery_mode", None)
+    manifest_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    _write_customer_package(job_dir)
+
+    manifest = run_delivery_check(job_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "delivery_mode_customer_declared" in manifest["blockers"]
+
+
 def test_delivery_check_blocks_customer_package_internal_path_leak(tmp_path: Path) -> None:
     job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
     _write_customer_package(job_dir, extra_report_text="/shared/shen/2026/ultimate/jobs/ORDER001")
@@ -228,6 +247,41 @@ def test_delivery_check_blocks_customer_package_internal_path_leak(tmp_path: Pat
 
     assert manifest["status"] == "blocked"
     assert "customer_package_no_internal_path_leaks" in manifest["blockers"]
+
+
+def test_delivery_check_blocks_customer_package_raw_and_slurm_hints(tmp_path: Path) -> None:
+    job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+    _write_customer_package(job_dir, extra_table_text="raw data path\tSLURM_JOB_ID\n/customer/raw\t12345\n")
+
+    manifest = run_delivery_check(job_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "customer_package_no_internal_path_leaks" in manifest["blockers"]
+
+
+def test_delivery_check_blocks_customer_package_missing_rich_contents(tmp_path: Path) -> None:
+    job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+    _write_customer_package(job_dir)
+    (job_dir / "deliverables" / "customer" / "readme_for_customer.md").unlink()
+    (job_dir / "deliverables" / "customer" / "figures" / "umap.png").unlink()
+    (job_dir / "deliverables" / "customer" / "tables" / "markers.tsv").unlink()
+
+    manifest = run_delivery_check(job_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "customer_package_readme_for_customer.md" in manifest["blockers"]
+    assert "customer_package_figures_nonempty" in manifest["blockers"]
+    assert "customer_package_tables_nonempty" in manifest["blockers"]
+
+
+def test_delivery_check_blocks_customer_package_without_interpretation_warning(tmp_path: Path) -> None:
+    job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+    _write_customer_package(job_dir, include_warning=False)
+
+    manifest = run_delivery_check(job_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "customer_package_interpretation_warning" in manifest["blockers"]
 
 
 def test_delivery_check_accepts_sanitized_customer_delivery_package(tmp_path: Path) -> None:
@@ -240,19 +294,39 @@ def test_delivery_check_accepts_sanitized_customer_delivery_package(tmp_path: Pa
     assert manifest["delivery_allowed"] is True
 
 
-def _write_customer_package(job_dir: Path, *, extra_report_text: str = "") -> None:
+def _write_customer_package(
+    job_dir: Path,
+    *,
+    extra_report_text: str = "",
+    extra_table_text: str = "",
+    include_warning: bool = True,
+) -> None:
     customer_dir = job_dir / "deliverables" / "customer"
     customer_dir.mkdir(parents=True, exist_ok=True)
+    (customer_dir / "figures").mkdir(parents=True, exist_ok=True)
+    (customer_dir / "tables").mkdir(parents=True, exist_ok=True)
+    report_warning = "警示：统计结果不是机制证明。" if include_warning else "Results are summarized for review."
+    methods_warning = "警示：推断结果需要人工解释。" if include_warning else "Analyses were run with the approved preset."
+    readme_warning = "Interpretation warning: results require human review." if include_warning else "Customer package contents are listed below."
     (customer_dir / "report.html").write_text(
-        f"<html><body>Customer report. analysis_level production_backend. 警示：统计结果不是机制证明。{extra_report_text}</body></html>",
+        f"<html><body>Customer report. analysis_level production_backend. {report_warning}{extra_report_text}</body></html>",
         encoding="utf-8",
     )
     (customer_dir / "methods.md").write_text(
-        "# Customer methods\n\nanalysis_level: production_backend\n\n警示：推断结果需要人工解释。\n",
+        f"# Customer methods\n\nanalysis_level: production_backend\n\n{methods_warning}\n",
+        encoding="utf-8",
+    )
+    (customer_dir / "readme_for_customer.md").write_text(
+        f"# Customer package\n\n{readme_warning}\n\nFiles under figures/ and tables/ are sanitized delivery artifacts.\n",
         encoding="utf-8",
     )
     (customer_dir / "delivery_index.tsv").write_text(
-        "category\tfile\tnote\nreport\treport.html\tcustomer-facing sanitized report\n",
+        "category\tfile\tnote\n"
+        "report\treport.html\tcustomer-facing sanitized report\n"
+        "methods\tmethods.md\tcustomer-facing methods\n"
+        "readme\treadme_for_customer.md\tcustomer package guide\n"
+        "figure\tfigures/umap.png\tcustomer-facing figure\n"
+        "table\ttables/markers.tsv\tcustomer-facing table\n",
         encoding="utf-8",
     )
     (customer_dir / "customer_delivery_sanitization.tsv").write_text(
@@ -261,5 +335,10 @@ def _write_customer_package(job_dir: Path, *, extra_report_text: str = "") -> No
         "raw_path_exposure\tpass\tno raw path in customer package\t\n"
         "sensitive_metadata\tpass\tno sensitive metadata fields detected\t\n"
         "interpretation_warning\tpass\tcustomer report includes boundary warning\t\n",
+        encoding="utf-8",
+    )
+    (customer_dir / "figures" / "umap.png").write_text("png", encoding="utf-8")
+    (customer_dir / "tables" / "markers.tsv").write_text(
+        "gene\tscore\nA\t1\n" + extra_table_text,
         encoding="utf-8",
     )

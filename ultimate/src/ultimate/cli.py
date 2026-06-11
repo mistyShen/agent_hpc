@@ -17,6 +17,7 @@ from ultimate.pipeline import run_pipeline_from_config
 from ultimate.plot_style import available_styles, generate_style_review, set_active_style
 from ultimate.preflight import run_preflight
 from ultimate.production_audit import run_production_audit
+from ultimate.raw_upstream import run_raw_upstream_evidence
 from ultimate.report import build_report
 from ultimate.reproducibility import export_reproducible_package
 from ultimate.singlecell_audit import run_singlecell_audit
@@ -183,6 +184,20 @@ def handoff_check_command(root: Path, output_dir: Path | None) -> None:
     click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
     if manifest.get("status") != "ready":
         raise click.ClickException("handoff-check blocked: " + ",".join(manifest.get("blockers") or []))
+
+
+@main.command("raw-upstream-evidence")
+@click.option("--module", "module_name", type=click.Choice(["rnaseq", "scrna"]), required=True)
+@click.option("--input-path", type=click.Path(path_type=Path), required=True)
+@click.option("--samplesheet", type=click.Path(path_type=Path), default=None)
+@click.option("--output-dir", type=click.Path(path_type=Path), required=True)
+@click.option("--stage", default=None, help="Optional stage label recorded in the raw upstream manifest.")
+def raw_upstream_evidence_command(module_name: str, input_path: Path, samplesheet: Path | None, output_dir: Path, stage: str | None) -> None:
+    """Write lightweight Slurm evidence that raw/semi-raw inputs are importable."""
+    manifest = run_raw_upstream_evidence(module=module_name, input_path=input_path, samplesheet=samplesheet, output_dir=output_dir, stage=stage)
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+    if manifest.get("status") != "ready":
+        raise click.ClickException("raw-upstream-evidence blocked: " + str(manifest.get("blocked_reason") or "unknown"))
 
 
 @main.command("audit-singlecell")

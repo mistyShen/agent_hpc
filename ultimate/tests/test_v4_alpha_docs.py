@@ -41,3 +41,14 @@ def test_readme_documents_v4_alpha_customer_delivery_path() -> None:
     assert "delivery_mode=customer_delivery_rehearsal" in text
     assert "customer_delivery_rehearsal" in text
     assert "customer_delivery" in text
+
+
+def test_readme_documents_v4_beta_customer_trial_path() -> None:
+    readme = Path(__file__).resolve().parents[1] / "README.md"
+    text = readme.read_text(encoding="utf-8")
+
+    assert "V4 Beta Customer Trial" in text
+    assert "v4_beta_customer_trial.sbatch" in text
+    assert "readme_for_customer.md" in text
+    assert "raw upstream evidence is still lightweight" in text
+    assert "V4 Beta remains a controlled rehearsal" in text

@@ -385,6 +385,7 @@ def _approval_summary(approval: dict[str, Any] | None) -> dict[str, Any]:
         "input_path": str(approval.get("input_path", "")),
         "output_dir": str(approval.get("output_dir", "")),
         "delivery_scope": str(approval.get("delivery_scope", "")),
+        "delivery_mode": str(approval.get("delivery_mode", "")),
         "reason": str(approval.get("reason", "")),
         "approval_path": str(approval.get("_approval_path", "")),
     }
@@ -458,6 +459,7 @@ def _aggregate_run_level_fields(module_manifests: list[dict[str, Any]], delivery
     gate_reason = str(delivery_gate.get("non_delivery_reason") or "")
     non_delivery_reason = "" if delivery_allowed else (gate_reason or ";".join(sorted(set(reasons))) or "not_marked_for_delivery")
     delivery_scope = str(delivery_gate.get("delivery_scope") or "not_applicable")
+    delivery_mode = str(delivery_gate.get("delivery_mode") or "not_applicable")
     return {
         "analysis_level": analysis_level,
         "is_demo": is_demo,
@@ -466,4 +468,5 @@ def _aggregate_run_level_fields(module_manifests: list[dict[str, Any]], delivery
         "validation_evidence_allowed": validation_evidence_allowed,
         "non_delivery_reason": non_delivery_reason,
         "delivery_scope": delivery_scope,
+        "delivery_mode": delivery_mode,
     }

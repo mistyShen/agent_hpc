@@ -15,16 +15,61 @@ CUSTOMER_PACKAGE_FILES = (
     "methods.md",
     "delivery_index.tsv",
     "customer_delivery_sanitization.tsv",
+    "readme_for_customer.md",
 )
 CUSTOMER_FORBIDDEN_TOKENS = (
-    "/shared/",
-    "/Users/",
+    "/shared",
+    "/Users",
     "raw_links",
     "production_approval",
+    "production approval",
     "SLURM_JOB_ID",
     "slurm_job_id",
     ".conda",
     "/jobs/",
+)
+CUSTOMER_FORBIDDEN_RAW_PATH_HINTS = (
+    "raw data path",
+    "raw_data_path",
+    "raw input path",
+    "raw_input_path",
+    "raw fastq path",
+    "raw_fastq_path",
+    "raw bam path",
+    "raw_bam_path",
+    "raw data dir",
+    "raw_data_dir",
+    "raw_dir",
+    "input_path",
+    "source_raw_path",
+)
+CUSTOMER_TEXT_SUFFIXES = {
+    ".csv",
+    ".html",
+    ".htm",
+    ".json",
+    ".log",
+    ".md",
+    ".tsv",
+    ".txt",
+    ".svg",
+    ".yaml",
+    ".yml",
+}
+CUSTOMER_WARNING_TOKENS = (
+    "warning",
+    "warn",
+    "interpretation",
+    "boundary",
+    "not causal",
+    "not direct",
+    "not mechanism",
+    "not proof",
+    "警示",
+    "解释边界",
+    "不是",
+    "不能",
+    "不得",
 )
 
 
@@ -130,8 +175,11 @@ def _resolve_run_dir(path: Path) -> tuple[Path, Path | None]:
 def _check_production_approval(rows: list[dict[str, Any]], manifest: dict[str, Any], path: Path) -> None:
     approval = manifest.get("production_approval") if isinstance(manifest.get("production_approval"), dict) else {}
     scope = str(approval.get("delivery_scope") or manifest.get("delivery_scope") or "")
+    mode = str(approval.get("delivery_mode") or manifest.get("delivery_mode") or "")
     _check(rows, "production_approval_approved", approval.get("approved") is True, path, "production approval must be approved=true")
     _check(rows, "delivery_scope_valid", scope in VALID_DELIVERY_SCOPES, path, "delivery_scope must be internal_rehearsal or customer_delivery")
+    if scope == "customer_delivery":
+        _check(rows, "delivery_mode_customer_declared", bool(mode), path, "customer_delivery packages must declare delivery_mode")
     for field in ("approved_by", "approved_at", "project_id", "input_path", "output_dir", "reason"):
         _check(rows, f"production_approval_{field}", bool(str(approval.get(field) or "")), path, f"production approval must include {field}")
     input_path = Path(str(approval.get("input_path") or ""))
@@ -259,9 +307,22 @@ def _check_customer_delivery_package(rows: list[dict[str, Any]], run_dir: Path, 
     package_paths = [customer_dir / name for name in CUSTOMER_PACKAGE_FILES]
     for path in package_paths:
         _check(rows, f"customer_package_{path.name}", _nonempty(path), path, f"customer package must include non-empty {path.name}")
-    visible_paths = [path for path in package_paths if path.suffix.lower() in {".html", ".md", ".tsv", ".txt"} and path.exists()]
+
+    for name in ("figures", "tables"):
+        directory = customer_dir / name
+        _check(rows, f"customer_package_{name}_dir", directory.is_dir(), directory, f"customer package must include {name}/")
+        _check(rows, f"customer_package_{name}_nonempty", _has_nonempty_file(directory), directory, f"customer package {name}/ must contain at least one non-empty file")
+
+    visible_paths = _customer_visible_text_files(customer_dir)
     leaks = _customer_visible_leaks(visible_paths)
     _check(rows, "customer_package_no_internal_path_leaks", not leaks, customer_dir, "customer-facing package must not expose server paths, raw_links, approval files, or Slurm internals")
+    _check(
+        rows,
+        "customer_package_interpretation_warning",
+        _customer_has_interpretation_warning(customer_dir),
+        customer_dir,
+        "customer-facing package must include an interpretation warning or boundary statement",
+    )
     sanitization_path = customer_dir / "customer_delivery_sanitization.tsv"
     if _nonempty(sanitization_path):
         scan_rows = _read_tsv(sanitization_path)
@@ -273,14 +334,38 @@ def _check_customer_delivery_package(rows: list[dict[str, Any]], run_dir: Path, 
         _check(rows, "customer_sanitization_required_checks", expected.issubset(present), sanitization_path, "customer sanitization table must cover internal paths, raw paths, sensitive metadata, and warnings")
 
 
+def _has_nonempty_file(directory: Path) -> bool:
+    return directory.is_dir() and any(path.is_file() and path.stat().st_size > 0 for path in directory.rglob("*"))
+
+
+def _customer_visible_text_files(customer_dir: Path) -> list[Path]:
+    if not customer_dir.is_dir():
+        return []
+    return sorted(
+        path
+        for path in customer_dir.rglob("*")
+        if path.is_file() and path.suffix.lower() in CUSTOMER_TEXT_SUFFIXES
+    )
+
+
 def _customer_visible_leaks(paths: list[Path]) -> list[str]:
     leaks: list[str] = []
     for path in paths:
         text = path.read_text(encoding="utf-8", errors="ignore")
+        lower_text = text.lower()
         for token in CUSTOMER_FORBIDDEN_TOKENS:
-            if token in text:
+            if token.lower() in lower_text:
+                leaks.append(f"{path}:{token}")
+        for token in CUSTOMER_FORBIDDEN_RAW_PATH_HINTS:
+            if token in lower_text:
                 leaks.append(f"{path}:{token}")
     return leaks
+
+
+def _customer_has_interpretation_warning(customer_dir: Path) -> bool:
+    paths = [customer_dir / "report.html", customer_dir / "methods.md", customer_dir / "readme_for_customer.md"]
+    text = "\n".join(path.read_text(encoding="utf-8", errors="ignore") for path in paths if path.exists()).lower()
+    return any(token in text for token in CUSTOMER_WARNING_TOKENS)
 
 
 def _write_outputs(run_dir: Path, job_dir: Path | None, payload: dict[str, Any]) -> None:

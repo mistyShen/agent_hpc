@@ -17,7 +17,7 @@ def test_prepare_batch_scaffolds_two_jobs_without_copying_raw_data(tmp_path: Pat
     raw_counts = raw_dir / "raw_counts.tsv"
     raw_counts.write_text("gene\tS1\tS2\nG1\t10\t20\n", encoding="utf-8")
     samplesheet = tmp_path / "samples.tsv"
-    samplesheet.write_text("sample_id\tcondition\tinput_path\nS1\tcontrol\t/shared/raw/S1.fastq.gz\n", encoding="utf-8")
+    samplesheet.write_text(f"sample_id\tcondition\tinput_path\nS1\tcontrol\t{raw_counts}\n", encoding="utf-8")
     request = tmp_path / "request.yaml"
     request.write_text("analysis_presets:\n  - basic\n", encoding="utf-8")
 
@@ -46,6 +46,8 @@ def test_prepare_batch_scaffolds_two_jobs_without_copying_raw_data(tmp_path: Pat
     assert manifest["jobs_total"] == 3
     assert manifest["jobs_ready"] == 2
     assert manifest["jobs_blocked"] == 1
+    assert manifest["status_counts"]["ready_to_run"] == 2
+    assert manifest["status_counts"]["blocked"] == 1
     assert manifest["delivery_allowed"] is False
     assert manifest["non_delivery_reason"] == BATCH_NON_DELIVERY_REASON
     assert manifest["policy"]["runs_analysis"] is False
@@ -64,14 +66,18 @@ def test_prepare_batch_scaffolds_two_jobs_without_copying_raw_data(tmp_path: Pat
     blocked_dir = root / "jobs" / "ORDER_BLOCKED"
     assert not blocked_dir.exists()
     rows = _read_summary(Path(manifest["artifacts"]["summary_tsv"]))
-    assert [row["status"] for row in rows] == ["ready", "ready", "blocked"]
+    assert [row["status"] for row in rows] == ["ready_to_run", "ready_to_run", "blocked"]
     assert {row["scaffold_status"] for row in rows} == {"scaffolded", "not_scaffolded"}
     assert all(row["delivery_allowed"] == "false" for row in rows)
     assert all(row["non_delivery_reason"] == BATCH_NON_DELIVERY_REASON for row in rows)
+    assert rows[0]["production_approval_allowed"] == "true"
+    assert rows[0]["next_action"] == "run_preflight_then_request_production_approval"
+    assert (root / "jobs" / "ORDER_A" / "failure_recovery.md").exists()
     assert rows[0]["approval_status"] == "template_pending_approval"
     assert "config does not exist" in rows[2]["blockers"]
     report = Path(manifest["artifacts"]["report_md"]).read_text(encoding="utf-8")
     assert "delivery_allowed: false" in report
+    assert "jobs_ready_to_run: 2" in report
     assert "no analysis, Slurm submission, or remote command is run" in report
 
 
@@ -129,16 +135,51 @@ def test_prepare_batch_supports_json_and_explicit_customer_approval_without_deli
 
     manifest = prepare_batch(batch_path=batch_path)
 
-    assert manifest["jobs_ready"] == 1
+    assert manifest["jobs_ready"] == 0
     assert manifest["delivery_allowed"] is False
     assert manifest["non_delivery_reason"] == BATCH_NON_DELIVERY_REASON
     rows = _read_summary(Path(manifest["artifacts"]["summary_tsv"]))
-    assert rows[0]["status"] == "ready"
+    assert rows[0]["status"] == "needs_metadata"
     assert rows[0]["approval_status"] == "customer_approved"
+    assert rows[0]["production_approval_allowed"] == "false"
     assert rows[0]["delivery_allowed"] == "false"
     approval = json.loads((root / "jobs" / "JSON001" / "config" / "production_approval.json").read_text(encoding="utf-8"))
     assert approval["approved"] is True
     assert approval["delivery_scope"] == "customer_delivery"
+
+
+def test_prepare_batch_marks_fastq_inputs_as_raw_upstream_required(tmp_path: Path) -> None:
+    fastq = tmp_path / "reads.fastq"
+    fastq.write_text("@r1\nACGT\n+\n!!!!\n", encoding="utf-8")
+    samplesheet = tmp_path / "samples.tsv"
+    samplesheet.write_text(f"sample_id\tcondition\tfastq_1\nS1\tcase\t{fastq}\n", encoding="utf-8")
+    request = tmp_path / "request.md"
+    request.write_text("Run rnaseq standard after raw upstream handoff.\n", encoding="utf-8")
+    config_path = _write_project_config(tmp_path / "fastq_config.yaml", fastq)
+    root = tmp_path / "shared" / "shen" / "2026" / "ultimate"
+    batch_path = tmp_path / "batch.yaml"
+    batch_path.write_text(
+        yaml.safe_dump(
+            {
+                "batch_id": "fastq_batch",
+                "root": str(root),
+                "jobs": [{"job_id": "FASTQ001", "config": str(config_path), "samplesheet": str(samplesheet), "request": str(request)}],
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+
+    manifest = prepare_batch(batch_path=batch_path)
+
+    assert manifest["jobs_ready"] == 0
+    assert manifest["status_counts"]["raw_upstream_required"] == 1
+    rows = _read_summary(Path(manifest["artifacts"]["summary_tsv"]))
+    assert rows[0]["status"] == "raw_upstream_required"
+    assert rows[0]["production_approval_allowed"] == "false"
+    recovery = (root / "jobs" / "FASTQ001" / "failure_recovery.md").read_text(encoding="utf-8")
+    assert "failure_stage: `raw_upstream`" in recovery
+    assert "slurm_required: `true`" in recovery
 
 
 def _write_project_config(path: Path, raw_counts: Path) -> Path:
