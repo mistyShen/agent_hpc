@@ -17,6 +17,9 @@ def test_v4_2_customer_trial_script_scope_and_entries() -> None:
     assert "delivery_scope: customer_delivery" in text
     assert "delivery_mode: customer_delivery_rehearsal" in text
     assert "v4_2_customer_trial_report.md" in text
+    assert "raw-upstream-validated" in text
+    assert "license-required" in text
+    assert "handoff-required" in text
 
 
 def test_v4_2_customer_trial_uses_formal_customer_package_and_batch_status() -> None:
