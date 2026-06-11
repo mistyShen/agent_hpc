@@ -7,8 +7,10 @@ import click
 
 from ultimate.approval_gate import load_production_approval
 from ultimate.batch import prepare_batch
+from ultimate.batch_status import build_batch_status
 from ultimate.config import load_config
 from ultimate.constants import PROJECT_TYPES
+from ultimate.customer_package import build_customer_package
 from ultimate.demo import init_project
 from ultimate.delivery_check import run_delivery_check
 from ultimate.handoff_check import run_handoff_check
@@ -164,6 +166,27 @@ def delivery_check_command(run_dir: Path) -> None:
         raise click.ClickException("delivery-check blocked: " + ",".join(manifest.get("blockers") or []))
 
 
+@main.command("customer-package")
+@click.option("--run-dir", type=click.Path(path_type=Path, exists=True, file_okay=False), required=True, help="Production run directory or prepared job directory.")
+@click.option("--output-dir", type=click.Path(path_type=Path), default=None, help="Where sanitized customer-facing files should be written.")
+def customer_package_command(run_dir: Path, output_dir: Path | None) -> None:
+    """Build a sanitized customer-facing package from a production run."""
+    manifest = build_customer_package(run_dir=run_dir, output_dir=output_dir)
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+    if manifest.get("status") != "ready":
+        raise click.ClickException("customer-package blocked: sanitization checks failed")
+
+
+@main.command("batch-status")
+@click.option("--batch-dir", type=click.Path(path_type=Path, exists=True, file_okay=False), required=True, help="Batch output directory or directory containing prepared jobs.")
+@click.option("--output-dir", type=click.Path(path_type=Path), default=None, help="Where batch status artifacts should be written. Defaults to --batch-dir.")
+@click.option("--job-glob", default=None, help="Optional job directory glob used to limit status scans, for example 'v4_2_*_20260611T000000Z'.")
+def batch_status_command(batch_dir: Path, output_dir: Path | None, job_glob: str | None) -> None:
+    """Summarize raw-upstream, run, customer-package, and delivery-check status for a batch."""
+    manifest = build_batch_status(batch_dir=batch_dir, output_dir=output_dir, job_glob=job_glob)
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+
+
 @main.command("handoff-check")
 @click.option(
     "--root",
@@ -192,9 +215,27 @@ def handoff_check_command(root: Path, output_dir: Path | None) -> None:
 @click.option("--samplesheet", type=click.Path(path_type=Path), default=None)
 @click.option("--output-dir", type=click.Path(path_type=Path), required=True)
 @click.option("--stage", default=None, help="Optional stage label recorded in the raw upstream manifest.")
-def raw_upstream_evidence_command(module_name: str, input_path: Path, samplesheet: Path | None, output_dir: Path, stage: str | None) -> None:
+@click.option("--tiny-reference", type=click.Path(path_type=Path), default=None, help="Tiny FASTA/reference required for rnaseq_fastq_tiny_counts.")
+@click.option("--quant-tool", default=None, help="Quant/count command to require for rnaseq_fastq_tiny_counts: salmon, featureCounts, or subread.")
+def raw_upstream_evidence_command(
+    module_name: str,
+    input_path: Path,
+    samplesheet: Path | None,
+    output_dir: Path,
+    stage: str | None,
+    tiny_reference: Path | None,
+    quant_tool: str | None,
+) -> None:
     """Write lightweight Slurm evidence that raw/semi-raw inputs are importable."""
-    manifest = run_raw_upstream_evidence(module=module_name, input_path=input_path, samplesheet=samplesheet, output_dir=output_dir, stage=stage)
+    manifest = run_raw_upstream_evidence(
+        module=module_name,
+        input_path=input_path,
+        samplesheet=samplesheet,
+        output_dir=output_dir,
+        stage=stage,
+        tiny_reference=tiny_reference,
+        quant_tool=quant_tool,
+    )
     click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
     if manifest.get("status") != "ready":
         raise click.ClickException("raw-upstream-evidence blocked: " + str(manifest.get("blocked_reason") or "unknown"))

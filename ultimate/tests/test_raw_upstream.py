@@ -29,6 +29,84 @@ def test_raw_upstream_rnaseq_fastq_evidence_ready(tmp_path: Path) -> None:
     assert Path(manifest["artifacts"]["failure_recovery"]).exists()
 
 
+def test_raw_upstream_rnaseq_tiny_counts_requires_tool_and_reference(tmp_path: Path, monkeypatch) -> None:
+    fastq_dir = tmp_path / "fastq"
+    fastq_dir.mkdir()
+    fastq = fastq_dir / "S1.fastq"
+    fastq.write_text("@r1\nACGT\n+\n!!!!\n@r2\nTGCA\n+\n!!!!\n", encoding="utf-8")
+    reference = tmp_path / "tiny.fa"
+    reference.write_text(">GENE_A\nACGT\n>GENE_B\nTGCA\n", encoding="utf-8")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    salmon = bin_dir / "salmon"
+    salmon.write_text("#!/usr/bin/env bash\necho salmon-test\n", encoding="utf-8")
+    salmon.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{bin_dir}")
+    monkeypatch.setenv("SLURM_JOB_ID", "999")
+
+    manifest = run_raw_upstream_evidence(
+        module="rnaseq",
+        input_path=fastq_dir,
+        samplesheet=None,
+        output_dir=tmp_path / "tiny_out",
+        stage="rnaseq_fastq_tiny_counts",
+        tiny_reference=reference,
+        quant_tool="salmon",
+    )
+
+    assert manifest["status"] == "ready"
+    assert manifest["slurm_job_id"] == "999"
+    assert manifest["quant_tool"] == "salmon"
+    matrix = Path(manifest["artifacts"]["output_matrix"]).read_text(encoding="utf-8")
+    assert "GENE_A" in matrix
+    assert "GENE_B" in matrix
+
+
+def test_raw_upstream_rnaseq_tiny_counts_blocks_missing_reference(tmp_path: Path, monkeypatch) -> None:
+    fastq = tmp_path / "S1.fastq"
+    fastq.write_text("@r1\nACGT\n+\n!!!!\n", encoding="utf-8")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    salmon = bin_dir / "salmon"
+    salmon.write_text("#!/usr/bin/env bash\necho salmon-test\n", encoding="utf-8")
+    salmon.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{bin_dir}")
+
+    manifest = run_raw_upstream_evidence(
+        module="rnaseq",
+        input_path=fastq,
+        samplesheet=None,
+        output_dir=tmp_path / "blocked_ref",
+        stage="rnaseq_fastq_tiny_counts",
+        tiny_reference=None,
+        quant_tool="salmon",
+    )
+
+    assert manifest["status"] == "blocked"
+    assert "tiny_reference" in manifest["blocked_reason"]
+
+
+def test_raw_upstream_rnaseq_tiny_counts_blocks_missing_quant_tool(tmp_path: Path, monkeypatch) -> None:
+    fastq = tmp_path / "S1.fastq"
+    fastq.write_text("@r1\nACGT\n+\n!!!!\n", encoding="utf-8")
+    reference = tmp_path / "tiny.fa"
+    reference.write_text(">GENE_A\nACGT\n", encoding="utf-8")
+    monkeypatch.setenv("PATH", str(tmp_path / "empty_bin"))
+
+    manifest = run_raw_upstream_evidence(
+        module="rnaseq",
+        input_path=fastq,
+        samplesheet=None,
+        output_dir=tmp_path / "blocked_tool",
+        stage="rnaseq_fastq_tiny_counts",
+        tiny_reference=reference,
+        quant_tool="salmon",
+    )
+
+    assert manifest["status"] == "blocked"
+    assert "required quant tool not found" in manifest["blocked_reason"]
+
+
 def test_raw_upstream_scrna_10x_mtx_evidence_ready(tmp_path: Path) -> None:
     mtx = tmp_path / "tenx_mtx"
     mtx.mkdir()

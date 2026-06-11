@@ -67,3 +67,15 @@ def test_readme_documents_v4_1_tool_completeness_path() -> None:
     assert "sanitization.tsv" in text
     assert "customer_delivery_sanitization.tsv" in text
     assert "customer_package_manifest.tsv" in text
+
+
+def test_readme_documents_v4_2_raw_to_customer_path() -> None:
+    readme = Path(__file__).resolve().parents[1] / "README.md"
+    text = readme.read_text(encoding="utf-8")
+
+    assert "V4.2 Raw-to-Customer Trial" in text
+    assert "ultimate customer-package" in text
+    assert "ultimate batch-status" in text
+    assert "v4_2_raw_to_customer_trial.sbatch" in text
+    assert "rnaseq_fastq_tiny_counts" in text
+    assert "must write a blocked" in text

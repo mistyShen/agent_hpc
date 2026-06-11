@@ -519,6 +519,44 @@ script refreshes internal production-style rehearsal evidence for the next
 high-frequency modules: `vdj`, `cite_seq`, `methylation`, `scatac`,
 `multiome`, and `functional_state`.
 
+### V4.2 Raw-to-Customer Trial
+
+V4.2 moves from audit completeness to a controlled raw/standard-input customer
+rehearsal. The intended path is:
+
+```text
+triage -> prepare-job -> preflight -> raw-upstream-evidence -> run -> customer-package -> delivery-check -> batch-status
+```
+
+Two new CLI surfaces support that path:
+
+```bash
+ultimate customer-package --run-dir /shared/shen/2026/ultimate/jobs/<job_id>
+ultimate batch-status --batch-dir /shared/shen/2026/ultimate/jobs \
+  --output-dir /shared/shen/2026/ultimate/reports/batch_status_v4_2
+```
+
+`customer-package` builds a sanitized customer-facing package with
+`report.html`, `methods.md`, `delivery_index.tsv`, `sanitization.tsv`, legacy
+`customer_delivery_sanitization.tsv`, `customer_package_manifest.tsv`,
+`readme_for_customer.md`, and non-empty `figures/` and `tables/`. It redacts
+internal paths and raw-path hints before `delivery-check` evaluates the package.
+
+The V4.2 Slurm evidence suite is:
+
+```bash
+hpc-sbatch /shared/shen/2026/ultimate/slurm/v4_2_raw_to_customer_trial.sbatch
+```
+
+It attempts a controlled `rnaseq FASTQ -> tiny count matrix -> customer package`
+chain and a controlled `scrna 10x MTX -> object/report -> customer package`
+chain. The RNA-seq raw stage is explicit: `rnaseq_fastq_tiny_counts` requires a
+tiny FASTA reference and a visible `salmon`, `featureCounts`, or `subread`
+command. If that dependency is missing, the raw stage must write a blocked
+manifest and `failure_recovery.md`; it must not silently fall back to fake
+evidence. V4.2 remains a controlled customer-delivery rehearsal, not a real
+customer data release.
+
 ## SCEPI Matrix Backend
 
 The SCEPI module is a matrix-level single-cell epigenomics MVP, not a full

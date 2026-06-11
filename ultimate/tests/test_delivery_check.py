@@ -7,6 +7,7 @@ from pathlib import Path
 from click.testing import CliRunner
 
 from ultimate.cli import main
+from ultimate.customer_package import build_customer_package
 from ultimate.delivery_check import run_delivery_check
 
 
@@ -310,6 +311,37 @@ def test_delivery_check_accepts_sanitized_customer_delivery_package(tmp_path: Pa
 
     assert manifest["status"] == "ready"
     assert manifest["delivery_allowed"] is True
+
+
+def test_customer_package_cli_builds_sanitized_package_from_job(tmp_path: Path) -> None:
+    job_dir, run_dir = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+    (run_dir / "reports" / "report.html").write_text(
+        "<html>analysis_level production_backend delivery_allowed true /shared/shen/2026/ultimate/jobs/ORDER001 raw data path warning</html>",
+        encoding="utf-8",
+    )
+
+    package_manifest = build_customer_package(run_dir=job_dir)
+
+    assert package_manifest["status"] == "ready"
+    customer_dir = job_dir / "deliverables" / "customer"
+    assert (customer_dir / "sanitization.tsv").exists()
+    assert (customer_dir / "customer_delivery_sanitization.tsv").exists()
+    assert (customer_dir / "customer_package_manifest.tsv").exists()
+    assert "/shared" not in (customer_dir / "report.html").read_text(encoding="utf-8")
+    assert "raw data path" not in (customer_dir / "report.html").read_text(encoding="utf-8")
+    check = run_delivery_check(job_dir)
+    assert check["status"] == "ready"
+
+
+def test_customer_package_cli_command(tmp_path: Path) -> None:
+    job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+
+    result = CliRunner().invoke(main, ["customer-package", "--run-dir", str(job_dir)])
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ready"
+    assert (job_dir / "deliverables" / "customer" / "readme_for_customer.md").exists()
 
 
 def _write_customer_package(

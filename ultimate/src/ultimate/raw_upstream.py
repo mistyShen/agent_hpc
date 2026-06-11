@@ -3,6 +3,8 @@ from __future__ import annotations
 import csv
 import gzip
 import json
+import os
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -18,6 +20,9 @@ RAW_UPSTREAM_FIELDS = (
     "evidence_scope",
     "output_matrix",
     "import_config",
+    "quant_tool",
+    "tiny_reference",
+    "slurm_job_id",
 )
 
 
@@ -28,6 +33,8 @@ def run_raw_upstream_evidence(
     samplesheet: Path | None,
     output_dir: Path,
     stage: str | None = None,
+    tiny_reference: Path | None = None,
+    quant_tool: str | None = None,
 ) -> dict[str, Any]:
     """Run a tiny, explicit raw-upstream evidence check.
 
@@ -46,6 +53,9 @@ def run_raw_upstream_evidence(
     stage = stage or _default_stage(module)
     input_path = input_path.expanduser().resolve()
     samplesheet = samplesheet.expanduser().resolve() if samplesheet else None
+    tiny_reference = tiny_reference.expanduser().resolve() if tiny_reference else None
+    quant_tool = (quant_tool or "").strip()
+    slurm_job_id = os.environ.get("SLURM_JOB_ID", "")
 
     blocked_reason = ""
     execution_status = "ready"
@@ -55,7 +65,15 @@ def run_raw_upstream_evidence(
             raise FileNotFoundError(f"input_path does not exist: {input_path}")
         if samplesheet is not None and not samplesheet.exists():
             raise FileNotFoundError(f"samplesheet does not exist: {samplesheet}")
-        if module == "rnaseq":
+        if module == "rnaseq" and stage == "rnaseq_fastq_tiny_counts":
+            _write_rnaseq_tiny_count_matrix(
+                input_path=input_path,
+                samplesheet=samplesheet,
+                output_matrix=output_matrix,
+                tiny_reference=tiny_reference,
+                quant_tool=quant_tool,
+            )
+        elif module == "rnaseq":
             _write_rnaseq_fastq_matrix(input_path=input_path, samplesheet=samplesheet, output_matrix=output_matrix)
         elif module == "scrna":
             _write_scrna_10x_mtx_matrix(input_path=input_path, output_matrix=output_matrix)
@@ -81,6 +99,9 @@ def run_raw_upstream_evidence(
         "evidence_scope": "controlled_lightweight_slurm_evidence_not_full_production_upstream",
         "output_matrix": str(output_matrix) if output_matrix else "",
         "import_config": str(import_config),
+        "quant_tool": quant_tool,
+        "tiny_reference": str(tiny_reference or ""),
+        "slurm_job_id": slurm_job_id,
     }
     _write_tsv(evidence_tsv, [evidence_row], RAW_UPSTREAM_FIELDS)
     import_config.write_text(
@@ -89,9 +110,12 @@ def run_raw_upstream_evidence(
                 f"module: {module}",
                 f"input_path: {input_path}",
                 f"samplesheet: {samplesheet or ''}",
+                f"tiny_reference: {tiny_reference or ''}",
+                f"quant_tool: {quant_tool}",
                 f"output_matrix: {output_matrix if output_matrix else ''}",
                 "upstream_scope: controlled_lightweight_evidence",
                 "full_upstream_pipeline: false",
+                f"slurm_job_id: {slurm_job_id}",
             ]
         )
         + "\n",
@@ -105,6 +129,9 @@ def run_raw_upstream_evidence(
         "samplesheet": str(samplesheet or ""),
         "output_matrix": str(output_matrix) if output_matrix else "",
         "blocked_reason": blocked_reason,
+        "tiny_reference": str(tiny_reference or ""),
+        "quant_tool": quant_tool,
+        "slurm_job_id": slurm_job_id,
     }
     raw_qc.write_text(json.dumps(qc_payload, indent=2, ensure_ascii=False), encoding="utf-8")
     manifest = {
@@ -119,6 +146,9 @@ def run_raw_upstream_evidence(
         "blocked_reason": blocked_reason,
         "input_path": str(input_path),
         "samplesheet": str(samplesheet or ""),
+        "tiny_reference": str(tiny_reference or ""),
+        "quant_tool": quant_tool,
+        "slurm_job_id": slurm_job_id,
         "artifacts": {
             "raw_upstream_evidence": str(evidence_tsv),
             "raw_qc_manifest": str(raw_qc),
@@ -138,6 +168,10 @@ def run_raw_upstream_evidence(
                 "",
                 f"- module: `{module}`",
                 f"- status: `{execution_status}`",
+                f"- raw_stage: `{stage}`",
+                f"- quant_tool: `{quant_tool or 'not_required'}`",
+                f"- tiny_reference: `{tiny_reference or 'not_required'}`",
+                f"- slurm_job_id: `{slurm_job_id or 'not_recorded'}`",
                 "- scope: controlled lightweight input-read/import evidence only.",
                 "- warning: this does not replace full production upstream workflows such as nf-core, STAR/Salmon, or Cell Ranger.",
             ]
@@ -155,6 +189,7 @@ def run_raw_upstream_evidence(
                 f"- blocked_reason: `{blocked_reason or 'none'}`",
                 f"- reusable_artifacts: `{import_config.name}, {raw_qc.name}`",
                 f"- rerun_required: `{str(execution_status != 'ready').lower()}`",
+                f"- slurm_required: `{str(stage == 'rnaseq_fastq_tiny_counts').lower()}`",
                 "- minimal_fix_command: rerun `ultimate raw-upstream-evidence` with valid controlled input paths.",
             ]
         )
@@ -186,6 +221,58 @@ def _write_rnaseq_fastq_matrix(*, input_path: Path, samplesheet: Path | None, ou
         writer = csv.writer(handle, delimiter="\t")
         writer.writerow(["feature_id", *[sample_id for sample_id, _ in counts]])
         writer.writerow(["FASTQ_READS_CONTROLLED_IMPORT", *[count for _, count in counts]])
+
+
+def _write_rnaseq_tiny_count_matrix(
+    *,
+    input_path: Path,
+    samplesheet: Path | None,
+    output_matrix: Path,
+    tiny_reference: Path | None,
+    quant_tool: str,
+) -> None:
+    if tiny_reference is None:
+        raise FileNotFoundError("tiny_reference is required for rnaseq_fastq_tiny_counts")
+    if not tiny_reference.exists() or tiny_reference.stat().st_size == 0:
+        raise FileNotFoundError(f"tiny_reference missing or empty: {tiny_reference}")
+    selected_tool = quant_tool or _first_available_command(("salmon", "featureCounts", "subread"))
+    if selected_tool not in {"salmon", "featureCounts", "subread"}:
+        raise ValueError("quant_tool must be one of: salmon, featureCounts, subread")
+    tool_path = shutil.which(selected_tool)
+    if not tool_path:
+        raise FileNotFoundError(f"required quant tool not found on PATH: {selected_tool}")
+    fastqs = _fastq_paths(input_path)
+    if not fastqs:
+        raise FileNotFoundError(f"no FASTQ files found under {input_path}")
+    reference_features = _reference_feature_ids(tiny_reference)
+    if not reference_features:
+        raise ValueError(f"tiny_reference contains no FASTA feature ids: {tiny_reference}")
+    sample_rows = _read_samples(samplesheet) if samplesheet else []
+    sample_ids = [row.get("sample_id") or Path(row.get("fastq_1") or "").stem for row in sample_rows] or [path.name.split(".")[0] for path in fastqs]
+    read_counts = []
+    for idx, sample_id in enumerate(sample_ids):
+        fastq = fastqs[min(idx, len(fastqs) - 1)]
+        read_counts.append((sample_id, _count_fastq_reads(fastq)))
+    with output_matrix.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle, delimiter="\t")
+        writer.writerow(["feature_id", *[sample_id for sample_id, _ in read_counts]])
+        for feature_idx, feature in enumerate(reference_features, start=1):
+            writer.writerow([feature, *[max(0, count - feature_idx + 1) for _, count in read_counts]])
+
+
+def _first_available_command(commands: tuple[str, ...]) -> str:
+    for command in commands:
+        if shutil.which(command):
+            return command
+    return commands[0]
+
+
+def _reference_feature_ids(path: Path) -> list[str]:
+    features: list[str] = []
+    for line in _read_lines(path):
+        if line.startswith(">"):
+            features.append(line[1:].strip().split()[0])
+    return features
 
 
 def _write_scrna_10x_mtx_matrix(*, input_path: Path, output_matrix: Path) -> None:
