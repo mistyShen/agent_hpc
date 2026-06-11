@@ -16,6 +16,7 @@ CUSTOMER_PACKAGE_FILES = (
     "delivery_index.tsv",
     "sanitization.tsv",
     "customer_delivery_sanitization.tsv",
+    "customer_package_manifest.tsv",
     "readme_for_customer.md",
 )
 CUSTOMER_FORBIDDEN_TOKENS = (
@@ -336,6 +337,17 @@ def _check_customer_delivery_package(rows: list[dict[str, Any]], run_dir: Path, 
         expected = {"internal_path_exposure", "raw_path_exposure", "sensitive_metadata", "interpretation_warning"}
         present = {str(row.get("check_id") or "") for row in scan_rows}
         _check(rows, "customer_sanitization_required_checks", expected.issubset(present), sanitization_path, "customer sanitization table must cover internal paths, raw paths, sensitive metadata, and warnings")
+    package_manifest = customer_dir / "customer_package_manifest.tsv"
+    if _nonempty(package_manifest):
+        package_rows = _read_tsv(package_manifest)
+        _check(rows, "customer_package_manifest_rows_present", bool(package_rows), package_manifest, "customer package manifest must list customer-visible files")
+        bad_visibility = [
+            row
+            for row in package_rows
+            if str(row.get("customer_visible") or "").lower() not in {"true", "yes", "1"}
+            or str(row.get("sanitized") or "").lower() not in {"true", "yes", "1", "pass", "passed"}
+        ]
+        _check(rows, "customer_package_manifest_visible_sanitized", not bad_visibility, package_manifest, "customer package manifest rows must be customer-visible and sanitized")
 
 
 def _has_nonempty_file(directory: Path) -> bool:

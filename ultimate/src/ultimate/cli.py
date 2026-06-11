@@ -345,6 +345,48 @@ def audit_backends_command(root: Path, output_dir: Path | None) -> None:
     click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
 
 
+@main.command("tool-completeness")
+@click.option(
+    "--root",
+    type=click.Path(path_type=Path),
+    default=Path("/shared/shen/2026/ultimate"),
+    show_default=True,
+    help="Ultimate project root on shared storage.",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Where V4.1 tool completeness artifacts should be written.",
+)
+def tool_completeness_command(root: Path, output_dir: Path | None) -> None:
+    from ultimate.completeness import run_tool_completeness
+
+    manifest = run_tool_completeness(root=root, output_dir=output_dir)
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+
+
+@main.command("order-readiness")
+@click.option(
+    "--root",
+    type=click.Path(path_type=Path),
+    default=Path("/shared/shen/2026/ultimate"),
+    show_default=True,
+    help="Ultimate project root on shared storage.",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Where V4.1 module order-readiness artifacts should be written.",
+)
+def order_readiness_command(root: Path, output_dir: Path | None) -> None:
+    from ultimate.completeness import run_module_order_readiness
+
+    manifest = run_module_order_readiness(root=root, output_dir=output_dir)
+    click.echo(json.dumps(manifest, indent=2, ensure_ascii=False))
+
+
 @main.command("trial-tools")
 @click.option(
     "--root",

@@ -392,13 +392,25 @@ requires a sanitized customer package:
 jobs/<job_id>/deliverables/customer/report.html
 jobs/<job_id>/deliverables/customer/methods.md
 jobs/<job_id>/deliverables/customer/delivery_index.tsv
-jobs/<job_id>/deliverables/customer/customer_delivery_sanitization.tsv
+jobs/<job_id>/deliverables/customer/sanitization.tsv
+jobs/<job_id>/deliverables/customer/customer_package_manifest.tsv
 ```
 
 The customer package must not expose `/shared`, home paths, raw data paths,
 `raw_links`, approval files, Slurm internals, or other internal provenance.
 Those internal records remain in the run manifest and reproducibility package;
 the customer-facing package is a separate sanitized surface.
+
+`sanitization.tsv` is the standard customer-facing sanitization table name.
+Legacy packages may still provide `customer_delivery_sanitization.tsv`; tooling
+should continue to accept that legacy name for compatibility while new packages
+write `sanitization.tsv`.
+
+`customer_package_manifest.tsv` is the customer-facing package inventory. It
+lists the sanitized files included in the package, their customer-visible
+relative paths, artifact type, and brief notes. It must not include server
+paths, raw input paths, home paths, approval records, Slurm variables, or other
+internal provenance.
 
 The V4 Alpha rehearsal suite is expected to write:
 
@@ -429,8 +441,10 @@ V4 Beta keeps the same customer-delivery boundary, but strengthens the last
 mile needed before real customer work:
 
 - customer packages must include sanitized `report.html`, `methods.md`,
-  `readme_for_customer.md`, `delivery_index.tsv`, `customer_delivery_sanitization.tsv`,
-  plus non-empty `figures/` and `tables/` directories;
+  `readme_for_customer.md`, `delivery_index.tsv`, standard `sanitization.tsv`
+  with legacy `customer_delivery_sanitization.tsv` accepted for compatibility,
+  `customer_package_manifest.tsv`, plus non-empty `figures/` and `tables/`
+  directories;
 - `delivery-check` rejects customer-facing files that expose internal paths,
   raw path hints, approval files, Slurm internals, environment paths or missing
   interpretation warnings;
@@ -455,6 +469,55 @@ reports/v4_beta_customer_trial_report.md
 ```
 
 V4 Beta remains a controlled rehearsal, not real customer delivery.
+
+### V4.1 Tool Completeness And Customer Package Docs
+
+V4.1 documentation keeps tool-completeness evidence separate from customer
+delivery evidence. Tool readiness and disposition are documented through
+`docs/MULTIOMICS_IMPLEMENTATION_PLAN.md` and generated `audit-tools` /
+`audit-backends` outputs such as `tool_registry.tsv/json`; customer packages
+only expose sanitized delivery artifacts plus `customer_package_manifest.tsv`.
+
+The V4.1 local audit commands are:
+
+```bash
+ultimate tool-completeness \
+  --root /shared/shen/2026/ultimate \
+  --output-dir /shared/shen/2026/ultimate/audits/tool_completeness_latest
+
+ultimate order-readiness \
+  --root /shared/shen/2026/ultimate \
+  --output-dir /shared/shen/2026/ultimate/audits/order_readiness_latest
+```
+
+They write:
+
+```text
+audits/tool_completeness_latest/tool_completeness_matrix.tsv
+audits/tool_completeness_latest/tool_completeness_matrix.json
+audits/tool_completeness_latest/raw_upstream_readiness_matrix.tsv
+audits/tool_completeness_latest/customer_package_matrix.tsv
+audits/tool_completeness_latest/v4_1_tool_completeness_report.md
+audits/order_readiness_latest/module_order_readiness_matrix.tsv
+audits/order_readiness_latest/module_order_readiness_report.md
+```
+
+`tool_completeness_matrix.tsv` must have `missing_review=false` for every
+registered tool. Tools that are not retained still need an explicit disposition:
+`default_backend`, `optional_backend`, `handoff_adapter`,
+`licensed_path_detection`, `reference_only`, or `rejected_cleaned`.
+
+The V4.1 Slurm evidence scripts are:
+
+```bash
+hpc-sbatch /shared/shen/2026/ultimate/slurm/v4_1_tool_completeness_audit.sbatch
+hpc-sbatch /shared/shen/2026/ultimate/slurm/v4_1_order_readiness_rehearsal.sbatch
+```
+
+The first script is audit-only and should not run heavy algorithms. The second
+script refreshes internal production-style rehearsal evidence for the next
+high-frequency modules: `vdj`, `cite_seq`, `methylation`, `scatac`,
+`multiome`, and `functional_state`.
 
 ## SCEPI Matrix Backend
 

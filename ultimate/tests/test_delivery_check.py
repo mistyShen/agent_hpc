@@ -260,10 +260,26 @@ def test_delivery_check_blocks_customer_package_raw_and_slurm_hints(tmp_path: Pa
     assert "customer_package_no_internal_path_leaks" in manifest["blockers"]
 
 
+def test_delivery_check_blocks_customer_package_manifest_internal_path_leak(tmp_path: Path) -> None:
+    job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
+    _write_customer_package(job_dir)
+    (job_dir / "deliverables" / "customer" / "customer_package_manifest.tsv").write_text(
+        "artifact_type\tcustomer_path\tnote\n"
+        "report\treport.html\t/shared/shen/2026/ultimate/jobs/ORDER001/reports/report.html\n",
+        encoding="utf-8",
+    )
+
+    manifest = run_delivery_check(job_dir)
+
+    assert manifest["status"] == "blocked"
+    assert "customer_package_no_internal_path_leaks" in manifest["blockers"]
+
+
 def test_delivery_check_blocks_customer_package_missing_rich_contents(tmp_path: Path) -> None:
     job_dir, _ = _write_delivery_ready_job(tmp_path, delivery_scope="customer_delivery")
     _write_customer_package(job_dir)
     (job_dir / "deliverables" / "customer" / "readme_for_customer.md").unlink()
+    (job_dir / "deliverables" / "customer" / "customer_package_manifest.tsv").unlink()
     (job_dir / "deliverables" / "customer" / "figures" / "umap.png").unlink()
     (job_dir / "deliverables" / "customer" / "tables" / "markers.tsv").unlink()
 
@@ -271,6 +287,7 @@ def test_delivery_check_blocks_customer_package_missing_rich_contents(tmp_path: 
 
     assert manifest["status"] == "blocked"
     assert "customer_package_readme_for_customer.md" in manifest["blockers"]
+    assert "customer_package_customer_package_manifest.tsv" in manifest["blockers"]
     assert "customer_package_figures_nonempty" in manifest["blockers"]
     assert "customer_package_tables_nonempty" in manifest["blockers"]
 
@@ -330,6 +347,16 @@ def _write_customer_package(
         "table\ttables/markers.tsv\tcustomer-facing table\n",
         encoding="utf-8",
     )
+    (customer_dir / "customer_package_manifest.tsv").write_text(
+        "artifact_type\tcustomer_path\tnote\n"
+        "report\treport.html\tcustomer-facing sanitized report\n"
+        "methods\tmethods.md\tcustomer-facing methods\n"
+        "readme\treadme_for_customer.md\tcustomer package guide\n"
+        "sanitization\tsanitization.tsv\tcustomer-facing sanitization checks\n"
+        "figure\tfigures/umap.png\tcustomer-facing figure\n"
+        "table\ttables/markers.tsv\tcustomer-facing table\n",
+        encoding="utf-8",
+    )
     (customer_dir / "customer_delivery_sanitization.tsv").write_text(
         "check_id\tstatus\tnote\tpath\n"
         "internal_path_exposure\tpass\tno internal path in customer package\t\n"
@@ -339,6 +366,15 @@ def _write_customer_package(
         encoding="utf-8",
     )
     shutil.copyfile(customer_dir / "customer_delivery_sanitization.tsv", customer_dir / "sanitization.tsv")
+    (customer_dir / "customer_package_manifest.tsv").write_text(
+        "artifact_type\tfile\tcustomer_visible\tsanitized\tnote\n"
+        "report\treport.html\ttrue\ttrue\tsanitized report\n"
+        "methods\tmethods.md\ttrue\ttrue\tsanitized methods\n"
+        "readme\treadme_for_customer.md\ttrue\ttrue\tcustomer guide\n"
+        "figure\tfigures/umap.png\ttrue\ttrue\tcustomer figure\n"
+        "table\ttables/markers.tsv\ttrue\ttrue\tcustomer table\n",
+        encoding="utf-8",
+    )
     (customer_dir / "figures" / "umap.png").write_text("png", encoding="utf-8")
     (customer_dir / "tables" / "markers.tsv").write_text(
         "gene\tscore\nA\t1\n" + extra_table_text,

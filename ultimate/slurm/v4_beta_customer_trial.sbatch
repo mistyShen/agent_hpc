@@ -199,6 +199,14 @@ for sanitization_name in ("sanitization.tsv", "customer_delivery_sanitization.ts
         writer = csv.DictWriter(handle, fieldnames=("check_id", "status", "checked_at", "note"), delimiter="\t")
         writer.writeheader()
         writer.writerows(sanitization_rows)
+with (customer_dir / "customer_package_manifest.tsv").open("w", encoding="utf-8", newline="") as handle:
+    writer = csv.DictWriter(handle, fieldnames=("artifact_type", "file", "customer_visible", "sanitized", "note"), delimiter="\t")
+    writer.writeheader()
+    writer.writerow({"artifact_type": "report", "file": "report.html", "customer_visible": "true", "sanitized": "true", "note": "sanitized customer report"})
+    writer.writerow({"artifact_type": "methods", "file": "methods.md", "customer_visible": "true", "sanitized": "true", "note": "sanitized customer methods"})
+    writer.writerow({"artifact_type": "readme", "file": "readme_for_customer.md", "customer_visible": "true", "sanitized": "true", "note": "customer package guide"})
+    writer.writerow({"artifact_type": "figure", "file": f"figures/{module}_overview.png", "customer_visible": "true", "sanitized": "true", "note": "customer-facing figure"})
+    writer.writerow({"artifact_type": "table", "file": f"tables/{module}_summary.tsv", "customer_visible": "true", "sanitized": "true", "note": "customer-facing table"})
 PY
 }
 

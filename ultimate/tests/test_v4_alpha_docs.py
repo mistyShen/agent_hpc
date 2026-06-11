@@ -52,3 +52,18 @@ def test_readme_documents_v4_beta_customer_trial_path() -> None:
     assert "readme_for_customer.md" in text
     assert "raw upstream evidence is still lightweight" in text
     assert "V4 Beta remains a controlled rehearsal" in text
+
+
+def test_readme_documents_v4_1_tool_completeness_path() -> None:
+    readme = Path(__file__).resolve().parents[1] / "README.md"
+    text = readme.read_text(encoding="utf-8")
+
+    assert "V4.1 Tool Completeness" in text
+    assert "ultimate tool-completeness" in text
+    assert "ultimate order-readiness" in text
+    assert "tool_completeness_matrix.tsv" in text
+    assert "module_order_readiness_matrix.tsv" in text
+    assert "missing_review=false" in text
+    assert "sanitization.tsv" in text
+    assert "customer_delivery_sanitization.tsv" in text
+    assert "customer_package_manifest.tsv" in text

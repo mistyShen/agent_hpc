@@ -150,23 +150,50 @@ summary = [
     encoding="utf-8",
 )
 (customer_dir / "methods.md").write_text("\n".join(f"- {line}" for line in summary) + "\n", encoding="utf-8")
+(customer_dir / "readme_for_customer.md").write_text(
+    "# Customer package\n\n"
+    "This controlled V4 Alpha package contains sanitized report, methods, figures, and tables.\n\n"
+    "Interpretation warning: results require human review and are not mechanism proof.\n",
+    encoding="utf-8",
+)
+(customer_dir / "figures").mkdir(parents=True, exist_ok=True)
+(customer_dir / "tables").mkdir(parents=True, exist_ok=True)
+(customer_dir / "figures" / f"{module}_overview.png").write_text("controlled customer-facing figure placeholder\n", encoding="utf-8")
+(customer_dir / "tables" / f"{module}_summary.tsv").write_text("metric\tvalue\ncontrolled_rehearsal\ttrue\n", encoding="utf-8")
 with (customer_dir / "delivery_index.tsv").open("w", encoding="utf-8", newline="") as handle:
     writer = csv.DictWriter(handle, fieldnames=("category", "path", "module", "note"), delimiter="\t")
     writer.writeheader()
     writer.writerow({"category": "report", "path": "report.html", "module": module, "note": "sanitized rehearsal report"})
     writer.writerow({"category": "report", "path": "methods.md", "module": module, "note": "sanitized rehearsal methods"})
+    writer.writerow({"category": "readme", "path": "readme_for_customer.md", "module": module, "note": "customer package guide"})
+    writer.writerow({"category": "figure", "path": f"figures/{module}_overview.png", "module": module, "note": "customer-facing figure"})
+    writer.writerow({"category": "table", "path": f"tables/{module}_summary.tsv", "module": module, "note": "customer-facing table"})
+sanitization_rows = []
+for check_id in ("internal_path_exposure", "raw_path_exposure", "sensitive_metadata", "interpretation_warning"):
+    sanitization_rows.append(
+        {
+            "check_id": check_id,
+            "status": "pass",
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+            "note": "sanitized customer rehearsal package",
+        }
+    )
 with (customer_dir / "customer_delivery_sanitization.tsv").open("w", encoding="utf-8", newline="") as handle:
     writer = csv.DictWriter(handle, fieldnames=("check_id", "status", "checked_at", "note"), delimiter="\t")
     writer.writeheader()
-    for check_id in ("internal_path_exposure", "raw_path_exposure", "sensitive_metadata", "interpretation_warning"):
-        writer.writerow(
-            {
-                "check_id": check_id,
-                "status": "pass",
-                "checked_at": datetime.now(timezone.utc).isoformat(),
-                "note": "sanitized customer rehearsal package",
-            }
-        )
+    writer.writerows(sanitization_rows)
+with (customer_dir / "sanitization.tsv").open("w", encoding="utf-8", newline="") as handle:
+    writer = csv.DictWriter(handle, fieldnames=("check_id", "status", "checked_at", "note"), delimiter="\t")
+    writer.writeheader()
+    writer.writerows(sanitization_rows)
+with (customer_dir / "customer_package_manifest.tsv").open("w", encoding="utf-8", newline="") as handle:
+    writer = csv.DictWriter(handle, fieldnames=("artifact_type", "file", "customer_visible", "sanitized", "note"), delimiter="\t")
+    writer.writeheader()
+    writer.writerow({"artifact_type": "report", "file": "report.html", "customer_visible": "true", "sanitized": "true", "note": "sanitized customer report"})
+    writer.writerow({"artifact_type": "methods", "file": "methods.md", "customer_visible": "true", "sanitized": "true", "note": "sanitized customer methods"})
+    writer.writerow({"artifact_type": "readme", "file": "readme_for_customer.md", "customer_visible": "true", "sanitized": "true", "note": "customer package guide"})
+    writer.writerow({"artifact_type": "figure", "file": f"figures/{module}_overview.png", "customer_visible": "true", "sanitized": "true", "note": "customer-facing figure"})
+    writer.writerow({"artifact_type": "table", "file": f"tables/{module}_summary.tsv", "customer_visible": "true", "sanitized": "true", "note": "customer-facing table"})
 PY
 }
 
