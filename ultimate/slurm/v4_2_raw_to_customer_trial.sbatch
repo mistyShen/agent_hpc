@@ -18,6 +18,7 @@ DELIVERY_CHECK_FAILURES=0
 mkdir -p "$PROJECT_ROOT/logs" "$PROJECT_ROOT/jobs" "$PROJECT_ROOT/reports"
 cd "$PROJECT_ROOT"
 export PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
+export PATH="$PROJECT_ROOT/tools/bin:$CORE_ENV/bin:$SCRNA_ENV/bin:$PATH"
 
 write_job_manifest() {
   local job_dir="$1"
@@ -291,7 +292,7 @@ write_scrna_mtx_trial
 "$CORE_ENV/bin/python" -m ultimate.cli order-readiness \
   --root "$PROJECT_ROOT" \
   --output-dir "$PROJECT_ROOT/audits/order_readiness_v4_2_latest"
-if [[ -f "$PROJECT_ROOT/01_tools/storage_audit.py" ]]; then
+if [[ "${ULTIMATE_SKIP_STORAGE_AUDIT:-0}" != "1" && -f "$PROJECT_ROOT/01_tools/storage_audit.py" ]]; then
   "$CORE_ENV/bin/python" "$PROJECT_ROOT/01_tools/storage_audit.py" \
     --root "$PROJECT_ROOT" \
     --output-dir "$PROJECT_ROOT/audits/storage_v4_2_latest" \

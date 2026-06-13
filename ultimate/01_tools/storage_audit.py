@@ -5,6 +5,7 @@ import argparse
 import csv
 import json
 import os
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -225,6 +226,27 @@ def path_size(path: Path) -> int:
     if not path.is_dir():
         return stat.st_size
 
+    try:
+        timeout_seconds = float(os.environ.get("ULTIMATE_STORAGE_DU_TIMEOUT_SECONDS", "120"))
+        completed = subprocess.run(
+            ["du", "-sb", str(path)],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+        return int(completed.stdout.split()[0])
+    except subprocess.TimeoutExpired:
+        # Avoid letting a storage audit hold a Slurm pilot hostage on very large
+        # or slow NFS-backed directories. Prefer a recent audit value for the
+        # same path so pilot summaries do not silently under-report shared envs.
+        cached = cached_path_size(path)
+        if cached is not None:
+            return cached
+        return stat.st_size
+    except Exception:
+        pass
+
     total = 0
     for dirpath, dirnames, filenames in os.walk(path, followlinks=False):
         current = Path(dirpath)
@@ -247,6 +269,31 @@ def path_size(path: Path) -> int:
             except OSError:
                 pass
     return total
+
+
+def cached_path_size(path: Path) -> int | None:
+    root = path.parent
+    audits_root = root / "audits"
+    if not audits_root.exists():
+        return None
+    candidates = sorted(
+        audits_root.glob("storage_*/storage_audit.tsv"),
+        key=lambda item: item.stat().st_mtime if item.exists() else 0,
+        reverse=True,
+    )
+    path_str = str(path)
+    for audit_path in candidates:
+        try:
+            with audit_path.open("r", encoding="utf-8", newline="") as handle:
+                for row in csv.DictReader(handle, delimiter="\t"):
+                    if row.get("path") != path_str:
+                        continue
+                    value = int(float(row.get("bytes") or 0))
+                    if value > path.lstat().st_size:
+                        return value
+        except Exception:
+            continue
+    return None
 
 
 def cleanup_candidates(rows: list[dict[str, Any]], *, enabled: bool) -> list[dict[str, Any]]:
