@@ -30,6 +30,16 @@ ULTIMATE_V41_REHEARSAL_STAMP="$STAMP" \
 ULTIMATE_SKIP_STORAGE_AUDIT=1 \
 bash "$PROJECT_ROOT/slurm/v4_1_order_readiness_rehearsal.sbatch"
 
+# Normalize delivery artifacts across both layers. Older internal rehearsal
+# suites may only write run-level deliverables; the realistic pilot requires a
+# customer-package status for every stamped job, even when the package is a
+# controlled rehearsal artifact rather than a true customer release.
+while IFS= read -r job_dir; do
+  [[ -n "$job_dir" ]] || continue
+  "$CORE_ENV/bin/python" -m ultimate.cli customer-package --run-dir "$job_dir"
+  "$CORE_ENV/bin/python" -m ultimate.cli delivery-check --run-dir "$job_dir"
+done < <(find "$PROJECT_ROOT/jobs" -maxdepth 1 -type d -name "v*_*$STAMP" | sort)
+
 "$CORE_ENV/bin/python" -m ultimate.cli validation-index \
   --root "$PROJECT_ROOT" \
   --output-dir "$PROJECT_ROOT/reports/validation_index_v4_pilot"
